@@ -1,4 +1,5 @@
 option('with-docs', type: 'boolean', value: false)
+option('with-vapi', type: 'boolean', value: false)
 option('lib-only', type: 'boolean', value: false,
 	description: 'Only build libtllt-cp, ommitting the frontend'
 )

@@ -1,6 +1,8 @@
 #include <gtk/gtk.h>
 
 #include "tllt-cp-application.h"
+#include "tllt-cp-config.h"
+#include "tllt-cp-resources.h"
 #include "tllt-cp-window.h"
 
 struct _TlltCpApplication {
@@ -16,7 +18,6 @@ G_DEFINE_TYPE_WITH_PRIVATE(TlltCpApplication, tllt_cp_application, GTK_TYPE_APPL
 TlltCpApplication *
 tllt_cp_application_new(const char *id)
 {
-	g_print("%s\n", id);
 	return g_object_new(TLLT_CP_TYPE_APPLICATION, "application-id", id, NULL);
 }
 
@@ -33,35 +34,49 @@ tllt_cp_application_activate(GApplication *self)
 	gtk_window_present(GTK_WINDOW(priv->main_window));
 }
 
-// static void
-// tllt_cp_application_startup(GApplication *self)
-// {
-// 	G_APPLICATION_CLASS(tllt_cp_application_parent_class)->startup(self);
-// }
+static void
+tllt_cp_application_about(G_GNUC_UNUSED GSimpleAction *action, G_GNUC_UNUSED GVariant *param,
+						  gpointer data)
+{
+	TlltCpApplication *self = TLLT_CP_APPLICATION(data);
+	TlltCpApplicationPrivate *priv =
+		tllt_cp_application_get_instance_private(TLLT_CP_APPLICATION(self));
 
-// static void
-// tllt_cp_application_finalize(GObject *object)
-// {
-// 	TlltCpApplication *self		   = TLLT_CP_APPLICATION(object);
-// 	TlltCpApplicationPrivate *priv = tllt_cp_application_get_instance_private(self);
+	gtk_show_about_dialog(GTK_WINDOW(priv->main_window), "program-name", PACKAGE_NAME, "version",
+						  PACKAGE_VERSION, "license-type", GTK_LICENSE_GPL_3_0, NULL);
+}
 
-// 	G_OBJECT_CLASS(tllt_cp_application_parent_class)->finalize(object);
-// }
+static void
+tllt_cp_application_quit(G_GNUC_UNUSED GSimpleAction *action, G_GNUC_UNUSED GVariant *param,
+						 gpointer data)
+{
+	g_application_quit(G_APPLICATION(data));
+}
+
+static void
+tllt_cp_application_startup(GApplication *self)
+{
+	g_resources_register(tllt_cp_get_resource());
+	g_application_set_resource_base_path(self, "/com/gitlab/tristan957/TlltCp");
+
+	G_APPLICATION_CLASS(tllt_cp_application_parent_class)->startup(self);
+}
 
 static void
 tllt_cp_application_class_init(TlltCpApplicationClass *klass)
 {
-	GObjectClass *object_class   = G_OBJECT_CLASS(klass);
 	GApplicationClass *app_class = G_APPLICATION_CLASS(klass);
 
-	// object_class->finalize = tllt_cp_application_finalize;
 	app_class->activate = tllt_cp_application_activate;
-	// app_class->startup	 = tllt_cp_application_startup;
+	app_class->startup  = tllt_cp_application_startup;
 }
+
+static GActionEntry app_entries[] = {{.name = "about", .activate = tllt_cp_application_about},
+									 {.name = "quit", .activate = tllt_cp_application_quit}};
 
 static void
 tllt_cp_application_init(TlltCpApplication *self)
 {
-	TlltCpApplicationPrivate *priv =
-		tllt_cp_application_get_instance_private(TLLT_CP_APPLICATION(self));
+	g_action_map_add_action_entries(G_ACTION_MAP(self), app_entries, G_N_ELEMENTS(app_entries),
+									self);
 }

@@ -2,7 +2,8 @@
 
 #include "tllt-cp-application.h"
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
 	g_autoptr(TlltCpApplication) app;
 

@@ -27,7 +27,7 @@ tllt_cp_header_bar_class_init(TlltCpHeaderBarClass *klass)
 }
 
 static void
-tllt_cp_header_bar_init(TlltCpHeaderBar *self)
+tllt_cp_header_bar_init(G_GNUC_UNUSED TlltCpHeaderBar *self)
 {
 }
 

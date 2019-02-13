@@ -28,6 +28,8 @@ if not get_option('lib-only')
   libgtk_dep = dependency('gtk+-3.0', version: '>= 3.22')
 endif
 
+subdir('lib')
+
 if not get_option('lib-only')
   subdir('src')
 endif
