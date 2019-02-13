@@ -3,11 +3,9 @@ config_h = configuration_data({
 	'PACKAGE_VERSION': '"@0@"'.format(meson.project_version()),
 	'GETTEXT_PACKAGE': '"@0@"'.format(meson.project_name()),
 	'G_LOG_USE_STRUCTURED': true,
-	'G_LOG_DOMAIN': false,
 	'LOCALEDIR': '"@0@"'.format(join_paths(get_option('prefix'), get_option('localedir'))),
 	'LIBDIR': '"@0@"'.format(join_paths(get_option('prefix'), get_option('libdir'))),
 })
-config_h.set_quoted('G_LOG_DOMAIN', 'TlltCp')
 if get_option('buildtype') == 'release'
 	config_h.set('G_DISABLE_ASSERT', true)
 	config_h.set('G_DISABLE_CHECKS', true)

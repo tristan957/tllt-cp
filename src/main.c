@@ -1,5 +1,11 @@
 #include <gtk/gtk.h>
 
+// We have to set the domain here in order to avoid a macro redefinition
+#ifdef G_LOG_DOMAIN
+#	undef G_LOG_DOMAIN
+#	define G_LOG_DOMAIN "TlltCp"
+#endif
+
 #include "tllt-cp-application.h"
 
 int
