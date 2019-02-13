@@ -1,0 +1,39 @@
+project(
+    'tllt-cp',
+    ['c'],
+    version: '0.0.1',
+    license: [
+        'GPL-3.0',
+    ],
+    default_options: [
+        'c_std=c11',
+    ],
+)
+
+libtllt_cp_api_version = '0.1'
+
+c_flags = [
+	'-Wall',
+	'-Wextra',
+	'-pedantic',
+]
+
+add_global_arguments(c_flags, language: 'c')
+
+i18n = import('i18n')
+gnome = import('gnome')
+
+libgio_dep = dependency('gio-2.0', version: '>= 2.56')
+if not get_option('lib-only')
+  libgtk_dep = dependency('gtk+-3.0', version: '>= 3.22')
+endif
+
+if not get_option('lib-only')
+  subdir('src')
+endif
+
+subdir('po')
+subdir('data')
+subdir('docs')
+
+meson.add_install_script('meson_post_install.sh', '@0@'.format(get_option('lib-only')))

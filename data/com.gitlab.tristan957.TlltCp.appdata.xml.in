@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+	<id>com.gitlab.tristan957.TlltCp</id>
+	<licence>GPL-3.0</licence>
+	<description>
+		<p>The control panel for The Learning Little Toaster</p>
+	</description>
+	<url type="homepage">https://gitlab.com/tristan957/tllt-cp</url>
+	<screenshots>
+		<screenshot type="default">...</screenshot>
+	</screenshots>
+	<updatecontact>tristan_dot_partin_at_gmail.com</updatecontact>
+</component>

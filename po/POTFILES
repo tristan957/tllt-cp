@@ -1,0 +1,8 @@
+data/com.gitlab.tristan957.TlltCp.gschema.xml
+data/com.gitlab.tristan957.TlltCp.appdata.xml
+data/com.gitlab.tristan957.TlltCp.desktop
+data/ui/window.ui
+src/gui/main.c
+src/gui/tllt-cp-application.c
+src/gui/tllt-cp-header-bar.c
+src/gui/tllt-cp-window.c

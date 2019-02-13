@@ -1,0 +1,17 @@
+{
+	"[c]": {
+		"editor.formatOnSave": true,
+		"editor.insertSpaces": false,
+		"editor.tabSize": 4
+	},
+	"[cpp]": {
+		"editor.formatOnSave": true,
+		"editor.insertSpaces": false,
+		"editor.tabSize": 4
+	},
+	"files.associations": {
+		"*.desktop.in": "properties",
+		"*.xml.in": "xml",
+		"*.ui": "xml"
+	}
+}

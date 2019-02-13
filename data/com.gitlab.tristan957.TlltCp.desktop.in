@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=TlltCp
+GenericName=The Learning Little Toaster Control Panel
+Comment=Get the perfect output every time
+Keywords=Toaster
+Exec=tllt-cp
+Terminal=false
+Type=Application
+Categories=GTK
+# StartupNotify=true
+# X-GNOME-UsesNotifications=true
