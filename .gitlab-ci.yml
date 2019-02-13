@@ -1,4 +1,4 @@
-image: tristan957/gcc-gtk:latest
+image: tristan957/c-cxx-gtk:latest
 
 stages:
   - build
