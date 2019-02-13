@@ -15,7 +15,7 @@ libtllt_cp_api_version = '0.1'
 c_flags = [
 	'-Wall',
 	'-Wextra',
-	'-pedantic',
+	'--pedantic',
 ]
 
 add_global_arguments(c_flags, language: 'c')

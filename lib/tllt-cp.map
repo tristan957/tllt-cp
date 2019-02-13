@@ -1,6 +1,0 @@
-{
-global:
-    tllt_cp_*;
-local:
-    *;
-};

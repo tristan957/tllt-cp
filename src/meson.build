@@ -12,10 +12,6 @@ resources = gnome.compile_resources(
 	c_name: 'tllt_cp',
 )
 
-cflags = [
-  '-include', 'tllt-cp-config.h'
-]
-
 executable(
 	'tllt-cp',
 	sources + resources,
@@ -23,6 +19,5 @@ executable(
 		libgtk_dep,
 		libtllt_cp_dep,
 	],
-	c_args: cflags,
 	install: true,
 )
