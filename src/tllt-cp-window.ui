@@ -18,7 +18,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <signal name="clicked" handler="on_login_button_clicked" swapped="no"/>
+            <signal name="clicked" handler="on_login_button_clicked" object="user_profiles_flow_box" swapped="no"/>
             <style>
               <class name="suggested-action"/>
             </style>
@@ -79,19 +79,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkFlowBox" id="user_flow_box">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">0</property>
-            <property name="top_attach">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkRevealer">
+          <object class="GtkRevealer" id="user_profile_revealer">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="transition_type">none</property>
@@ -146,6 +134,32 @@
             <property name="left_attach">1</property>
             <property name="top_attach">0</property>
             <property name="height">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <property name="hscrollbar_policy">never</property>
+            <child>
+              <object class="GtkViewport">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="shadow_type">none</property>
+                <child>
+                  <object class="GtkFlowBox" id="user_profiles_flow_box">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
           </packing>
         </child>
       </object>

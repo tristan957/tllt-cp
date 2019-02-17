@@ -9,7 +9,7 @@ struct _TlltCpApplication {
 	GtkApplication parent;
 };
 
-typedef struct {
+typedef struct TlltCpApplicationPrivate {
 	GtkApplicationWindow *main_window;
 } TlltCpApplicationPrivate;
 
