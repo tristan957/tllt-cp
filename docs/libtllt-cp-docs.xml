@@ -17,7 +17,6 @@
   <chapter>
     <title>The Learning Little Toaster GUI</title>
 	  <xi:include href="xml/tllt-cp-application.xml"/>
-		<xi:include href="xml/tllt-cp-header-bar.xml"/>
     <xi:include href="xml/tllt-cp-window.xml"/>
   </chapter>
 
