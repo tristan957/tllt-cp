@@ -2,6 +2,7 @@ sources = [
 	'main.c',
 	'tllt-cp-application.c',
 	'tllt-cp-window.c',
+	'login/tllt-cp-login-dialog.c'
 ]
 
 resources = gnome.compile_resources(
@@ -18,5 +19,6 @@ executable(
 		libgtk_dep,
 		libtllt_cp_dep,
 	],
+	include_directories: include_directories('login'),
 	install: true,
 )

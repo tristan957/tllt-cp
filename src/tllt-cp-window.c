@@ -1,6 +1,12 @@
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "login/tllt-cp-login-dialog.h"
 #include "tllt-cp-window.h"
+
+#define LOGOUT_YES -8
+#define LOGOUT_NO -9
+#define LOGIN_YES -3
 
 struct _TlltCpWindow {
 	GtkApplicationWindow parent_instance;
@@ -20,7 +26,6 @@ G_DEFINE_TYPE_WITH_PRIVATE(TlltCpWindow, tllt_cp_window, GTK_TYPE_APPLICATION_WI
 static void
 user_flow_box_add_user(GtkFlowBox *self)
 {
-	// const GtkWidget *flow_box_child = gtk_flow_box_child_new();
 	GtkWidget *user_button = gtk_button_new_with_label("Tristan Partin");
 	gtk_container_add(GTK_CONTAINER(self), user_button);
 	gtk_widget_show_all(GTK_WIDGET(self));
@@ -29,13 +34,32 @@ user_flow_box_add_user(GtkFlowBox *self)
 static void
 on_login_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
 {
-	user_flow_box_add_user(user_data);
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	TlltCpLoginDialog *dialog = tllt_cp_login_dialog_new();
+	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(self));
+	const int response = gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(GTK_WIDGET(dialog));
+
+	if (response == LOGIN_YES) {
+		user_flow_box_add_user(priv->user_profiles_flow_box);
+	}
 }
 
 static void
-on_logout_button_clicked(GtkButton *button, G_GNUC_UNUSED gpointer user_data)
+on_logout_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
 {
-	g_print("%s\n", gtk_button_get_label(button));
+	g_autoptr(GString) message = g_string_new(NULL);
+	g_string_sprintf(message, _("Are you sure you would like to log %s out?"), "Tristan Partin");
+	GtkWidget *dialog = gtk_message_dialog_new(
+		GTK_WINDOW(user_data), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+		GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, message->str);
+	const int response = gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(dialog);
+
+	if (response == LOGOUT_YES) {
+	}
 }
 
 static void
@@ -84,9 +108,9 @@ tllt_cp_window_init(TlltCpWindow *self)
 {
 	g_print("Initializing object\n");
 	gtk_widget_init_template(GTK_WIDGET(self));
-	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
-	gtk_revealer_set_reveal_child(GTK_REVEALER(priv->user_actions_revealer), FALSE);
-	gtk_revealer_set_reveal_child(
-		GTK_REVEALER(priv->user_profile_revealer),
-		FALSE);	// FIXME: Gtk warning appears when this is originally set to false
+	// TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+	// gtk_revealer_set_reveal_child(GTK_REVEALER(priv->user_actions_revealer), FALSE);
+	// gtk_revealer_set_reveal_child(
+	// 	GTK_REVEALER(priv->user_profile_revealer),
+	// 	FALSE);	// FIXME: Gtk warning appears when this is originally set to false
 }

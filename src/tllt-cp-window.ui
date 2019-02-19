@@ -18,7 +18,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <signal name="clicked" handler="on_login_button_clicked" object="user_profiles_flow_box" swapped="no"/>
+            <signal name="clicked" handler="on_login_button_clicked" object="TlltCpWindow" swapped="no"/>
             <style>
               <class name="suggested-action"/>
             </style>
@@ -49,7 +49,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <signal name="clicked" handler="on_logout_button_clicked" swapped="no"/>
+                    <signal name="clicked" handler="on_logout_button_clicked" object="TlltCpWindow" swapped="no"/>
                     <style>
                       <class name="destructive-action"/>
                     </style>

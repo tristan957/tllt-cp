@@ -2,5 +2,6 @@
 <gresources>
   <gresource prefix="/com/gitlab/tristan957/TlltCp">
     <file preprocess="xml-stripblanks">tllt-cp-window.ui</file>
+    <file preprocess="xml-stripblanks">login/tllt-cp-login-dialog.ui</file>
   </gresource>
 </gresources>
