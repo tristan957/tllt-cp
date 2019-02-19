@@ -34,7 +34,7 @@ user_flow_box_add_user(GtkFlowBox *self)
 }
 
 static void
-on_login_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
+on_login_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 {
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
@@ -50,7 +50,7 @@ on_login_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
 }
 
 static void
-on_logout_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
+on_logout_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 {
 	g_autoptr(GString) message = g_string_new(NULL);
 	g_string_sprintf(message, _("Are you sure you would like to log %s out?"), "Tristan Partin");
@@ -65,9 +65,16 @@ on_logout_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
 }
 
 static void
-on_user_details_button_clicked(GtkButton *button, G_GNUC_UNUSED gpointer user_data)
+on_user_details_button_clicked(GtkButton *widget, G_GNUC_UNUSED gpointer user_data)
 {
-	g_print("%s\n", gtk_button_get_label(button));
+	g_print("%s\n", gtk_button_get_label(widget));
+}
+
+static void
+on_theme_state_changed(GtkSwitch *widget, G_GNUC_UNUSED gpointer user_data)
+{
+	g_object_set(gtk_settings_get_default(), "gtk-application-prefer-dark-theme",
+				 gtk_switch_get_state(widget) == 0, NULL);
 }
 
 TlltCpWindow *
@@ -101,6 +108,7 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 	gtk_widget_class_bind_template_callback(wid_class, on_login_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_logout_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_user_details_button_clicked);
+	gtk_widget_class_bind_template_callback(wid_class, on_theme_state_changed);
 }
 
 static void
