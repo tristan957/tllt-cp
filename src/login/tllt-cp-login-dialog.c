@@ -2,11 +2,13 @@
 
 #include "tllt-cp-login-dialog.h"
 
-struct _TlltCpLoginDialog {
+struct _TlltCpLoginDialog
+{
 	GtkDialog parent_instance;
 };
 
-typedef struct TlltCpLoginDialogPrivate {
+typedef struct TlltCpLoginDialogPrivate
+{
 	GtkEntry *username_entry;
 	GtkEntry *password_entry;
 } TlltCpLoginDialogPrivate;

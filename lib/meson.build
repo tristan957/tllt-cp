@@ -20,12 +20,12 @@ configure_file(
 )
 
 sources = [
-	'tllt-cp-ex.c',
+	'tllt-cp-user.c',
 ]
 
 public_headers = [
 	'tllt-cp.h',
-	'tllt-cp-ex.h'
+	'tllt-cp-user.h'
 ]
 
 # install_headers(libtllt_cp_public_headers, subdir: 'tllt-cp')
@@ -35,6 +35,9 @@ pkgincludedir = join_paths(get_option('includedir'), 'tllt-cp')
 libtllt_cp = shared_library(
 	'tllt-cp',
   	sources,
+	dependencies: [
+		libgio_dep,
+	],
   	install: true,
 )
 

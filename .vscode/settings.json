@@ -13,5 +13,6 @@
 		"*.desktop.in": "properties",
 		"*.xml.in": "xml",
 		"*.ui": "xml"
-	}
+	},
+	"C_Cpp.clang_format_path": "/usr/bin/clang-format", // until a new version of C/C++ is released with an upgraded clang-format
 }

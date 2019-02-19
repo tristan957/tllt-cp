@@ -5,11 +5,13 @@
 #include "tllt-cp-resources.h"
 #include "tllt-cp-window.h"
 
-struct _TlltCpApplication {
+struct _TlltCpApplication
+{
 	GtkApplication parent;
 };
 
-typedef struct TlltCpApplicationPrivate {
+typedef struct TlltCpApplicationPrivate
+{
 	GtkApplicationWindow *main_window;
 } TlltCpApplicationPrivate;
 

@@ -8,11 +8,13 @@
 #define LOGOUT_NO -9
 #define LOGIN_YES -3
 
-struct _TlltCpWindow {
+struct _TlltCpWindow
+{
 	GtkApplicationWindow parent_instance;
 };
 
-typedef struct TlltCpWindowPrivate {
+typedef struct TlltCpWindowPrivate
+{
 	GtkButton *login_button;
 	GtkButton *logout_button;
 	GtkButton *user_details_button;
@@ -71,7 +73,6 @@ on_user_details_button_clicked(GtkButton *button, G_GNUC_UNUSED gpointer user_da
 TlltCpWindow *
 tllt_cp_window_new(GApplication *app)
 {
-	g_print("Creating new window\n");
 	return g_object_new(TLLT_CP_TYPE_WINDOW, "application", app, NULL);
 }
 
@@ -84,7 +85,6 @@ tllt_cp_window_finalize(GObject *object)
 static void
 tllt_cp_window_class_init(TlltCpWindowClass *klass)
 {
-	g_print("Initializing class\n");
 	GObjectClass *object_class = G_OBJECT_CLASS(klass);
 	GtkWidgetClass *wid_class  = GTK_WIDGET_CLASS(klass);
 
@@ -106,7 +106,6 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 static void
 tllt_cp_window_init(TlltCpWindow *self)
 {
-	g_print("Initializing object\n");
 	gtk_widget_init_template(GTK_WIDGET(self));
 	// TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 	// gtk_revealer_set_reveal_child(GTK_REVEALER(priv->user_actions_revealer), FALSE);
