@@ -33,6 +33,12 @@ tllt_cp_application_activate(GApplication *self)
 		priv->main_window = GTK_APPLICATION_WINDOW(tllt_cp_window_new(self));
 	}
 
+	GtkBuilder *menu_builder =
+		gtk_builder_new_from_resource("/com/gitlab/tristan957/TlltCp/tllt-cp-app-menu.ui");
+	GObject *menu = gtk_builder_get_object(menu_builder, "app_menu");
+	gtk_application_set_app_menu(GTK_APPLICATION(self), G_MENU_MODEL(menu));
+	g_object_unref((gpointer) menu_builder);
+
 	gtk_window_present(GTK_WINDOW(priv->main_window));
 }
 
@@ -40,12 +46,16 @@ static void
 tllt_cp_application_about(G_GNUC_UNUSED GSimpleAction *action, G_GNUC_UNUSED GVariant *param,
 						  gpointer data)
 {
+	static const gchar *authors[] = {"Tristan Partin"};
+
 	TlltCpApplication *self = TLLT_CP_APPLICATION(data);
 	TlltCpApplicationPrivate *priv =
 		tllt_cp_application_get_instance_private(TLLT_CP_APPLICATION(self));
 
 	gtk_show_about_dialog(GTK_WINDOW(priv->main_window), "program-name", PACKAGE_NAME, "version",
-						  PACKAGE_VERSION, "license-type", GTK_LICENSE_GPL_3_0, NULL);
+						  PACKAGE_VERSION, "license-type", PACKAGE_LICENSE, "website",
+						  PACKAGE_WEBSITE, "website-label", PACKAGE_WEBSITE_LABEL, "authors",
+						  authors, "logo-icon-name", "trophy-gold", NULL);
 }
 
 static void
