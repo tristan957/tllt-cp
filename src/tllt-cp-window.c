@@ -2,6 +2,7 @@
 #include <gtk/gtk.h>
 
 #include "login/tllt-cp-login-dialog.h"
+#include "tllt-cp-user.h"
 #include "tllt-cp-window.h"
 
 #define LOGOUT_YES -8
@@ -21,21 +22,25 @@ typedef struct TlltCpWindowPrivate
 	GtkFlowBox *user_profiles_flow_box;
 	GtkRevealer *user_actions_revealer;
 	GtkRevealer *user_profile_revealer;
+
+	GSList *logged_in_users;
+	TlltCpUser *selected_user;
 } TlltCpWindowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE(TlltCpWindow, tllt_cp_window, GTK_TYPE_APPLICATION_WINDOW)
 
 static void
-user_flow_box_add_user(GtkFlowBox *self)
+user_flow_box_add_user(const GtkFlowBox *self, const TlltCpUser *user)
 {
-	GtkWidget *user_button = gtk_button_new_with_label("Tristan Partin");
-	gtk_container_add(GTK_CONTAINER(self), user_button);
+	GtkWidget *lab = gtk_label_new(user->name);
+	gtk_container_add(GTK_CONTAINER(self), lab);
 	gtk_widget_show_all(GTK_WIDGET(self));
 }
 
 static void
 on_login_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 {
+	static int i			  = 1;
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
@@ -45,7 +50,10 @@ on_login_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 	gtk_widget_destroy(GTK_WIDGET(dialog));
 
 	if (response == LOGIN_YES) {
-		user_flow_box_add_user(priv->user_profiles_flow_box);
+		const TlltCpUser *user =
+			tllt_cp_user_new("Tristan Partin", "tristan.partin@your_mom.com", i++);
+		priv->logged_in_users = g_slist_append(priv->logged_in_users, (gpointer) user);
+		user_flow_box_add_user(priv->user_profiles_flow_box, user);
 	}
 }
 
@@ -77,6 +85,24 @@ on_theme_state_changed(GtkToggleButton *widget, G_GNUC_UNUSED gpointer user_data
 				 gtk_toggle_button_get_active(widget), NULL);
 }
 
+static void
+on_user_profiles_flow_box_child_activated(G_GNUC_UNUSED GtkFlowBox *widget, GtkFlowBoxChild *child,
+										  gpointer user_data)
+{
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+	const gint index		  = gtk_flow_box_child_get_index(child);
+	priv->selected_user		  = TLLT_CP_USER(g_slist_nth_data(priv->logged_in_users, index));
+
+	if (!gtk_revealer_get_child_revealed(priv->user_actions_revealer)) {
+		gtk_revealer_set_reveal_child(priv->user_actions_revealer, TRUE);
+	}
+
+	if (!gtk_revealer_get_child_revealed(priv->user_profile_revealer)) {
+		gtk_revealer_set_reveal_child(priv->user_profile_revealer, TRUE);
+	}
+}
+
 TlltCpWindow *
 tllt_cp_window_new(GApplication *app)
 {
@@ -86,6 +112,9 @@ tllt_cp_window_new(GApplication *app)
 static void
 tllt_cp_window_finalize(GObject *object)
 {
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(TLLT_CP_WINDOW(object));
+	g_slist_free(priv->logged_in_users);
+
 	G_OBJECT_CLASS(tllt_cp_window_parent_class)->finalize(object);
 }
 
@@ -109,15 +138,14 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 	gtk_widget_class_bind_template_callback(wid_class, on_logout_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_user_details_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_theme_state_changed);
+	gtk_widget_class_bind_template_callback(wid_class, on_user_profiles_flow_box_child_activated);
 }
 
 static void
 tllt_cp_window_init(TlltCpWindow *self)
 {
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+	priv->logged_in_users	 = g_slist_alloc();
+
 	gtk_widget_init_template(GTK_WIDGET(self));
-	// TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
-	// gtk_revealer_set_reveal_child(GTK_REVEALER(priv->user_actions_revealer), FALSE);
-	// gtk_revealer_set_reveal_child(
-	// 	GTK_REVEALER(priv->user_profile_revealer),
-	// 	FALSE);	// FIXME: Gtk warning appears when this is originally set to false
 }

@@ -81,7 +81,7 @@ tllt_cp_user_class_init(TlltCpUserClass *klass)
 													 NULL, G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
 	obj_properties[PROP_USER_ID] =
 		g_param_spec_uint("user-id", _("User ID"), _("ID of the user"), 0, UINT_MAX, 0,
-						  G_PARAM_CONSTRUCT_ONLY | G_PARAM_READABLE);
+						  G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
@@ -95,5 +95,5 @@ tllt_cp_user_init(G_GNUC_UNUSED TlltCpUser *self)
 TlltCpUser *
 tllt_cp_user_new(const gchar *name, const gchar *email, const guint user_id)
 {
-	return g_object_new(TLLT_CP_TYPE_USER, "name", name, "email", email, "user-id", user_id);
+	return g_object_new(TLLT_CP_TYPE_USER, "name", name, "email", email, "user-id", user_id, NULL);
 }
