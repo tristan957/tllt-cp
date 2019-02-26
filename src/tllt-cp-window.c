@@ -1,13 +1,11 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "login/tllt-cp-login-dialog.h"
+#include "login/tllt-cp-login-window.h"
 #include "tllt-cp-user.h"
 #include "tllt-cp-window.h"
 
 #define LOGOUT_YES -8
-#define LOGOUT_NO -9
-#define LOGIN_YES -3
 
 struct _TlltCpWindow
 {
@@ -16,9 +14,6 @@ struct _TlltCpWindow
 
 typedef struct TlltCpWindowPrivate
 {
-	GtkButton *login_button;
-	GtkButton *logout_button;
-	GtkButton *user_details_button;
 	GtkFlowBox *user_profiles_flow_box;
 	GtkRevealer *user_actions_revealer;
 	GtkRevealer *user_profile_revealer;
@@ -44,17 +39,17 @@ on_login_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
-	TlltCpLoginDialog *dialog = tllt_cp_login_dialog_new();
-	gtk_window_set_transient_for(GTK_WINDOW(dialog), GTK_WINDOW(self));
-	const int response = gtk_dialog_run(GTK_DIALOG(dialog));
-	gtk_widget_destroy(GTK_WIDGET(dialog));
+	TlltCpLoginWindow *window = tllt_cp_login_window_new();
+	gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(self));
+	gtk_window_present(GTK_WINDOW(window));
+	// gtk_widget_destroy(GTK_WIDGET(dialog));
 
-	if (response == LOGIN_YES) {
-		const TlltCpUser *user =
-			tllt_cp_user_new("Tristan Partin", "tristan.partin@your_mom.com", i++);
-		priv->logged_in_users = g_slist_append(priv->logged_in_users, (gpointer) user);
-		user_flow_box_add_user(priv->user_profiles_flow_box, user);
-	}
+	// if (response == LOGIN_YES) {
+	// 	const TlltCpUser *user =
+	// 		tllt_cp_user_new("Tristan Partin", "tristan.partin@your_mom.com", i++);
+	// 	priv->logged_in_users = g_slist_append(priv->logged_in_users, (gpointer) user);
+	// 	user_flow_box_add_user(priv->user_profiles_flow_box, user);
+	// }
 }
 
 static void
@@ -128,9 +123,6 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 
 	gtk_widget_class_set_template_from_resource(wid_class,
 												"/com/gitlab/tristan957/TlltCp/tllt-cp-window.ui");
-	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, login_button);
-	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, logout_button);
-	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_details_button);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_profiles_flow_box);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_actions_revealer);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_profile_revealer);
