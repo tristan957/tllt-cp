@@ -24,32 +24,23 @@ typedef struct TlltCpWindowPrivate
 
 G_DEFINE_TYPE_WITH_PRIVATE(TlltCpWindow, tllt_cp_window, GTK_TYPE_APPLICATION_WINDOW)
 
-static void
-user_flow_box_add_user(const GtkFlowBox *self, const TlltCpUser *user)
+void
+tllt_cp_window_add_user(TlltCpWindow *self, const TlltCpUser *user)
 {
-	GtkWidget *lab = gtk_label_new(user->name);
-	gtk_container_add(GTK_CONTAINER(self), lab);
-	gtk_widget_show_all(GTK_WIDGET(self));
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+	gtk_container_add(GTK_CONTAINER(priv->user_profiles_flow_box), gtk_label_new(user->name));
+	gtk_widget_show_all(GTK_WIDGET(priv->user_profiles_flow_box));
+	priv->logged_in_users = g_slist_append(priv->logged_in_users, (gpointer) user);
 }
 
 static void
 on_login_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 {
-	static int i			  = 1;
-	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
-	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+	TlltCpWindow *self = TLLT_CP_WINDOW(user_data);
 
-	TlltCpLoginWindow *window = tllt_cp_login_window_new();
+	TlltCpLoginWindow *window = tllt_cp_login_window_new(self);
 	gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(self));
 	gtk_window_present(GTK_WINDOW(window));
-	// gtk_widget_destroy(GTK_WIDGET(dialog));
-
-	// if (response == LOGIN_YES) {
-	// 	const TlltCpUser *user =
-	// 		tllt_cp_user_new("Tristan Partin", "tristan.partin@your_mom.com", i++);
-	// 	priv->logged_in_users = g_slist_append(priv->logged_in_users, (gpointer) user);
-	// 	user_flow_box_add_user(priv->user_profiles_flow_box, user);
-	// }
 }
 
 static void
