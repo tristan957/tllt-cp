@@ -89,6 +89,15 @@ on_user_profiles_flow_box_child_activated(G_GNUC_UNUSED GtkFlowBox *widget, GtkF
 	}
 }
 
+static void
+on_user_actions_revealer_close_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
+{
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	gtk_revealer_set_reveal_child(priv->user_actions_revealer, FALSE);
+}
+
 TlltCpWindow *
 tllt_cp_window_new(GApplication *app)
 {
@@ -122,6 +131,7 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 	gtk_widget_class_bind_template_callback(wid_class, on_user_details_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_theme_state_changed);
 	gtk_widget_class_bind_template_callback(wid_class, on_user_profiles_flow_box_child_activated);
+	gtk_widget_class_bind_template_callback(wid_class, on_user_actions_revealer_close_clicked);
 }
 
 static void
