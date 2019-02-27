@@ -28,7 +28,9 @@ void
 tllt_cp_window_add_user(TlltCpWindow *self, const TlltCpUser *user)
 {
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
-	gtk_container_add(GTK_CONTAINER(priv->user_profiles_flow_box), gtk_label_new(user->name));
+	GtkWidget *lab			  = gtk_label_new(user->name);
+	gtk_widget_set_size_request(lab, 40, 20);
+	gtk_container_add(GTK_CONTAINER(priv->user_profiles_flow_box), lab);
 	gtk_widget_show_all(GTK_WIDGET(priv->user_profiles_flow_box));
 	priv->logged_in_users = g_slist_append(priv->logged_in_users, (gpointer) user);
 }
@@ -39,22 +41,36 @@ on_login_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 	TlltCpWindow *self = TLLT_CP_WINDOW(user_data);
 
 	TlltCpLoginWindow *window = tllt_cp_login_window_new(self);
-	gtk_window_set_transient_for(GTK_WINDOW(window), GTK_WINDOW(self));
 	gtk_window_present(GTK_WINDOW(window));
+}
+
+static void
+remove_children_from_user_profiles_flow_box(gpointer data, gpointer user_data)
+{
+	gtk_container_remove(GTK_CONTAINER(user_data), GTK_WIDGET(data));
 }
 
 static void
 on_logout_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 {
-	g_autoptr(GString) message = g_string_new(NULL);
-	g_string_sprintf(message, _("Are you sure you would like to log %s out?"), "Tristan Partin");
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
 	GtkWidget *dialog = gtk_message_dialog_new(
 		GTK_WINDOW(user_data), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-		GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, message->str);
+		GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("Are you sure you would like to log %s out?"),
+		"Tristan Partin");
 	const int response = gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);
 
 	if (response == LOGOUT_YES) {
+		g_autolist(GList) list = gtk_flow_box_get_selected_children(priv->user_profiles_flow_box);
+		g_list_foreach(list, remove_children_from_user_profiles_flow_box,
+					   (gpointer) priv->user_profiles_flow_box);
+		priv->logged_in_users = g_slist_remove(priv->logged_in_users, priv->selected_user);
+		priv->selected_user   = NULL;
+		gtk_revealer_set_reveal_child(priv->user_actions_revealer, FALSE);
+		gtk_revealer_set_reveal_child(priv->user_profile_revealer, FALSE);
 	}
 }
 
