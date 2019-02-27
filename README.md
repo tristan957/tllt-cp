@@ -4,7 +4,7 @@
 
 ## Dependencies
 
-* `curl >= 7.64`
+* `curl >= 7.61.1`
 * `glib >= 2.56`
 * `gtk >= 3.22`
 * `json-c >= 0.13.1`
