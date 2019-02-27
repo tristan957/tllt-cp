@@ -7,4 +7,5 @@ build:
   stage: build
   script:
     - CC=gcc meson build
+    - meson configure build -Dwerror=true -Dprefix=/usr
     - ninja -C build
