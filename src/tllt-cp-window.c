@@ -28,10 +28,20 @@ void
 tllt_cp_window_add_user(TlltCpWindow *self, const TlltCpUser *user)
 {
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	GtkWidget *flow_box_child = gtk_flow_box_child_new();
 	GtkWidget *lab			  = gtk_label_new(user->name);
-	gtk_widget_set_size_request(lab, 40, 20);
-	gtk_container_add(GTK_CONTAINER(priv->user_profiles_flow_box), lab);
+	gtk_widget_set_halign(flow_box_child, GTK_ALIGN_FILL);
+	gtk_widget_set_valign(flow_box_child, GTK_ALIGN_CENTER);
+	gtk_widget_set_margin_top(lab, 15);
+	gtk_widget_set_margin_bottom(lab, 15);
+	gtk_widget_set_margin_start(lab, 15);
+	gtk_widget_set_margin_end(lab, 15);
+
+	gtk_container_add(GTK_CONTAINER(flow_box_child), GTK_WIDGET(lab));
+	gtk_container_add(GTK_CONTAINER(priv->user_profiles_flow_box), flow_box_child);
 	gtk_widget_show_all(GTK_WIDGET(priv->user_profiles_flow_box));
+
 	priv->logged_in_users = g_slist_append(priv->logged_in_users, (gpointer) user);
 }
 
@@ -59,7 +69,7 @@ on_logout_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 	GtkWidget *dialog = gtk_message_dialog_new(
 		GTK_WINDOW(user_data), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
 		GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("Are you sure you would like to log %s out?"),
-		"Tristan Partin");
+		priv->selected_user->name);
 	const int response = gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);
 
@@ -153,8 +163,5 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 static void
 tllt_cp_window_init(TlltCpWindow *self)
 {
-	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
-	priv->logged_in_users	 = g_slist_alloc();
-
 	gtk_widget_init_template(GTK_WIDGET(self));
 }
