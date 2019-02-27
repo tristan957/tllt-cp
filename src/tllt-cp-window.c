@@ -74,7 +74,7 @@ on_logout_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 	gtk_widget_destroy(dialog);
 
 	if (response == LOGOUT_YES) {
-		g_autolist(GList) list = gtk_flow_box_get_selected_children(priv->user_profiles_flow_box);
+		g_autoptr(GList) list = gtk_flow_box_get_selected_children(priv->user_profiles_flow_box);
 		g_list_foreach(list, remove_children_from_user_profiles_flow_box,
 					   (gpointer) priv->user_profiles_flow_box);
 		priv->logged_in_users = g_slist_remove(priv->logged_in_users, priv->selected_user);
