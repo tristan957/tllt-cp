@@ -40,6 +40,8 @@ libtllt_cp = shared_library(
   	sources,
 	dependencies: [
 		libgio_dep,
+		libcurl_dep,
+		libjsonc_dep,
 	],
   	install: true,
 )
