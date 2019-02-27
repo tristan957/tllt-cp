@@ -66,7 +66,7 @@ on_new_user_re_password_entry_activate(G_GNUC_UNUSED GtkEntry *widget,
 {}
 
 TlltCpLoginWindow *
-tllt_cp_login_window_new(const TlltCpWindow *parent)
+tllt_cp_login_window_new(const GtkWindow *parent)
 {
 	return g_object_new(TLLT_CP_TYPE_LOGIN_WINDOW, "transient-for", GTK_WINDOW(parent), NULL);
 }

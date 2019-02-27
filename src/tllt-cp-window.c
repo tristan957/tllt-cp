@@ -50,7 +50,7 @@ on_login_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 {
 	TlltCpWindow *self = TLLT_CP_WINDOW(user_data);
 
-	TlltCpLoginWindow *window = tllt_cp_login_window_new(self);
+	TlltCpLoginWindow *window = tllt_cp_login_window_new(GTK_WINDOW(self));
 	gtk_window_present(GTK_WINDOW(window));
 }
 
