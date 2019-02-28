@@ -24,21 +24,34 @@ typedef struct TlltCpWindowPrivate
 
 G_DEFINE_TYPE_WITH_PRIVATE(TlltCpWindow, tllt_cp_window, GTK_TYPE_APPLICATION_WINDOW)
 
+static void
+tllt_cp_window_user_tile_clicked(GtkButton *widget, gpointer flow_box)
+{
+	g_signal_emit_by_name(flow_box, "child-activated",
+						  GTK_FLOW_BOX_CHILD(gtk_widget_get_parent(GTK_WIDGET(widget))), NULL);
+}
+
 void
 tllt_cp_window_add_user(TlltCpWindow *self, const TlltCpUser *user)
 {
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
 	GtkWidget *flow_box_child = gtk_flow_box_child_new();
-	GtkWidget *lab			  = gtk_label_new(user->name);
+	GtkWidget *user_tile	  = gtk_button_new();
+	GtkWidget *internal_box   = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+
 	gtk_widget_set_halign(flow_box_child, GTK_ALIGN_FILL);
 	gtk_widget_set_valign(flow_box_child, GTK_ALIGN_CENTER);
-	gtk_widget_set_margin_top(lab, 15);
-	gtk_widget_set_margin_bottom(lab, 15);
-	gtk_widget_set_margin_start(lab, 15);
-	gtk_widget_set_margin_end(lab, 15);
 
-	gtk_container_add(GTK_CONTAINER(flow_box_child), GTK_WIDGET(lab));
+	g_object_connect((gpointer) user_tile, "signal::clicked",
+					 G_CALLBACK(tllt_cp_window_user_tile_clicked), priv->user_profiles_flow_box,
+					 NULL);
+
+	gtk_box_pack_start(GTK_BOX(internal_box),
+					   gtk_image_new_from_icon_name("user-info", GTK_ICON_SIZE_DND), TRUE, TRUE, 0);
+	gtk_box_pack_end(GTK_BOX(internal_box), gtk_label_new(user->name), TRUE, TRUE, 0);
+	gtk_container_add(GTK_CONTAINER(user_tile), internal_box);
+	gtk_container_add(GTK_CONTAINER(flow_box_child), GTK_WIDGET(user_tile));
 	gtk_container_add(GTK_CONTAINER(priv->user_profiles_flow_box), flow_box_child);
 	gtk_widget_show_all(GTK_WIDGET(priv->user_profiles_flow_box));
 

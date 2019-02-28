@@ -194,6 +194,13 @@
                   <object class="GtkFlowBox" id="user_profiles_flow_box">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="margin_left">10</property>
+                    <property name="margin_right">10</property>
+                    <property name="margin_top">10</property>
+                    <property name="margin_bottom">10</property>
+                    <property name="column_spacing">10</property>
+                    <property name="row_spacing">10</property>
+                    <property name="selection_mode">none</property>
                     <signal name="child-activated" handler="on_user_profiles_flow_box_child_activated" object="TlltCpWindow" swapped="no"/>
                   </object>
                 </child>
