@@ -5,8 +5,6 @@
 #include "tllt-cp-user.h"
 #include "tllt-cp-window.h"
 
-#define LOGOUT_YES -8
-
 struct _TlltCpWindow
 {
 	GtkApplicationWindow parent_instance;
@@ -27,6 +25,8 @@ G_DEFINE_TYPE_WITH_PRIVATE(TlltCpWindow, tllt_cp_window, GTK_TYPE_APPLICATION_WI
 static void
 tllt_cp_window_user_tile_clicked(GtkButton *widget, gpointer flow_box)
 {
+	gtk_flow_box_select_child(flow_box,
+							  GTK_FLOW_BOX_CHILD(gtk_widget_get_parent(GTK_WIDGET(widget))));
 	g_signal_emit_by_name(flow_box, "child-activated",
 						  GTK_FLOW_BOX_CHILD(gtk_widget_get_parent(GTK_WIDGET(widget))), NULL);
 }
@@ -83,11 +83,16 @@ on_logout_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 		GTK_WINDOW(user_data), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
 		GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("Are you sure you would like to log %s out?"),
 		priv->selected_user->name);
+	GtkWidget *button	= gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_YES);
+	GtkStyleContext *ctx = gtk_widget_get_style_context(button);
+	gtk_style_context_add_class(ctx, GTK_STYLE_CLASS_DESTRUCTIVE_ACTION);
+
 	const int response = gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);
 
-	if (response == LOGOUT_YES) {
+	if (response == GTK_RESPONSE_YES) {
 		g_autoptr(GList) list = gtk_flow_box_get_selected_children(priv->user_profiles_flow_box);
+		g_warn_if_fail(g_list_length(list) > 0);
 		g_list_foreach(list, remove_children_from_user_profiles_flow_box,
 					   (gpointer) priv->user_profiles_flow_box);
 		priv->logged_in_users = g_slist_remove(priv->logged_in_users, priv->selected_user);
@@ -118,6 +123,7 @@ on_user_profiles_flow_box_child_activated(G_GNUC_UNUSED GtkFlowBox *widget, GtkF
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 	const gint index		  = gtk_flow_box_child_get_index(child);
 	priv->selected_user		  = TLLT_CP_USER(g_slist_nth_data(priv->logged_in_users, index));
+	g_warn_if_fail(priv->selected_user != NULL);
 
 	if (!gtk_revealer_get_child_revealed(priv->user_actions_revealer)) {
 		gtk_revealer_set_reveal_child(priv->user_actions_revealer, TRUE);
