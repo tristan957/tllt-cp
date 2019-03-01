@@ -194,5 +194,5 @@ tllt_cp_window_init(TlltCpWindow *self)
 	gtk_css_provider_load_from_resource(priv->css_provider,
 										"/com/gitlab/tristan957/TlltCp/style/style.css");
 	gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(priv->css_provider),
-											  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+											  GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
