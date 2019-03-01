@@ -189,10 +189,9 @@ tllt_cp_window_init(TlltCpWindow *self)
 	gtk_widget_init_template(GTK_WIDGET(self));
 
 	priv->css_provider = gtk_css_provider_new();
-	GdkScreen *screen  = gdk_screen_get_default();
-	g_warn_if_fail(screen != NULL);
 	gtk_css_provider_load_from_resource(priv->css_provider,
 										"/com/gitlab/tristan957/TlltCp/style/style.css");
-	gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(priv->css_provider),
-											  GTK_STYLE_PROVIDER_PRIORITY_USER);
+	gtk_style_context_add_provider_for_screen(gtk_window_get_screen(GTK_WINDOW(self)),
+											  GTK_STYLE_PROVIDER(priv->css_provider),
+											  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
