@@ -12,6 +12,7 @@ struct _TlltCpWindow
 
 typedef struct TlltCpWindowPrivate
 {
+	GtkCssProvider *css_provider;
 	GtkFlowBox *user_profiles_flow_box;
 	GtkRevealer *user_actions_revealer;
 	GtkRevealer *user_profile_revealer;
@@ -51,7 +52,7 @@ tllt_cp_window_add_user(TlltCpWindow *self, const TlltCpUser *user)
 					   gtk_image_new_from_icon_name("user-info", GTK_ICON_SIZE_DND), TRUE, TRUE, 0);
 	gtk_box_pack_end(GTK_BOX(internal_box), gtk_label_new(user->name), TRUE, TRUE, 0);
 	gtk_container_add(GTK_CONTAINER(user_tile), internal_box);
-	gtk_container_add(GTK_CONTAINER(flow_box_child), GTK_WIDGET(user_tile));
+	gtk_container_add(GTK_CONTAINER(flow_box_child), user_tile);
 	gtk_container_add(GTK_CONTAINER(priv->user_profiles_flow_box), flow_box_child);
 	gtk_widget_show_all(GTK_WIDGET(priv->user_profiles_flow_box));
 
@@ -154,6 +155,7 @@ tllt_cp_window_finalize(GObject *object)
 {
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(TLLT_CP_WINDOW(object));
 	g_slist_free(priv->logged_in_users);
+	g_object_unref(priv->css_provider);
 
 	G_OBJECT_CLASS(tllt_cp_window_parent_class)->finalize(object);
 }
@@ -182,5 +184,15 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 static void
 tllt_cp_window_init(TlltCpWindow *self)
 {
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
 	gtk_widget_init_template(GTK_WIDGET(self));
+
+	priv->css_provider = gtk_css_provider_new();
+	GdkScreen *screen  = gdk_screen_get_default();
+	g_warn_if_fail(screen != NULL);
+	gtk_css_provider_load_from_resource(priv->css_provider,
+										"/com/gitlab/tristan957/TlltCp/style/style.css");
+	gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(priv->css_provider),
+											  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
