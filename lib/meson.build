@@ -23,12 +23,14 @@ configure_file(
 )
 
 sources = [
+	'tllt-cp-client.c',
 	'tllt-cp-user.c',
 ]
 
 public_headers = [
 	'tllt-cp.h',
-	'tllt-cp-user.h'
+	'tllt-cp-client.h',
+	'tllt-cp-user.h',
 ]
 
 # install_headers(libtllt_cp_public_headers, subdir: 'tllt-cp')

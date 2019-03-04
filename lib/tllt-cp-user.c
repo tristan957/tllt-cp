@@ -88,9 +88,7 @@ tllt_cp_user_class_init(TlltCpUserClass *klass)
 
 static void
 tllt_cp_user_init(G_GNUC_UNUSED TlltCpUser *self)
-{
-	// https://developer.gnome.org/gobject/stable/howto-gobject-construction.html
-}
+{}
 
 TlltCpUser *
 tllt_cp_user_new(const gchar *name, const gchar *email, const guint user_id)
