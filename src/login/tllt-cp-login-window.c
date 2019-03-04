@@ -86,7 +86,7 @@ tllt_cp_login_window_class_init(TlltCpLoginWindowClass *klass)
 	obj_class->finalize = tllt_cp_login_window_finalize;
 
 	gtk_widget_class_set_template_from_resource(
-		wid_class, "/com/gitlab/tristan957/TlltCp/login/tllt-cp-login-window.ui");
+		wid_class, "/com/gitlab/tristan957/tllt-cp/login/tllt-cp-login-window.ui");
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow, login_stack);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow, login_email_entry);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow,

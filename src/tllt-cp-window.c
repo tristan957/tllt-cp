@@ -169,7 +169,7 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 	object_class->finalize = tllt_cp_window_finalize;
 
 	gtk_widget_class_set_template_from_resource(wid_class,
-												"/com/gitlab/tristan957/TlltCp/tllt-cp-window.ui");
+												"/com/gitlab/tristan957/tllt-cp/tllt-cp-window.ui");
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_profiles_flow_box);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_actions_revealer);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_profile_revealer);
@@ -190,7 +190,7 @@ tllt_cp_window_init(TlltCpWindow *self)
 
 	priv->css_provider = gtk_css_provider_new();
 	gtk_css_provider_load_from_resource(priv->css_provider,
-										"/com/gitlab/tristan957/TlltCp/style/style.css");
+										"/com/gitlab/tristan957/tllt-cp/style/style.css");
 	gtk_style_context_add_provider_for_screen(gtk_window_get_screen(GTK_WINDOW(self)),
 											  GTK_STYLE_PROVIDER(priv->css_provider),
 											  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);

@@ -34,7 +34,7 @@ tllt_cp_application_activate(GApplication *self)
 	}
 
 	GtkBuilder *menu_builder =
-		gtk_builder_new_from_resource("/com/gitlab/tristan957/TlltCp/tllt-cp-app-menu.ui");
+		gtk_builder_new_from_resource("/com/gitlab/tristan957/tllt-cp/tllt-cp-app-menu.ui");
 	GObject *menu = gtk_builder_get_object(menu_builder, "app_menu");
 	gtk_application_set_app_menu(GTK_APPLICATION(self), G_MENU_MODEL(menu));
 	g_object_unref((gpointer) menu_builder);
@@ -69,7 +69,7 @@ static void
 tllt_cp_application_startup(GApplication *self)
 {
 	g_resources_register(tllt_cp_get_resource());
-	g_application_set_resource_base_path(self, "/com/gitlab/tristan957/TlltCp");
+	g_application_set_resource_base_path(self, "/com/gitlab/tristan957/tllt-cp");
 
 	G_APPLICATION_CLASS(tllt_cp_application_parent_class)->startup(self);
 }
