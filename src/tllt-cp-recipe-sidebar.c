@@ -17,7 +17,7 @@ typedef struct TlltCpRecipeSidebarPrivate
 
 G_DEFINE_TYPE_WITH_PRIVATE(TlltCpRecipeSidebar, tllt_cp_recipe_sidebar, GTK_TYPE_BOX)
 
-typedef enum
+typedef enum TlltCpRecipeSidebarProps
 {
 	PROP_USER = 1,
 	N_PROPS
@@ -50,8 +50,12 @@ tllt_cp_recipe_sidebar_set_property(GObject *obj, guint prop_id, const GValue *v
 
 	switch (prop_id) {
 	case PROP_USER:
-		g_free(priv->user);
-		priv->user = g_value_dup_object(val);
+		/**
+		 * Use the same user pointer that exists at the window level. Increment ref count of new
+		 * object and decrement ref count of old object.
+		 */
+		g_object_unref(priv->user);
+		priv->user = g_object_ref(g_value_get_pointer(val));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -62,11 +66,6 @@ tllt_cp_recipe_sidebar_set_property(GObject *obj, guint prop_id, const GValue *v
 static void
 tllt_cp_recipe_sidebar_finalize(GObject *obj)
 {
-	TlltCpRecipeSidebar *self		 = TLLT_CP_RECIPE_SIDEBAR(obj);
-	TlltCpRecipeSidebarPrivate *priv = tllt_cp_recipe_sidebar_get_instance_private(self);
-
-	g_free(priv->user);	// This may be wrong
-
 	G_OBJECT_CLASS(tllt_cp_recipe_sidebar_parent_class)->finalize(obj);
 }
 
@@ -95,8 +94,24 @@ tllt_cp_recipe_sidebar_init(TlltCpRecipeSidebar *self)
 	gtk_widget_init_template(GTK_WIDGET(self));
 }
 
-TlltCpRecipeSidebar *
-tllt_cp_recipe_sidebar_new()
+void
+tllt_cp_recipe_sidebar_clear(G_GNUC_UNUSED TlltCpRecipeSidebar *self)
+{}
+
+void
+tllt_cp_recipe_sidebar_add_recipe(G_GNUC_UNUSED TlltCpRecipeSidebar *self)
+{}
+
+void
+tllt_cp_recipe_sidebar_set_user(TlltCpRecipeSidebar *self, TlltCpUser *user)
 {
-	return g_object_new(TLLT_CP_TYPE_RECIPE_SIDEBAR, NULL);
+	TlltCpRecipeSidebarPrivate *priv = tllt_cp_recipe_sidebar_get_instance_private(self);
+
+	priv->user = user;
+}
+
+TlltCpRecipeSidebar *
+tllt_cp_recipe_sidebar_new(TlltCpUser *user)
+{
+	return g_object_new(TLLT_CP_TYPE_RECIPE_SIDEBAR, "user", user, NULL);
 }

@@ -98,6 +98,7 @@ on_logout_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 					   (gpointer) priv->user_profiles_flow_box);
 		priv->logged_in_users = g_slist_remove(priv->logged_in_users, priv->selected_user);
 		priv->selected_user   = NULL;
+
 		gtk_revealer_set_reveal_child(priv->user_actions_revealer, FALSE);
 		gtk_revealer_set_reveal_child(priv->user_profile_revealer, FALSE);
 	}
