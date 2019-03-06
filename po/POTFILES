@@ -1,6 +1,6 @@
-data/com.gitlab.tristan957.TlltCp.gschema.xml
-data/com.gitlab.tristan957.TlltCp.appdata.xml
-data/com.gitlab.tristan957.TlltCp.desktop
+data/com.gitlab.tristan957.tllt-cp.gschema.xml
+data/com.gitlab.tristan957.tllt-cp.appdata.xml
+data/com.gitlab.tristan957.tllt-cp.desktop
 src/main.c
 src/tllt-cp-app-menu.ui
 src/tllt-cp-application.c
