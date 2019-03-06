@@ -13,7 +13,7 @@
     <property name="skip_taskbar_hint">True</property>
     <property name="skip_pager_hint">True</property>
     <child type="titlebar">
-      <object class="GtkHeaderBar">
+      <object class="GtkHeaderBar" id="header_bar">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="title" translatable="yes">Login</property>
@@ -60,6 +60,8 @@
                   <object class="GtkEntry" id="login_email_entry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="has_focus">True</property>
+                    <property name="is_focus">True</property>
                     <property name="hexpand">True</property>
                   </object>
                   <packing>
