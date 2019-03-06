@@ -6,8 +6,8 @@
 <FILE>tllt-cp-application</FILE>
 <TITLE>TlltCpApplication</TITLE>
 TLLT_CP_TYPE_APPLICATION
-irc_application_new
-IrcApplication
+tllt_cp_application_new
+TlltCpApplication
 </SECTION>
 
 <SECTION>
@@ -16,4 +16,20 @@ IrcApplication
 TLLT_CP_TYPE_WINDOW
 tllt_cp_window_new
 TlltCpWindow
+</SECTION>
+
+<SECTION>
+<FILE>tllt-cp-recipe-sidebar</FILE>
+<TITLE>TlltCpRecipeSidebar</TITLE>
+TLLT_CP_TYPE_RECIPE_SIDEBAR
+tllt_cp_recipe_sidebar_new
+TlltCpRecipeSidebar
+</SECTION>
+
+<SECTION>
+<FILE>login/tllt-cp-login-window</FILE>
+<TITLE>TlltCpLoginWindow</TITLE>
+TLLT_CP_TYPE_LOGIN_WINDOW
+tllt_cp_login_window_new
+TlltCpLoginWindow
 </SECTION>

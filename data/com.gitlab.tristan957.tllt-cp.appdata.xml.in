@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-	<id>com.gitlab.tristan957.TlltCp</id>
+	<id>com.gitlab.tristan957.tllt-cp</id>
 	<licence>GPL-3.0</licence>
 	<description>
 		<p>The control panel for The Learning Little Toaster</p>

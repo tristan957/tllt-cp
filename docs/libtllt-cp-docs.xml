@@ -7,22 +7,24 @@
 
 <book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
   <bookinfo>
-    <title>The Learning Little Toaster Reference Manual</title>
+    <title>The Learning Little Toaster Control Panel Reference Manual</title>
   </bookinfo>
 
   <chapter>
-    <title>The Learning Little Toaster API</title>
+    <title>The Learning Little Toaster Control Panel API</title>
   </chapter>
 
   <chapter>
-    <title>The Learning Little Toaster GUI</title>
-	  <xi:include href="xml/tllt-cp-application.xml"/>
-    <xi:include href="xml/tllt-cp-window.xml"/>
+    <title>The Learning Little Toaster Control Panel GUI</title>
+	  <xi:include href="xml/tllt-cp-application.xml" />
+    <xi:include href="xml/tllt-cp-recipe-sidebar.xml" />
+    <xi:include href="xml/tllt-cp-window.xml" />
+    <xi:include href="xml/login/tllt-cp-login-window.xml "/>
   </chapter>
 
   <index id="api-index-full">
     <title>API Index</title>
-    <xi:include href="xml/api-index-full.xml"/>
+    <xi:include href="xml/api-index-full.xml" />
   </index>
 
   <index id="deprecated-api-index" role="deprecated">
