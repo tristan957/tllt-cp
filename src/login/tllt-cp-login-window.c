@@ -28,6 +28,7 @@ static void
 on_login_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
 {
 	TlltCpLoginWindow *self = TLLT_CP_LOGIN_WINDOW(user_data);
+
 	tllt_cp_window_add_user(TLLT_CP_WINDOW(gtk_window_get_transient_for(GTK_WINDOW(self))),
 							tllt_cp_user_new("Tristan Partin", "tristan.partin@your_mom.com", 1));
 	gtk_window_close(GTK_WINDOW(self));
@@ -40,7 +41,7 @@ on_cancel_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 }
 
 static void
-on_new_user_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
+on_new_user_button_clicked(GtkButton *widget, gpointer user_data)
 {
 	TlltCpLoginWindow *self		   = TLLT_CP_LOGIN_WINDOW(user_data);
 	TlltCpLoginWindowPrivate *priv = tllt_cp_login_window_get_instance_private(self);
@@ -56,6 +57,7 @@ static void
 on_create_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 {
 	TlltCpLoginWindow *self = TLLT_CP_LOGIN_WINDOW(user_data);
+
 	tllt_cp_window_add_user(TLLT_CP_WINDOW(gtk_window_get_transient_for(GTK_WINDOW(self))),
 							tllt_cp_user_new("Tristan Partin", "tristan.partin@your_mom.com", 2));
 	gtk_window_close(GTK_WINDOW(self));

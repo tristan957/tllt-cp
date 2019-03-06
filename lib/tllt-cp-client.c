@@ -23,7 +23,7 @@ enum TlltCpClientProps
 	N_PROPS
 };
 
-static GParamSpec *obj_properties[N_PROPS] = {NULL};
+static GParamSpec *obj_properties[N_PROPS];
 
 static void
 tllt_cp_client_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpec *pspec)
