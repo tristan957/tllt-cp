@@ -25,7 +25,7 @@ gnome = import('gnome')
 
 libgio_dep = dependency('gio-2.0', version: '>= 2.56')
 libcurl_dep = dependency('libcurl', version: '>= 7.61.1')
-libjsonc_dep = dependency('json-c', version: '>= 0.13.1')
+libjson_glib_dep = dependency('json-glib-1.0', version: '>= 1.4.2')
 if not get_option('lib-only')
 	libgtk_dep = dependency('gtk+-3.0', version: '>= 3.22')
 endif
