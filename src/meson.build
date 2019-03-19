@@ -13,13 +13,19 @@ resources = gnome.compile_resources(
 	c_name: 'tllt_cp',
 )
 
+dependencies = [
+	libgtk_dep,
+	libtllt_cp_dep,
+]
+
+if get_option('with-driver')
+	dependencies += libtllt_driver_dep
+endif
+
 executable(
 	'tllt-cp',
 	sources + resources,
-	dependencies: [
-		libgtk_dep,
-		libtllt_cp_dep,
-	],
+	dependencies: dependencies,
 	include_directories: include_directories('login'),
 	install: true,
 )
