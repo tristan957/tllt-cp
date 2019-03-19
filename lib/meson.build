@@ -24,12 +24,14 @@ configure_file(
 
 sources = [
 	'tllt-cp-client.c',
+	'tllt-cp-recipe.c',
 	'tllt-cp-user.c',
 ]
 
 public_headers = [
 	'tllt-cp.h',
 	'tllt-cp-client.h',
+	'tllt-cp-recipe.h',
 	'tllt-cp-user.h',
 ]
 
