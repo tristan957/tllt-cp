@@ -71,8 +71,14 @@ tllt_cp_client_finalize(GObject *obj)
 	TlltCpClient *self		  = TLLT_CP_CLIENT(obj);
 	TlltCpClientPrivate *priv = tllt_cp_client_get_instance_private(self);
 
-	g_free(priv->host);
-	g_free(priv->host);
+	if (priv->host != NULL) {
+		g_free(priv->host);
+	}
+	if (priv->port != NULL) {
+		g_free(priv->host);
+	}
+
+	G_OBJECT_CLASS(tllt_cp_client_parent_class)->finalize(obj);
 }
 
 static void
