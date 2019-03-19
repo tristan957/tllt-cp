@@ -31,6 +31,7 @@ if not get_option('lib-only')
 endif
 
 subdir('lib')
+
 if get_option('with-driver')
 	subdir('driver')
 endif
