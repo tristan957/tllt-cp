@@ -1,6 +1,7 @@
+#include <limits.h>
+
 #include <glib-object.h>
 #include <glib/gi18n.h>
-#include <limits.h>
 
 #include "tllt-sensor.h"
 #include "tllt-thermistor.h"
