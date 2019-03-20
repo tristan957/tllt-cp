@@ -18,13 +18,19 @@ dependencies = [
 	libtllt_cp_dep,
 ]
 
+c_args = []
+
 if get_option('with-driver')
 	dependencies += libtllt_dep
+	if get_option('with-gpio')
+		c_args += '-DTLLT_GPIO'
+	endif
 endif
 
 executable(
 	'tllt-cp',
 	sources + resources,
+	c_args: c_args,
 	dependencies: dependencies,
 	include_directories: include_directories('login'),
 	gui_app: true,

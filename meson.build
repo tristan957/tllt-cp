@@ -20,7 +20,7 @@ c_flags = [
 
 cc = meson.get_compiler('c')
 
-add_global_arguments(c_flags, language: 'c')
+add_project_arguments(c_flags, language: 'c')
 
 i18n = import('i18n')
 gnome = import('gnome')
