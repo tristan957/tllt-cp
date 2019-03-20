@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 if get_option('with-driver')
-	dependencies += libtllt_driver_dep
+	dependencies += libtllt_dep
 endif
 
 executable(
