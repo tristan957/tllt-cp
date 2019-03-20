@@ -1,8 +1,8 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 
-#include "tllt-scale.h"
-#include "tllt-thermo.h"
+#include "sensors/tllt-scale.h"
+#include "sensors/tllt-thermistor.h"
 #include "tllt-toaster.h"
 
 struct _TlltToaster

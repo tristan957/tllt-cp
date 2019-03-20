@@ -2,9 +2,9 @@
 #include <glib/gi18n.h>
 #include <limits.h>
 
-#include "tllt-powerable.h"
-#include "tllt-readable.h"
-#include "tllt-thermistor.h"
+#include "ifaces/tllt-powerable.h"
+#include "ifaces/tllt-readable.h"
+#include "sensors/tllt-thermistor.h"
 
 static void tllt_thermistor_powerable_interface_init(TlltPowerableInterface *iface);
 static void tllt_thermistor_readable_interface_init(TlltReadableInterface *iface);
@@ -37,6 +37,9 @@ tllt_thermistor_read(G_GNUC_UNUSED TlltThermistor *self)
 	return 0;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+
 static void
 tllt_thermistor_powerable_interface_init(TlltPowerableInterface *iface)
 {
@@ -49,6 +52,8 @@ tllt_thermistor_readable_interface_init(TlltReadableInterface *iface)
 {
 	iface->read = tllt_thermistor_read;
 }
+
+#pragma GCC diagnostic pop
 
 static void
 tllt_thermistor_set_property(GObject *obj, guint prop_id, const GValue *val, GParamSpec *pspec)
