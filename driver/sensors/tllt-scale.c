@@ -38,6 +38,7 @@ tllt_scale_read(G_GNUC_UNUSED TlltScale *self)
 	return 0;
 }
 
+// Unfortunately the way GLib interface implementation is setup this is unavoidable
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
 

@@ -37,6 +37,7 @@ tllt_thermistor_read(G_GNUC_UNUSED TlltThermistor *self)
 	return 0;
 }
 
+// Unfortunately the way GLib interface implementation is setup this is unavoidable
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
 
