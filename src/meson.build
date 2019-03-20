@@ -13,12 +13,9 @@ resources = gnome.compile_resources(
 	c_name: 'tllt_cp',
 )
 
-pthread_dep = cc.find_library('pthread')
-
 dependencies = [
 	libgtk_dep,
 	libtllt_cp_dep,
-	pthread_dep,
 ]
 
 if get_option('with-driver')
