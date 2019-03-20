@@ -39,9 +39,10 @@ public_headers = [
 
 pkgincludedir = join_paths(get_option('includedir'), 'tllt-cp')
 
-libtllt_cp = shared_library(
+libtllt_cp = library(
 	'tllt-cp',
   	sources,
+	version: '1.0.0',
 	dependencies: [
 		libgio_dep,
 		libcurl_dep,

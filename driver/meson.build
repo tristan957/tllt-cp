@@ -16,9 +16,10 @@ public_headers = [
 
 pkgincludedir = join_paths(get_option('includedir'), 'tllt')
 
-libtllt = shared_library(
+libtllt = library(
 	'tllt',
   	sources,
+	version: '1.0.0',
 	dependencies: [
 		libgio_dep,
 	],
