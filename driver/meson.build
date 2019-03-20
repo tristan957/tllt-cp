@@ -1,15 +1,13 @@
 sources = [
-	'sensors/ifaces/tllt-powerable.c',
-	'sensors/ifaces/tllt-readable.c',
 	'sensors/tllt-scale.c',
+	'sensors/tllt-sensor.c',
 	'sensors/tllt-thermistor.c',
 	'tllt-toaster.c',
 ]
 
 public_headers = [
-	'sensors/ifaces/tllt-powerable.h',
-	'sensors/ifaces/tllt-readable.h',
 	'sensors/tllt-scale.h',
+	'sensors/tllt-sensor.h',
 	'sensors/tllt-thermistor.h',
 	'tllt-toaster.h',
 ]

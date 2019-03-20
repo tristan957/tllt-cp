@@ -3,18 +3,9 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 
-#include "ifaces/tllt-powerable.h"
-#include "ifaces/tllt-readable.h"
-#include "sensors/tllt-scale.h"
+#include "tllt-scale.h"
 
-static void tllt_scale_readable_interface_init(TlltReadableInterface *iface);
-static void tllt_scale_powerable_interface_init(TlltPowerableInterface *iface);
-
-G_DEFINE_TYPE_WITH_CODE(TlltScale, tllt_scale, G_TYPE_OBJECT,
-						G_IMPLEMENT_INTERFACE(TLLT_TYPE_POWERABLE,
-											  tllt_scale_powerable_interface_init)
-							G_IMPLEMENT_INTERFACE(TLLT_TYPE_READABLE,
-												  tllt_scale_readable_interface_init))
+G_DEFINE_TYPE(TlltScale, tllt_scale, TLLT_TYPE_SENSOR)
 
 typedef enum TlltScaleProps
 {
@@ -38,25 +29,6 @@ tllt_scale_read(G_GNUC_UNUSED TlltScale *self)
 	return 0;
 }
 
-// Unfortunately the way GLib interface implementation is setup this is unavoidable
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-
-static void
-tllt_scale_powerable_interface_init(TlltPowerableInterface *iface)
-{
-	iface->on  = tllt_scale_on;
-	iface->off = tllt_scale_off;
-}
-
-static void
-tllt_scale_readable_interface_init(TlltReadableInterface *iface)
-{
-	iface->read = tllt_scale_read;
-}
-
-#pragma GCC diagnostic pop
-
 static void
 tllt_scale_set_property(GObject *obj, guint prop_id, const GValue *val, GParamSpec *pspec)
 {
@@ -72,12 +44,21 @@ tllt_scale_set_property(GObject *obj, guint prop_id, const GValue *val, GParamSp
 	}
 }
 
+// Unfortunately the way GLib interface implementation is setup this is unavoidable
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+
 static void
 tllt_scale_class_init(TlltScaleClass *klass)
 {
-	GObjectClass *obj_class = G_OBJECT_CLASS(klass);
+	GObjectClass *obj_class		  = G_OBJECT_CLASS(klass);
+	TlltSensorClass *sensor_class = TLLT_SENSOR_CLASS(klass);
 
 	obj_class->set_property = tllt_scale_set_property;
+
+	sensor_class->off  = tllt_scale_off;
+	sensor_class->on   = tllt_scale_on;
+	sensor_class->read = tllt_scale_read;
 
 	obj_properties[PROP_GPIO_PIN] =
 		g_param_spec_uchar("gpio-pin", _("GPIO pin"), _("GPIO pin for the scale"), 0, UCHAR_MAX, 0,
@@ -85,6 +66,8 @@ tllt_scale_class_init(TlltScaleClass *klass)
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
+
+#pragma GCC diagnostic pop
 
 static void
 tllt_scale_init(G_GNUC_UNUSED TlltScale *self)

@@ -2,18 +2,10 @@
 #include <glib/gi18n.h>
 #include <limits.h>
 
-#include "ifaces/tllt-powerable.h"
-#include "ifaces/tllt-readable.h"
-#include "sensors/tllt-thermistor.h"
+#include "tllt-sensor.h"
+#include "tllt-thermistor.h"
 
-static void tllt_thermistor_powerable_interface_init(TlltPowerableInterface *iface);
-static void tllt_thermistor_readable_interface_init(TlltReadableInterface *iface);
-
-G_DEFINE_TYPE_WITH_CODE(TlltThermistor, tllt_thermistor, G_TYPE_OBJECT,
-						G_IMPLEMENT_INTERFACE(TLLT_TYPE_POWERABLE,
-											  tllt_thermistor_powerable_interface_init)
-							G_IMPLEMENT_INTERFACE(TLLT_TYPE_READABLE,
-												  tllt_thermistor_readable_interface_init))
+G_DEFINE_TYPE(TlltThermistor, tllt_thermistor, TLLT_TYPE_SENSOR)
 
 typedef enum TlltThermistorProps
 {
@@ -37,25 +29,6 @@ tllt_thermistor_read(G_GNUC_UNUSED TlltThermistor *self)
 	return 0;
 }
 
-// Unfortunately the way GLib interface implementation is setup this is unavoidable
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-
-static void
-tllt_thermistor_powerable_interface_init(TlltPowerableInterface *iface)
-{
-	iface->on  = tllt_thermistor_on;
-	iface->off = tllt_thermistor_off;
-}
-
-static void
-tllt_thermistor_readable_interface_init(TlltReadableInterface *iface)
-{
-	iface->read = tllt_thermistor_read;
-}
-
-#pragma GCC diagnostic pop
-
 static void
 tllt_thermistor_set_property(GObject *obj, guint prop_id, const GValue *val, GParamSpec *pspec)
 {
@@ -71,12 +44,21 @@ tllt_thermistor_set_property(GObject *obj, guint prop_id, const GValue *val, GPa
 	}
 }
 
+// Unfortunately the way GLib interface implementation is setup this is unavoidable
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
+
 static void
 tllt_thermistor_class_init(TlltThermistorClass *klass)
 {
-	GObjectClass *obj_class = G_OBJECT_CLASS(klass);
+	GObjectClass *obj_class		  = G_OBJECT_CLASS(klass);
+	TlltSensorClass *sensor_class = TLLT_SENSOR_CLASS(klass);
 
 	obj_class->set_property = tllt_thermistor_set_property;
+
+	sensor_class->off  = tllt_thermistor_off;
+	sensor_class->on   = tllt_thermistor_on;
+	sensor_class->read = tllt_thermistor_read;
 
 	obj_properties[PROP_GPIO_PIN] =
 		g_param_spec_uchar("gpio-pin", _("GPIO pin"), _("GPIO pin for the thermo"), 0, UCHAR_MAX, 0,
@@ -84,6 +66,8 @@ tllt_thermistor_class_init(TlltThermistorClass *klass)
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
+
+#pragma GCC diagnostic pop
 
 static void
 tllt_thermistor_init(G_GNUC_UNUSED TlltThermistor *self)
