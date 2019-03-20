@@ -18,6 +18,8 @@ c_flags = [
 	'--pedantic',
 ]
 
+cc = meson.get_compiler('c')
+
 add_global_arguments(c_flags, language: 'c')
 
 i18n = import('i18n')

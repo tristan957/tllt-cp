@@ -13,9 +13,12 @@ resources = gnome.compile_resources(
 	c_name: 'tllt_cp',
 )
 
+pthread_dep = cc.find_library('pthread')
+
 dependencies = [
 	libgtk_dep,
 	libtllt_cp_dep,
+	pthread_dep,
 ]
 
 if get_option('with-driver')
@@ -27,5 +30,6 @@ executable(
 	sources + resources,
 	dependencies: dependencies,
 	include_directories: include_directories('login'),
+	gui_app: true,
 	install: true,
 )
