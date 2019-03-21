@@ -44,7 +44,7 @@ tllt_scale_set_property(GObject *obj, guint prop_id, const GValue *val, GParamSp
 	}
 }
 
-// Unfortunately the way GLib interface implementation is setup this is unavoidable
+// Unfortunately the way GLib abstract classes are setup this is unavoidable
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
 
