@@ -32,7 +32,6 @@ executable(
 	sources + resources,
 	c_args: c_args,
 	dependencies: dependencies,
-	include_directories: include_directories('login'),
 	gui_app: true,
 	install: true,
 )

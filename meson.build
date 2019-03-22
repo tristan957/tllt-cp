@@ -10,9 +10,9 @@ project(
     ],
 )
 
-libtllt_cp_api_version = '0.1'
+libtllt_cp_api_version = '1.0.0'
 
-c_flags = [
+c_args = [
 	'-Wall',
 	'-Wextra',
 	'--pedantic',
@@ -20,7 +20,7 @@ c_flags = [
 
 cc = meson.get_compiler('c')
 
-add_project_arguments(c_flags, language: 'c')
+add_project_arguments(c_args, language: 'c')
 
 i18n = import('i18n')
 gnome = import('gnome')

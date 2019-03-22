@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include <glib-object.h>
 #include <glib/gi18n.h>
 
@@ -10,17 +12,15 @@ struct _TlltCpClient
 
 typedef struct TlltCpClientPrivate
 {
-	char *host;
-	char *port;
+	char *server;
 } TlltCpClientPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE(TlltCpClient, tllt_cp_client, G_TYPE_OBJECT)
 
 enum TlltCpClientProps
 {
-	PROP_HOST = 1,
-	PROP_PORT,
-	N_PROPS
+	PROP_SERVER = 1,
+	N_PROPS,
 };
 
 static GParamSpec *obj_properties[N_PROPS];
@@ -32,11 +32,8 @@ tllt_cp_client_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpec
 	TlltCpClientPrivate *priv = tllt_cp_client_get_instance_private(self);
 
 	switch (prop_id) {
-	case PROP_HOST:
-		g_value_set_string(val, priv->host);
-		break;
-	case PROP_PORT:
-		g_value_set_string(val, priv->port);
+	case PROP_SERVER:
+		g_value_set_string(val, priv->server);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -51,13 +48,9 @@ tllt_cp_client_set_property(GObject *obj, guint prop_id, const GValue *val, GPar
 	TlltCpClientPrivate *priv = tllt_cp_client_get_instance_private(self);
 
 	switch (prop_id) {
-	case PROP_HOST:
-		g_free(priv->host);
-		priv->host = g_value_dup_string(val);
-		break;
-	case PROP_PORT:
-		g_free(priv->port);
-		priv->port = g_value_dup_string(val);
+	case PROP_SERVER:
+		g_free(priv->server);
+		priv->server = g_value_dup_string(val);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -71,11 +64,8 @@ tllt_cp_client_finalize(GObject *obj)
 	TlltCpClient *self		  = TLLT_CP_CLIENT(obj);
 	TlltCpClientPrivate *priv = tllt_cp_client_get_instance_private(self);
 
-	if (priv->host != NULL) {
-		g_free(priv->host);
-	}
-	if (priv->port != NULL) {
-		g_free(priv->host);
+	if (priv->server != NULL) {
+		g_free(priv->server);
 	}
 
 	G_OBJECT_CLASS(tllt_cp_client_parent_class)->finalize(obj);
@@ -90,10 +80,9 @@ tllt_cp_client_class_init(TlltCpClientClass *klass)
 	obj_class->get_property = tllt_cp_client_get_property;
 	obj_class->set_property = tllt_cp_client_set_property;
 
-	obj_properties[PROP_HOST] =
-		g_param_spec_string("host", _("Host"), _("Server host"), NULL, G_PARAM_READWRITE);
-	obj_properties[PROP_PORT] =
-		g_param_spec_string("port", _("Port"), _("Server port"), NULL, G_PARAM_READWRITE);
+	obj_properties[PROP_SERVER] =
+		g_param_spec_string("server", _("Server"), _("Location of the server"), NULL,
+							G_PARAM_READWRITE | G_PARAM_PRIVATE | G_PARAM_CONSTRUCT_ONLY);
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
@@ -105,11 +94,9 @@ tllt_cp_client_init(G_GNUC_UNUSED TlltCpClient *self)
 TlltCpClient *
 tllt_cp_client_new_from_environment()
 {
-	const char *host = g_getenv("TLLT_CP_HOST");
-	const char *port = g_getenv("TLLT_CP_PORT");
+	const char *server = g_getenv("TLLT_CP_SERVER");
 
-	g_warn_if_fail(host != NULL);
-	g_warn_if_fail(port != NULL);
+	g_warn_if_fail(server != NULL);
 
-	return g_object_new(TLLT_CP_TYPE_CLIENT, "host", host, "port", port, NULL);
+	return g_object_new(TLLT_CP_TYPE_CLIENT, "server", server, NULL);
 }

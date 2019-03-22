@@ -55,3 +55,7 @@ libtllt_cp_dep = declare_dependency(
 	include_directories: include_directories('.'),
 	link_with: libtllt_cp,
 )
+
+if get_option('with-tests')
+	subdir('tests')
+endif

@@ -2,6 +2,7 @@ image: tristan957/c-cxx-gtk:latest
 
 stages:
   - build
+  - test
 
 build:
   stage: build
@@ -9,3 +10,8 @@ build:
     - CC=gcc meson build
     - meson configure build -Dwerror=true -Dprefix=/usr
     - ninja -C build
+
+test:
+  stage: test
+  script:
+    - ninja test -C build
