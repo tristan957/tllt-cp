@@ -44,6 +44,9 @@ endif
 
 subdir('po')
 subdir('data')
-subdir('docs')
+
+if get_option('with-docs')
+    subdir('docs')
+endif
 
 meson.add_install_script('meson_post_install.sh', '@0@'.format(get_option('lib-only')))

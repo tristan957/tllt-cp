@@ -6,6 +6,11 @@ stages:
 
 build:
   stage: build
+  artifacts:
+    untracked: false
+    expire_in: 1 week
+    paths:
+      - build
   script:
     - CC=gcc meson build
     - meson configure build -Dwerror=true -Dprefix=/usr
@@ -13,5 +18,7 @@ build:
 
 test:
   stage: test
+  dependencies:
+    - build
   script:
     - ninja test -C build
