@@ -13,7 +13,7 @@ build:
       - build
   script:
     - CC=gcc meson build
-    - meson configure build -Dwerror=true -Dprefix=/usr
+    - meson configure build -Dwerror=true
     - ninja -C build
 
 test:
