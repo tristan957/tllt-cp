@@ -30,7 +30,7 @@ on_login_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
 	TlltCpLoginWindow *self = TLLT_CP_LOGIN_WINDOW(user_data);
 
 	tllt_cp_window_add_user(TLLT_CP_WINDOW(gtk_window_get_transient_for(GTK_WINDOW(self))),
-							tllt_cp_user_new("Tristan Partin", "tristan.partin@your_mom.com", 1));
+							tllt_cp_user_new("Alex Coronado", "tristan.partin@your_mom.com", 1));
 	gtk_window_close(GTK_WINDOW(self));
 }
 
