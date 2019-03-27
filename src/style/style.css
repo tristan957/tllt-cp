@@ -5,3 +5,11 @@ flowboxchild:selected {
 .tllt-cp-timer-text {
     font-size: 48pt;
 }
+
+#tllt-cp-toasting-progress > trough {
+	min-height: 5px;
+}
+
+#tllt-cp-toasting-progress > trough > progress {
+	min-height: 5px;
+}
