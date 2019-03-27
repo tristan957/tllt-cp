@@ -33,11 +33,11 @@ tllt_cp_application_activate(GApplication *self)
 		priv->main_window = GTK_APPLICATION_WINDOW(tllt_cp_window_new(self));
 	}
 
-	GtkBuilder *menu_builder =
-		gtk_builder_new_from_resource("/com/gitlab/tristan957/tllt-cp/tllt-cp-app-menu.ui");
-	GObject *menu = gtk_builder_get_object(menu_builder, "app_menu");
-	gtk_application_set_app_menu(GTK_APPLICATION(self), G_MENU_MODEL(menu));
-	g_object_unref((gpointer) menu_builder);
+	// GtkBuilder *menu_builder =
+	// 	gtk_builder_new_from_resource("/com/gitlab/tristan957/tllt-cp/tllt-cp-app-menu.ui");
+	// GObject *menu = gtk_builder_get_object(menu_builder, "app_menu");
+	// gtk_application_set_app_menu(GTK_APPLICATION(self), G_MENU_MODEL(menu));
+	// g_object_unref((gpointer) menu_builder);
 
 	gtk_window_present(GTK_WINDOW(priv->main_window));
 }
@@ -59,13 +59,6 @@ tllt_cp_application_about(G_GNUC_UNUSED GSimpleAction *action, G_GNUC_UNUSED GVa
 }
 
 static void
-tllt_cp_application_quit(G_GNUC_UNUSED GSimpleAction *action, G_GNUC_UNUSED GVariant *param,
-						 gpointer data)
-{
-	g_application_quit(G_APPLICATION(data));
-}
-
-static void
 tllt_cp_application_startup(GApplication *self)
 {
 	g_resources_register(tllt_cp_get_resource());
@@ -83,11 +76,10 @@ tllt_cp_application_class_init(TlltCpApplicationClass *klass)
 	app_class->startup  = tllt_cp_application_startup;
 }
 
-static GActionEntry app_entries[] = {{.name = "about", .activate = tllt_cp_application_about},
-									 {.name = "quit", .activate = tllt_cp_application_quit}};
+static GActionEntry app_entries[] = {{.name = "about", .activate = tllt_cp_application_about}};
 
 static void
-tllt_cp_application_init(TlltCpApplication *self)
+tllt_cp_application_init(G_GNUC_UNUSED TlltCpApplication *self)
 {
 	g_action_map_add_action_entries(G_ACTION_MAP(self), app_entries, G_N_ELEMENTS(app_entries),
 									self);

@@ -114,10 +114,10 @@ on_user_details_button_clicked(GtkButton *widget, G_GNUC_UNUSED gpointer user_da
 }
 
 static void
-on_theme_state_changed(GtkToggleButton *widget, G_GNUC_UNUSED gpointer user_data)
+on_theme_state_changed(GtkCheckButton *widget, G_GNUC_UNUSED gpointer user_data)
 {
 	g_object_set(gtk_settings_get_default(), "gtk-application-prefer-dark-theme",
-				 gtk_toggle_button_get_active(widget), NULL);
+				 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)), NULL);
 }
 
 static void
