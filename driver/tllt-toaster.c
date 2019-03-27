@@ -151,13 +151,13 @@ start_toaster_async(G_GNUC_UNUSED GTask *task, G_GNUC_UNUSED gpointer source_obj
 {
 	TlltToasterStartArgs *args = task_data;
 
-	const clock_t total_cycles = (args->minutes * 60 + args->seconds) * CLOCKS_PER_SEC;
+	const clock_t total = (args->minutes * 60 + args->seconds) * CLOCKS_PER_SEC;
 
 	// send signal to heating elements
 
 	const clock_t start = clock();
 	clock_t t			= clock();
-	while (t - start < total_cycles) {
+	while (t - start < total) {
 		t = clock();
 	}
 }

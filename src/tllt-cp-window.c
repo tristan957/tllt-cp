@@ -17,6 +17,7 @@ typedef struct TlltCpWindowPrivate
 	GtkFlowBox *user_profiles_flow_box;
 	GtkRevealer *user_actions_revealer;
 	GtkRevealer *recipe_revealer;
+	GtkGrid *timer_countdown_grid;
 
 	TlltToaster *toaster;
 	GSList *logged_in_users;
@@ -162,6 +163,15 @@ on_recipe_revealer_close_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointe
 	}
 }
 
+static gboolean
+show_leading_zeros(GtkSpinButton *widget, G_GNUC_UNUSED gpointer user_data)
+{
+	gtk_entry_set_text(GTK_ENTRY(widget),
+					   g_strdup_printf("%02i", gtk_spin_button_get_value_as_int(widget)));
+
+	return TRUE;
+}
+
 TlltCpWindow *
 tllt_cp_window_new(GApplication *app)
 {
@@ -199,6 +209,7 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 	gtk_widget_class_bind_template_callback(wid_class, on_user_actions_revealer_close_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_recipe_revealer_close_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_recipe_revealer_new_button_clicked);
+	gtk_widget_class_bind_template_callback(wid_class, show_leading_zeros);
 }
 
 static void
@@ -216,5 +227,4 @@ tllt_cp_window_init(TlltCpWindow *self)
 											  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 	priv->toaster = tllt_toaster_new(0, 1);
-	tllt_toaster_start_with_time(priv->toaster, 1, 1);
 }
