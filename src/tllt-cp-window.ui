@@ -77,7 +77,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkBox" id="toaster_operating_box">
+          <object class="GtkBox" id="toasting_progress_box">
             <property name="can_focus">False</property>
             <property name="spacing">5</property>
             <child>
@@ -86,6 +86,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="tooltip_text" translatable="yes">Stop toaster operation</property>
+                <signal name="clicked" handler="on_toaster_stop_button_clicked" object="TlltCpWindow" swapped="no"/>
                 <child>
                   <object class="GtkImage">
                     <property name="visible">True</property>
@@ -105,7 +106,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkProgressBar">
+              <object class="GtkProgressBar" id="toasting_progress_bar">
                 <property name="name">tllt-cp-toasting-progress</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -382,12 +383,12 @@
             </child>
           </object>
           <packing>
-            <property name="name">recipe_view</property>
+            <property name="name">recipe-page</property>
             <property name="title" translatable="yes">Recipes</property>
           </packing>
         </child>
         <child>
-          <object class="GtkStack">
+          <object class="GtkStack" id="timer_stack">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="transition_type">crossfade</property>
@@ -404,7 +405,7 @@
                 <property name="row_spacing">5</property>
                 <property name="column_spacing">5</property>
                 <child>
-                  <object class="GtkSpinButton" id="minute_spin_button">
+                  <object class="GtkSpinButton" id="timer_minutes_spin_button">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="max_length">2</property>
@@ -427,7 +428,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkSpinButton" id="seond_spin_button">
+                  <object class="GtkSpinButton" id="timer_seconds_spin_button">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="max_length">2</property>
@@ -469,6 +470,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <signal name="clicked" handler="on_timer_start_button_clicked" object="TlltCpWindow" swapped="no"/>
                     <style>
                       <class name="suggested-action"/>
                     </style>
@@ -481,12 +483,12 @@
                 </child>
               </object>
               <packing>
-                <property name="name">edit</property>
+                <property name="name">edit-page</property>
                 <property name="title" translatable="yes">Edit</property>
               </packing>
             </child>
             <child>
-              <object class="GtkGrid" id="timer_countdown_grid">
+              <object class="GtkGrid">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="halign">center</property>
@@ -512,7 +514,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="timer_seconds_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">00</property>
@@ -526,7 +528,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkLabel" id="timer_minutes_label">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">00</property>
@@ -540,11 +542,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="reset_button">
+                  <object class="GtkButton">
                     <property name="label" translatable="yes">Reset</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <signal name="clicked" handler="on_timer_reset_button_clicked" object="TlltCpWindow" swapped="no"/>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -554,14 +557,14 @@
                 </child>
               </object>
               <packing>
-                <property name="name">page0</property>
-                <property name="title" translatable="yes">page0</property>
+                <property name="name">display-page</property>
+                <property name="title" translatable="yes">Display</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="name">manual_view</property>
+            <property name="name">manual-page</property>
             <property name="title" translatable="yes">Manual</property>
             <property name="position">1</property>
           </packing>
