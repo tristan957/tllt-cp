@@ -4,6 +4,7 @@
 #include "login/tllt-cp-login-window.h"
 #include "tllt-cp-user.h"
 #include "tllt-cp-window.h"
+#include "tllt-toaster.h"
 
 struct _TlltCpWindow
 {
@@ -15,8 +16,9 @@ typedef struct TlltCpWindowPrivate
 	GtkCssProvider *css_provider;
 	GtkFlowBox *user_profiles_flow_box;
 	GtkRevealer *user_actions_revealer;
-	GtkRevealer *user_profile_revealer;
+	GtkRevealer *recipe_revealer;
 
+	TlltToaster *toaster;
 	GSList *logged_in_users;
 	TlltCpUser *selected_user;
 } TlltCpWindowPrivate;
@@ -100,7 +102,7 @@ on_logout_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 		priv->selected_user   = NULL;
 
 		gtk_revealer_set_reveal_child(priv->user_actions_revealer, FALSE);
-		gtk_revealer_set_reveal_child(priv->user_profile_revealer, FALSE);
+		gtk_revealer_set_reveal_child(priv->recipe_revealer, FALSE);
 	}
 }
 
@@ -131,8 +133,8 @@ on_user_profiles_flow_box_child_activated(G_GNUC_UNUSED GtkFlowBox *widget, GtkF
 		gtk_revealer_set_reveal_child(priv->user_actions_revealer, TRUE);
 	}
 
-	if (!gtk_revealer_get_child_revealed(priv->user_profile_revealer)) {
-		gtk_revealer_set_reveal_child(priv->user_profile_revealer, TRUE);
+	if (!gtk_revealer_get_child_revealed(priv->recipe_revealer)) {
+		gtk_revealer_set_reveal_child(priv->recipe_revealer, TRUE);
 	}
 }
 
@@ -143,6 +145,21 @@ on_user_actions_revealer_close_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
 	gtk_revealer_set_reveal_child(priv->user_actions_revealer, FALSE);
+}
+
+static void
+on_recipe_revealer_new_button_clicked(G_GNUC_UNUSED GtkButton *widget,
+									  G_GNUC_UNUSED gpointer user_data)
+{}
+
+static void
+on_recipe_revealer_close_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
+{
+	GtkRevealer *recipe_revealer = GTK_REVEALER(user_data);
+
+	if (gtk_revealer_get_child_revealed(recipe_revealer)) {
+		gtk_revealer_set_reveal_child(recipe_revealer, FALSE);
+	}
 }
 
 TlltCpWindow *
@@ -173,13 +190,15 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 												"/com/gitlab/tristan957/tllt-cp/tllt-cp-window.ui");
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_profiles_flow_box);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_actions_revealer);
-	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_profile_revealer);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, recipe_revealer);
 	gtk_widget_class_bind_template_callback(wid_class, on_login_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_logout_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_user_details_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_theme_state_changed);
 	gtk_widget_class_bind_template_callback(wid_class, on_user_profiles_flow_box_child_activated);
 	gtk_widget_class_bind_template_callback(wid_class, on_user_actions_revealer_close_clicked);
+	gtk_widget_class_bind_template_callback(wid_class, on_recipe_revealer_close_button_clicked);
+	gtk_widget_class_bind_template_callback(wid_class, on_recipe_revealer_new_button_clicked);
 }
 
 static void
@@ -195,4 +214,7 @@ tllt_cp_window_init(TlltCpWindow *self)
 	gtk_style_context_add_provider_for_screen(gtk_window_get_screen(GTK_WINDOW(self)),
 											  GTK_STYLE_PROVIDER(priv->css_provider),
 											  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+	priv->toaster = tllt_toaster_new(0, 1);
+	tllt_toaster_start_with_time(priv->toaster, 1, 1);
 }
