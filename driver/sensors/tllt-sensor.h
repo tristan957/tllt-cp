@@ -13,7 +13,9 @@ struct _TlltSensorClass
 
 	void (*on)(TlltSensor *self);
 	void (*off)(TlltSensor *self);
-	void (*read)(TlltSensor *self);
+	double (*read)(TlltSensor *self);
 };
+
+void tllt_sensor_off(TlltSensor *self);
 
 G_END_DECLS

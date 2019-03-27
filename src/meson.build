@@ -1,9 +1,8 @@
 sources = [
 	'main.c',
+	'login/tllt-cp-login-window.c',
 	'tllt-cp-application.c',
-	'tllt-cp-recipe-sidebar.c',
 	'tllt-cp-window.c',
-	'login/tllt-cp-login-window.c'
 ]
 
 resources = gnome.compile_resources(

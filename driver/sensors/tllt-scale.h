@@ -8,6 +8,8 @@ G_BEGIN_DECLS
 
 struct _TlltScale
 {
+	TlltSensor parent_instance;
+
 	unsigned char gpio_pin;
 };
 

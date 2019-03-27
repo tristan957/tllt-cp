@@ -68,3 +68,32 @@ tllt_sensor_class_init(TlltSensorClass *klass)
 static void
 tllt_sensor_init(G_GNUC_UNUSED TlltSensor *self)
 {}
+
+void
+tllt_sensor_off(TlltSensor *self)
+{
+	TlltSensorPrivate *priv = tllt_sensor_get_instance_private(self);
+
+	priv->running = FALSE;
+
+	TlltSensorClass *klass = TLLT_SENSOR_GET_CLASS(self);
+	klass->off(self);
+}
+
+void
+tllt_sensor_on(TlltSensor *self)
+{
+	TlltSensorPrivate *priv = tllt_sensor_get_instance_private(self);
+
+	priv->running = TRUE;
+
+	TlltSensorClass *klass = TLLT_SENSOR_GET_CLASS(self);
+	klass->on(self);
+}
+
+double
+tllt_sensor_read(TlltSensor *self)
+{
+	TlltSensorClass *klass = TLLT_SENSOR_GET_CLASS(self);
+	return klass->read(self);
+}

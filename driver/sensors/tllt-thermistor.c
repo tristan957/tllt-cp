@@ -31,6 +31,21 @@ tllt_thermistor_read(G_GNUC_UNUSED TlltThermistor *self)
 }
 
 static void
+tllt_thermistor_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpec *pspec)
+{
+	TlltThermistor *self = TLLT_THERMISTOR(obj);
+
+	switch (prop_id) {
+	case PROP_GPIO_PIN:
+		g_value_set_uchar(val, self->gpio_pin);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
+		break;
+	}
+}
+
+static void
 tllt_thermistor_set_property(GObject *obj, guint prop_id, const GValue *val, GParamSpec *pspec)
 {
 	TlltThermistor *self = TLLT_THERMISTOR(obj);
@@ -55,6 +70,7 @@ tllt_thermistor_class_init(TlltThermistorClass *klass)
 	GObjectClass *obj_class		  = G_OBJECT_CLASS(klass);
 	TlltSensorClass *sensor_class = TLLT_SENSOR_CLASS(klass);
 
+	obj_class->get_property = tllt_thermistor_get_property;
 	obj_class->set_property = tllt_thermistor_set_property;
 
 	sensor_class->off  = tllt_thermistor_off;
