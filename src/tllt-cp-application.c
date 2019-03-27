@@ -33,12 +33,6 @@ tllt_cp_application_activate(GApplication *self)
 		priv->main_window = GTK_APPLICATION_WINDOW(tllt_cp_window_new(self));
 	}
 
-	// GtkBuilder *menu_builder =
-	// 	gtk_builder_new_from_resource("/com/gitlab/tristan957/tllt-cp/tllt-cp-app-menu.ui");
-	// GObject *menu = gtk_builder_get_object(menu_builder, "app_menu");
-	// gtk_application_set_app_menu(GTK_APPLICATION(self), G_MENU_MODEL(menu));
-	// g_object_unref((gpointer) menu_builder);
-
 	gtk_window_present(GTK_WINDOW(priv->main_window));
 }
 
