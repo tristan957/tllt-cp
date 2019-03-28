@@ -205,6 +205,7 @@ on_timer_start_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_dat
 	gtk_widget_set_visible(GTK_WIDGET(priv->toasting_progress_box), TRUE);
 	gtk_stack_set_visible_child_name(priv->timer_stack, "display-page");
 
+	g_object_ref(self);
 	tllt_toaster_start_with_time(
 		priv->toaster, gtk_spin_button_get_value_as_int(priv->timer_minutes_spin_button),
 		gtk_spin_button_get_value_as_int(priv->timer_seconds_spin_button), update_timer, self);
@@ -217,8 +218,6 @@ on_timer_reset_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_dat
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
 	tllt_toaster_stop(priv->toaster);
-	// gtk_widget_set_visible(GTK_WIDGET(priv->toasting_progress_box), FALSE);
-	// gtk_stack_set_visible_child_name(priv->timer_stack, "edit-page");
 }
 
 static void
@@ -228,8 +227,6 @@ on_toaster_stop_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_da
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
 	tllt_toaster_stop(priv->toaster);
-	// gtk_widget_set_visible(GTK_WIDGET(priv->toasting_progress_box), FALSE);
-	// gtk_stack_set_visible_child_name(priv->timer_stack, "edit-page");
 }
 
 static void
@@ -237,6 +234,8 @@ on_toaster_stopped(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
 {
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	g_object_unref(self);
 
 	gtk_widget_set_visible(GTK_WIDGET(priv->toasting_progress_box), FALSE);
 	gtk_stack_set_visible_child_name(priv->timer_stack, "edit-page");
@@ -310,5 +309,5 @@ tllt_cp_window_init(TlltCpWindow *self)
 											  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 	priv->toaster = tllt_toaster_new(0, 1);
-	g_object_connect(priv->toaster, "signal::stopped", on_toaster_stopped, self, NULL);
+	g_object_connect(priv->toaster, "signal::stopped", G_CALLBACK(on_toaster_stopped), self, NULL);
 }
