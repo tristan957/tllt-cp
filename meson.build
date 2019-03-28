@@ -6,7 +6,7 @@ project(
         'GPL-3.0',
     ],
     default_options: [
-        'c_std=c11',
+        'c_std=gnu11',
     ],
 )
 
@@ -16,7 +16,6 @@ c_args = [
 	'-Wall',
 	'-Wextra',
 	'--pedantic',
-    '-Wno-error-pedantic',
 ]
 
 cc = meson.get_compiler('c')
