@@ -87,6 +87,7 @@ tllt_toaster_set_property(GObject *obj, guint prop_id, const GValue *val, GParam
 static void
 tllt_toaster_finalize(GObject *obj)
 {
+	g_print("FINALIZING\n");
 	TlltToaster *self		 = TLLT_TOASTER(obj);
 	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
 
@@ -152,58 +153,29 @@ tllt_toaster_stop(TlltToaster *self)
 }
 
 static gboolean
-update_on_timeout(gpointer user_data)
+start_toaster(gpointer user_data)
 {
 	TlltToasterStartArgs *args = user_data;
 	TlltToasterPrivate *priv   = tllt_toaster_get_instance_private(args->toaster);
 
+	g_object_ref(args->toaster);
+
 	const int delta = args->total_seconds - g_timer_elapsed(priv->timer, NULL);
-	if (delta >= 0) {
+	if (delta > 0 && !g_cancellable_is_cancelled(priv->cancellable)) {
 		args->update(delta / 60, delta % 60, 1 - ((double) delta) / args->total_seconds,
 					 args->user_data);
 		return TRUE;
 	}
 
-	g_cancellable_cancel(priv->cancellable);
-
-	return FALSE;
-}
-
-static void
-start_toaster_async(G_GNUC_UNUSED GTask *task, G_GNUC_UNUSED gpointer source_object,
-					gpointer task_data, G_GNUC_UNUSED GCancellable *cancellable)
-{
-	TlltToasterStartArgs *args = task_data;
-	TlltToasterPrivate *priv   = tllt_toaster_get_instance_private(args->toaster);
-
-	g_timer_start(priv->timer);
-	g_timeout_add(40, update_on_timeout, args);
-
-	// send signal to heating elements
-	// forever loop adjusting heating elements
-	// wait for cancel call in update_on_timeout
-	while (TRUE) {
-	}
-}
-
-static void
-start_toaster_cb(GObject *source_object, G_GNUC_UNUSED GAsyncResult *res,
-				 G_GNUC_UNUSED gpointer user_data)
-{
-	TlltToaster *self		 = TLLT_TOASTER(source_object);
-	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
-
-	g_object_unref(self);
 	g_timer_reset(priv->timer);
 	g_object_unref(priv->cancellable);
 
-	g_signal_emit(self, obj_signals[SIGNAL_STOPPED], 0);
-}
+	g_signal_emit(args->toaster, obj_signals[SIGNAL_STOPPED], 0);
 
-static void
-start_toaster_destroy_notify(gpointer data)
-{
-	g_free(data);
+	g_object_unref(args->toaster);
+	g_free(args);
+
+	return FALSE;
 }
 
 void
@@ -217,17 +189,13 @@ tllt_toaster_start_with_time(TlltToaster *self, const unsigned int minutes,
 
 	TlltToasterStartArgs *args = g_malloc(sizeof(TlltToasterStartArgs));
 	g_warn_if_fail(args != NULL);
-	g_object_ref(self);
 	args->total_seconds = minutes * 60 + seconds;
 	args->update		= update;
 	args->user_data		= user_data;
 	args->toaster		= self;
 
-	GTask *toast = g_task_new(self, priv->cancellable, start_toaster_cb, NULL);
-	g_task_set_return_on_cancel(toast, TRUE);
-	g_task_set_task_data(toast, args, start_toaster_destroy_notify);
-	g_task_run_in_thread(toast, start_toaster_async);
-	g_object_unref(toast);
+	g_timer_start(priv->timer);
+	g_timeout_add(40, start_toaster, args);
 
 	g_signal_emit(self, obj_signals[SIGNAL_STARTED], 0);
 }
