@@ -1,10 +1,10 @@
-image: debian/unstable
+image: fedora/latest
 packages:
   - gcc
-  - libcurl4
-  - libgtk-3-dev
+  - libcurl-devel
+  - gtk3-devel
   - meson
-  - libjson-glib-dev
+  - json-glib-devel
 sources:
   - https://git.sr.ht/~tristan957/tllt-cp
 tasks:

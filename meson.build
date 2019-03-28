@@ -26,19 +26,13 @@ i18n = import('i18n')
 gnome = import('gnome')
 
 libgio_dep = dependency('gio-2.0', version: '>= 2.56')
-libcurl_dep = dependency('libcurl', version: '>= 7.64')
-if not libcurl_dep.found()
-    libcurl_dep = dependency('libcurl4', version: '>= 7.64')
-endif
+libcurl_dep = dependency('libcurl', version: '>= 7.61')
 libjson_glib_dep = dependency('json-glib-1.0', version: '>= 1.4.2')
 libgtk_dep = dependency('gtk+-3.0', version: '>= 3.22')
 
 subdir('lib')
 subdir('driver')
-
-if not get_option('lib-only')
-	subdir('src')
-endif
+subdir('src')
 
 subdir('po')
 subdir('data')
