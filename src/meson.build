@@ -12,25 +12,21 @@ resources = gnome.compile_resources(
 	c_name: 'tllt_cp',
 )
 
-dependencies = [
-	libgtk_dep,
-	libtllt_cp_dep,
-]
-
 c_args = []
 
-if get_option('with-driver')
-	dependencies += libtllt_dep
-	if get_option('with-gpio')
-		c_args += '-DTLLT_GPIO'
-	endif
+if get_option('with-gpio')
+	c_args += '-DTLLT_GPIO'
 endif
 
 executable(
 	'tllt-cp',
 	sources + resources,
 	c_args: c_args,
-	dependencies: dependencies,
+	dependencies: [
+		libgtk_dep,
+		libtllt_cp_dep,
+		libtllt_dep,
+	],
 	gui_app: true,
 	install: true,
 )
