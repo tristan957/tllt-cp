@@ -7,7 +7,7 @@ stages:
 build:
   stage: build
   artifacts:
-    untracked: false
+    untracked: true
     expire_in: 1 week
     paths:
       - build
