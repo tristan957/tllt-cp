@@ -13,7 +13,7 @@ build:
       - build
   script:
     - CC=gcc meson build
-    - meson configure build -Dwerror=true
+    - meson configure build -Dwerror=true -Dwith-driver=true
     - ninja -C build
 
 test:
