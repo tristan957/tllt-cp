@@ -1,4 +1,4 @@
-[![pipeline status](https://gitlab.com/tristan957/tllt-cp/badges/master/pipeline.svg)](https://gitlab.com/tristan957/tllt-cp/commits/master)
+[![builds.sr.ht status](https://builds.sr.ht/~tristan957/tllt-cp/.build.yml.svg)](https://builds.sr.ht/~tristan957/tllt-cp/.build.yml?)
 
 # The Learning Little Toaster Control Panel
 
