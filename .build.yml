@@ -11,7 +11,7 @@ tasks:
   - setup: |
       cd tllt-cp
       CC=gcc meson build
-      meson configure build -Dwerror=true -Dwith-driver=true
+      meson configure build -Dwerror=true
   - build: |
       cd tllt-cp
       ninja -C build
