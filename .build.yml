@@ -1,9 +1,10 @@
-image: archlinux
+image: debian/unstable
 packages:
   - gcc
-  - gtk3
+  - libcurl4
+  - libgtk-3-dev
   - meson
-  - json-glib
+  - libjson-glib-dev
 sources:
   - https://git.sr.ht/~tristan957/tllt-cp
 tasks:
