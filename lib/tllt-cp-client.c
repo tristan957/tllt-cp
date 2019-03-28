@@ -96,7 +96,7 @@ tllt_cp_client_new_from_environment()
 {
 	const char *server = g_getenv("TLLT_CP_SERVER");
 
-	g_warn_if_fail(server != NULL);
+	g_return_val_if_fail(server != NULL, NULL);
 
 	return g_object_new(TLLT_CP_TYPE_CLIENT, "server", server, NULL);
 }
