@@ -12,6 +12,8 @@ public_headers = [
 	'tllt-toaster.h',
 ]
 
+libtllt_version = '1.0.0'
+
 # install_headers(libtllt_public_headers, subdir: 'tllt')
 
 pkgincludedir = join_paths(get_option('includedir'), 'tllt')
@@ -19,7 +21,7 @@ pkgincludedir = join_paths(get_option('includedir'), 'tllt')
 libtllt = library(
 	'tllt',
   	sources,
-	version: '1.0.0',
+	version: libtllt_version,
 	dependencies: [
 		libgio_dep,
 	],
@@ -29,4 +31,5 @@ libtllt = library(
 libtllt_dep = declare_dependency(
 	include_directories: include_directories('.'),
 	link_with: libtllt,
+	version: libtllt_version,
 )

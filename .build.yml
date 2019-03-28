@@ -1,0 +1,16 @@
+image: archlinux
+packages:
+  - gcc
+  - gtk3
+  - meson
+  - json-glib
+sources:
+  - https://git.sr.ht/~tristan957/tllt-cp
+tasks:
+  - setup: |
+      cd tllt-cp
+      CC=gcc meson build
+      meson configure build -Dwerror=true -Dwith-driver=true
+  - build: |
+      cd tllt-cp
+      ninja -C build
