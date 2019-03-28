@@ -16,6 +16,7 @@ c_args = [
 	'-Wall',
 	'-Wextra',
 	'--pedantic',
+    '-Wno-error-pedantic',
 ]
 
 cc = meson.get_compiler('c')
