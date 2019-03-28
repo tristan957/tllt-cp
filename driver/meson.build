@@ -18,9 +18,16 @@ libtllt_version = '1.0.0'
 
 pkgincludedir = join_paths(get_option('includedir'), 'tllt')
 
+c_args = []
+
+if get_option('with-gpio')
+	c_args += '-DTLLT_GPIO'
+endif
+
 libtllt = library(
 	'tllt',
   	sources,
+	c_args: c_args,
 	version: libtllt_version,
 	dependencies: [
 		libgio_dep,
