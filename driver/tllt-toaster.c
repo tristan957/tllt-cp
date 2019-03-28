@@ -228,4 +228,6 @@ tllt_toaster_start_with_time(TlltToaster *self, const unsigned int minutes,
 	g_task_set_task_data(toast, args, start_toaster_destroy_notify);
 	g_task_run_in_thread(toast, start_toaster_async);
 	g_object_unref(toast);
+
+	g_signal_emit(self, obj_signals[SIGNAL_STARTED], 0);
 }
