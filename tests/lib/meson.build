@@ -14,7 +14,7 @@ test_client = executable(
 		libgio_dep,
 		libtllt_cp_dep,
 	],
-	include_directories: include_directories('..')
+	include_directories: include_directories('../../lib')
 )
 
 test('Test client', test_client, env: env)

@@ -58,7 +58,3 @@ libtllt_cp_dep = declare_dependency(
 	link_with: libtllt_cp,
 	version: libtllt_cp_version
 )
-
-if get_option('with-tests')
-	subdir('tests')
-endif
