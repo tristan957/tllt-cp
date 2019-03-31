@@ -158,7 +158,7 @@ tllt_cp_client_get_request(TlltCpClient *self, const GType type, const char *end
 		return NULL;
 	}
 
-	return json_gobject_from_data(type, buffer.buf, buffer.len, err);
+	return json_gobject_from_data(type, buffer.buf, -1, err);
 }
 
 size_t
