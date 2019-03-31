@@ -1,23 +1,27 @@
-#include <glib-object.h>
-#include <glib/gi18n.h>
 #include <limits.h>
 
+#include <curl/curl.h>
+#include <glib-object.h>
+#include <glib/gi18n.h>
+#include <json-glib/json-glib.h>
+
+#include "tllt-cp-client.h"
 #include "tllt-cp-user.h"
 
 typedef struct TlltCpUserPrivate
 {
-	guint user_id;
+	unsigned int user_id;
 } TlltCpUserPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE(TlltCpUser, tllt_cp_user, G_TYPE_OBJECT)
 
-enum TlltCpUserProperties
+typedef enum TlltCpUserProperties
 {
 	PROP_NAME = 1,
 	PROP_EMAIL,
 	PROP_USER_ID,
 	N_PROPS
-};
+} TlltCpUserProperties;
 
 static GParamSpec *obj_properties[N_PROPS];
 
@@ -94,4 +98,17 @@ TlltCpUser *
 tllt_cp_user_new(const gchar *name, const gchar *email, const guint user_id)
 {
 	return g_object_new(TLLT_CP_TYPE_USER, "name", name, "email", email, "user-id", user_id, NULL);
+}
+
+TlltCpUser *
+tllt_cp_user_get_by_id(TlltCpClient *client, unsigned int id, GError **err)
+{
+	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
+
+	g_autoptr(GString) endpoint = g_string_new(client->server);
+	g_string_append_printf(endpoint, "/users/%u", id);
+	GObject *obj = tllt_cp_client_get_request(client, TLLT_CP_TYPE_USER, endpoint->str, err);
+	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
+
+	return TLLT_CP_USER(obj);
 }

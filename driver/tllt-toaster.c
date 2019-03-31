@@ -87,7 +87,6 @@ tllt_toaster_set_property(GObject *obj, guint prop_id, const GValue *val, GParam
 static void
 tllt_toaster_finalize(GObject *obj)
 {
-	g_print("FINALIZING\n");
 	TlltToaster *self		 = TLLT_TOASTER(obj);
 	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
 

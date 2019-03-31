@@ -2,6 +2,9 @@
 
 #include <glib-object.h>
 
+#include "tllt-cp-client.h"
+#include "tllt-cp-user.h"
+
 G_BEGIN_DECLS
 
 #define TLLT_CP_TYPE_USER (tllt_cp_user_get_type())
@@ -15,5 +18,6 @@ struct _TlltCpUser
 };
 
 TlltCpUser *tllt_cp_user_new(const gchar *name, const gchar *email, const guint user_id);
+TlltCpUser *tllt_cp_user_get_by_id(TlltCpClient *client, unsigned int id, GError **err);
 
 G_END_DECLS

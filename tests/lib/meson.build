@@ -1,8 +1,7 @@
-host = 'localhost'
-port = 8080
+host = 'http://localhost:8080/api/v1'
 
 env = [
-	'TLLT_CP_SERVER=@0@:@1@'.format(host, port),
+	'TLLT_CP_SERVER=@0@'.format(host),
 ]
 
 test_client = executable(

@@ -1,5 +1,6 @@
 config_h = configuration_data({
 	'PACKAGE_NAME': '"@0@"'.format('The Learning Little Toaster Control Panel'),
+	'PACKAGE_DOMAIN': '1',
 	'PACKAGE_VERSION': '"@0@"'.format(meson.project_version()),
 	'GETTEXT_PACKAGE': '"@0@"'.format(meson.project_name()),
 	'G_LOG_USE_STRUCTURED': true,
