@@ -103,62 +103,206 @@ tllt_cp_client_new_from_environment()
 	return g_object_new(TLLT_CP_TYPE_CLIENT, "server", server, NULL);
 }
 
+static gboolean
+status_code_valid(const unsigned int status_code)
+{
+	if (status_code != 200 && status_code && 201 && status_code != 202) {
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
 GObject *
 tllt_cp_client_get_request(TlltCpClient *self, const GType type, const char *endpoint, GError **err)
 {
 	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
 
 	TlltCpBuffer buffer = {.buf = NULL, .len = 0};
-
+	struct curl_slist *headers;
 	CURLcode req_code = 0;
+
 	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_URL, endpoint)) != CURLE_OK) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_URL: %s",
 					curl_easy_strerror(req_code));
-		return NULL;
+		goto on_error;
 	}
 	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_WRITEFUNCTION,
 									 tllt_cp_client_write_cb)) != CURLE_OK) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_WRITEFUNCTION: %s",
 					curl_easy_strerror(req_code));
-		return NULL;
+		goto on_error;
 	}
 	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_WRITEDATA, &buffer)) != CURLE_OK) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_WRITEDATA: %s",
 					curl_easy_strerror(req_code));
-		return NULL;
+		goto on_error;
 	}
 	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_USERAGENT, "libcurl-agent/tllt-cp")) !=
 		CURLE_OK) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_USERAGENT: %s",
 					curl_easy_strerror(req_code));
-		return NULL;
+		goto on_error;
 	}
+
+	// Setting headers
+	headers = NULL;
+	headers = curl_slist_append(headers, "Accept: application/json");
+	if (headers == NULL) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set request headers");
+		goto on_error;
+	}
+	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_HTTPHEADER, headers)) != CURLE_OK) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_HEADERDATA: %s",
+					curl_easy_strerror(req_code));
+		goto on_error;
+	}
+
 	if ((req_code = curl_easy_perform(self->handle)) != CURLE_OK) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to perform request: %s",
 					curl_easy_strerror(req_code));
-		return NULL;
+		goto on_error;
 	}
 
-	long http_code	= 0;
+	long status_code  = 0;
 	CURLcode res_code = CURLE_OK;
-	if ((res_code = curl_easy_getinfo(self->handle, CURLINFO_RESPONSE_CODE, &http_code)) !=
+	if ((res_code = curl_easy_getinfo(self->handle, CURLINFO_RESPONSE_CODE, &status_code)) !=
 		CURLE_OK) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to get status req_code: %s",
 					curl_easy_strerror(res_code));
-		return NULL;
+		goto on_error;
 	}
 
 	if (req_code == CURLE_ABORTED_BY_CALLBACK) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Memory error while reading response data");
-		return NULL;
+		goto on_error;
 	}
 
-	if (http_code != 200 && http_code != 201) {
-		// grab error from object and transfer to GError
-		return NULL;
+	if (!status_code_valid(status_code)) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Invalid response code of %ld", status_code);
+		goto on_error;
 	}
+
+	curl_slist_free_all(headers);
 
 	return json_gobject_from_data(type, buffer.buf, -1, err);
+
+on_error:
+	curl_slist_free_all(headers);
+	return NULL;
+}
+
+GObject *
+tllt_cp_client_post_request(TlltCpClient *self, const GType type, const char *endpoint,
+							GObject *data, GError **err)
+{
+	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
+
+	TlltCpBuffer buffer		   = {.buf = NULL, .len = 0};
+	struct curl_slist *headers = NULL;
+	CURLcode req_code		   = 0;
+
+	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_URL, endpoint)) != CURLE_OK) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_URL: %s",
+					curl_easy_strerror(req_code));
+		goto on_error;
+	}
+	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_POST, TRUE)) != CURLE_OK) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_POST: %s",
+					curl_easy_strerror(req_code));
+		goto on_error;
+	}
+
+	if (data != NULL) {
+		gsize length	   = 0;
+		char *deserialized = json_gobject_to_data(data, &length);
+		if (deserialized == NULL || length == 0) {
+			g_set_error(err, PACKAGE_DOMAIN, ERROR_JSON, "Failed to deserialize object to JSON");
+			goto on_error;
+		}
+
+		if ((req_code = curl_easy_setopt(self->handle, CURLOPT_COPYPOSTFIELDS, deserialized)) !=
+			CURLE_OK) {
+			g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_COPYPOSTFIELDS: %s",
+						curl_easy_strerror(req_code));
+			g_free(deserialized);
+			goto on_error;
+		}
+		g_print("%s\n", deserialized);
+		g_free(deserialized);
+	}
+
+	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_WRITEFUNCTION,
+									 tllt_cp_client_write_cb)) != CURLE_OK) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_WRITEFUNCTION: %s",
+					curl_easy_strerror(req_code));
+		goto on_error;
+	}
+	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_WRITEDATA, &buffer)) != CURLE_OK) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_WRITEDATA: %s",
+					curl_easy_strerror(req_code));
+		goto on_error;
+	}
+	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_USERAGENT, "libcurl/tllt-cp")) !=
+		CURLE_OK) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_USERAGENT: %s",
+					curl_easy_strerror(req_code));
+		goto on_error;
+	}
+
+	// Setting headers
+	headers = curl_slist_append(headers, "Accept: application/json");
+	headers = curl_slist_append(headers, "Content-Type: application/json");
+	headers = curl_slist_append(headers, "charsets: utf-8");
+	if (headers == NULL) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set request headers");
+		goto on_error;
+	}
+	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_HTTPHEADER, headers)) != CURLE_OK) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_HEADEROPT: %s",
+					curl_easy_strerror(req_code));
+		goto on_error;
+	}
+
+	if ((req_code = curl_easy_perform(self->handle)) != CURLE_OK) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to perform request: %s",
+					curl_easy_strerror(req_code));
+		goto on_error;
+	}
+
+	long status_code  = 0;
+	CURLcode res_code = CURLE_OK;
+	if ((res_code = curl_easy_getinfo(self->handle, CURLINFO_RESPONSE_CODE, &status_code)) !=
+		CURLE_OK) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to get status req_code: %s",
+					curl_easy_strerror(res_code));
+		goto on_error;
+	}
+
+	if (req_code == CURLE_ABORTED_BY_CALLBACK) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Memory error while reading response data");
+		goto on_error;
+	}
+
+	if (!status_code_valid(status_code)) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Invalid response code of %ld", status_code);
+		goto on_error;
+	}
+
+	GObject *obj = json_gobject_from_data(type, buffer.buf, -1, err);
+
+	curl_slist_free_all(headers);
+	curl_easy_reset(self->handle);
+	g_free(buffer.buf);
+
+	return obj;
+
+on_error:
+	curl_slist_free_all(headers);
+	curl_easy_reset(self->handle);
+	g_free(buffer.buf);
+
+	return NULL;
 }
 
 size_t

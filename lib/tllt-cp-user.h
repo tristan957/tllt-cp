@@ -23,5 +23,7 @@ struct _TlltCpUser
 
 TlltCpUser *tllt_cp_user_new(const gchar *name, const gchar *email, const guint user_id);
 TlltCpUser *tllt_cp_user_get_by_id(TlltCpClient *client, unsigned int id, GError **err);
+TlltCpUser *tllt_cp_user_authenticate(TlltCpClient *client, const char *email, const char *password,
+									  GError **err);
 
 G_END_DECLS

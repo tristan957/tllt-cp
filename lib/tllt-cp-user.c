@@ -5,6 +5,7 @@
 #include <glib/gi18n.h>
 #include <json-glib/json-glib.h>
 
+#include "dto/tllt-cp-authentication-dto.h"
 #include "tllt-cp-client.h"
 #include "tllt-cp-user.h"
 
@@ -108,6 +109,24 @@ tllt_cp_user_get_by_id(TlltCpClient *client, unsigned int id, GError **err)
 	g_autoptr(GString) endpoint = g_string_new(client->server);
 	g_string_append_printf(endpoint, "/users/%u", id);
 	GObject *obj = tllt_cp_client_get_request(client, TLLT_CP_TYPE_USER, endpoint->str, err);
+
+	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
+
+	return TLLT_CP_USER(obj);
+}
+
+TlltCpUser *
+tllt_cp_user_authenticate(TlltCpClient *client, const char *email, const char *password,
+						  GError **err)
+{
+	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
+
+	g_autoptr(TlltCpAuthenticationDto) dto = tllt_cp_authentication_dto_new(email, password);
+	g_autoptr(GString) endpoint			   = g_string_new(client->server);
+	g_string_append_printf(endpoint, "/users/authenticate");
+	GObject *obj =
+		tllt_cp_client_post_request(client, TLLT_CP_TYPE_USER, endpoint->str, G_OBJECT(dto), err);
+
 	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
 
 	return TLLT_CP_USER(obj);
