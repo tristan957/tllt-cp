@@ -1,5 +1,9 @@
 #pragma once
 
+#if !defined(__TLLT_CP_HEADER_INTERNAL__) && !defined(TLLT_CP_COMPILATION)
+#	error "Only <tllt-cp.h> can be included directly."
+#endif
+
 #include <glib-object.h>
 
 G_BEGIN_DECLS

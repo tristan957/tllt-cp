@@ -25,6 +25,7 @@ configure_file(
 
 sources = [
 	'tllt-cp-client.c',
+	'tllt-cp-error.c',
 	'tllt-cp-recipe.c',
 	'tllt-cp-user.c',
 ]
@@ -32,6 +33,7 @@ sources = [
 public_headers = [
 	'tllt-cp.h',
 	'tllt-cp-client.h',
+	'tllt-cp-error.h',
 	'tllt-cp-recipe.h',
 	'tllt-cp-user.h',
 ]
@@ -42,9 +44,14 @@ pkgincludedir = join_paths(get_option('includedir'), 'tllt-cp')
 
 libtllt_cp_version = '1.0.0'
 
+c_args = [
+	'-DTLLT_CP_COMPILATION',
+]
+
 libtllt_cp = library(
 	'tllt-cp',
   	sources,
+	c_args: c_args,
 	version: libtllt_cp_version,
 	dependencies: [
 		libgio_dep,

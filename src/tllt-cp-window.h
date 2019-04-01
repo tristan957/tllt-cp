@@ -2,7 +2,7 @@
 
 #include <gtk/gtk.h>
 
-#include "tllt-cp-user.h"
+#include "tllt-cp.h"
 
 G_BEGIN_DECLS
 

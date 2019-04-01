@@ -4,8 +4,8 @@
 #include <gtk/gtk.h>
 
 #include "tllt-cp-login-window.h"
-#include "tllt-cp-user.h"
 #include "tllt-cp-window.h"
+#include "tllt-cp.h"
 #include "tllt-toaster.h"
 
 struct _TlltCpWindow
