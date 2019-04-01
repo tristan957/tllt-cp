@@ -2,12 +2,10 @@
 	"[c]": {
 		"editor.formatOnSave": true,
 		"editor.insertSpaces": false,
-		"editor.tabSize": 4
 	},
 	"[cpp]": {
 		"editor.formatOnSave": true,
 		"editor.insertSpaces": false,
-		"editor.tabSize": 4
 	},
 	"files.associations": {
 		"*clang-format": "yaml",
