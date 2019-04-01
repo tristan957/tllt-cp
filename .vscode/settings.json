@@ -9,7 +9,7 @@
 	},
 	"files.associations": {
 		"*clang-format": "yaml",
-		"*.desktop.in": "properties",
+		"*.desktop.in": "ini",
 		"*.xml.in": "xml",
 		"*.ui": "xml",
 	},
