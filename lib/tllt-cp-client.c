@@ -118,9 +118,9 @@ tllt_cp_client_get_request(TlltCpClient *self, const GType type, const char *end
 {
 	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
 
-	TlltCpBuffer buffer = {.buf = NULL, .len = 0};
-	struct curl_slist *headers;
-	CURLcode req_code = 0;
+	TlltCpBuffer buffer		   = {.buf = NULL, .len = 0};
+	struct curl_slist *headers = NULL;
+	CURLcode req_code		   = 0;
 
 	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_URL, endpoint)) != CURLE_OK) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_URL: %s",
