@@ -127,7 +127,9 @@ tllt_cp_user_authenticate(TlltCpClient *client, const char *email, const char *p
 	GObject *obj =
 		tllt_cp_client_post_request(client, TLLT_CP_TYPE_USER, endpoint->str, G_OBJECT(dto), err);
 
-	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
+	if (err != NULL) {
+		return NULL;
+	}
 
 	return TLLT_CP_USER(obj);
 }
