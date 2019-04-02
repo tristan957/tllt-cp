@@ -29,6 +29,7 @@ typedef struct TlltCpWindowPrivate
 
 	TlltToaster *toaster;
 	GSList *logged_in_users;
+	TlltCpClient *client;
 	TlltCpUser *selected_user;
 } TlltCpWindowPrivate;
 
@@ -73,9 +74,10 @@ tllt_cp_window_add_user(TlltCpWindow *self, const TlltCpUser *user)
 static void
 on_login_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 {
-	TlltCpWindow *self = TLLT_CP_WINDOW(user_data);
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
-	TlltCpLoginWindow *window = tllt_cp_login_window_new(GTK_WINDOW(self));
+	TlltCpLoginWindow *window = tllt_cp_login_window_new(GTK_WINDOW(self), priv->client);
 	gtk_window_present(GTK_WINDOW(window));
 }
 
@@ -307,6 +309,8 @@ tllt_cp_window_init(TlltCpWindow *self)
 	gtk_style_context_add_provider_for_screen(gtk_window_get_screen(GTK_WINDOW(self)),
 											  GTK_STYLE_PROVIDER(priv->css_provider),
 											  GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+	priv->client = tllt_cp_client_new_from_environment();
 
 	priv->toaster = tllt_toaster_new(0, 1);
 	g_object_connect(priv->toaster, "signal::stopped", G_CALLBACK(on_toaster_stopped), self, NULL);

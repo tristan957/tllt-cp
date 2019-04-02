@@ -228,7 +228,6 @@ tllt_cp_client_post_request(TlltCpClient *self, const GType type, const char *en
 			g_free(deserialized);
 			goto on_error;
 		}
-		g_print("%s\n", deserialized);
 		g_free(deserialized);
 	}
 

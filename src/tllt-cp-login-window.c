@@ -20,17 +20,43 @@ typedef struct TlltCpLoginWindowPrivate
 	GtkEntry *new_user_email_entry;
 	GtkEntry *new_user_password_entry;
 	GtkEntry *new_user_re_password_entry;
+	GtkInfoBar *info_bar;
+	GtkLabel *info_bar_label;
+
+	TlltCpClient *client;
 } TlltCpLoginWindowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE(TlltCpLoginWindow, tllt_cp_login_window, GTK_TYPE_WINDOW)
 
+typedef enum TlltCpLoginWindowProps
+{
+	PROP_CLIENT = 1,
+	N_PROPS,
+} TlltCpLoginWindowProps;
+
+static GParamSpec *obj_properties[N_PROPS];
+
 static void
 on_login_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
 {
-	TlltCpLoginWindow *self = TLLT_CP_LOGIN_WINDOW(user_data);
+	TlltCpLoginWindow *self		   = TLLT_CP_LOGIN_WINDOW(user_data);
+	TlltCpLoginWindowPrivate *priv = tllt_cp_login_window_get_instance_private(self);
 
-	tllt_cp_window_add_user(TLLT_CP_WINDOW(gtk_window_get_transient_for(GTK_WINDOW(self))),
-							tllt_cp_user_new("Alex Coronado", "tristan.partin@your_mom.com", 1));
+	const char *email	= gtk_entry_get_text(priv->login_email_entry);
+	const char *password = gtk_entry_get_text(priv->login_password_entry);
+
+	GError *err		 = NULL;
+	TlltCpUser *user = tllt_cp_user_authenticate(priv->client, email, password, &err);
+	if (err != NULL) {
+		gtk_label_set_label(priv->info_bar_label, err->message);
+		if (!gtk_info_bar_get_revealed(priv->info_bar)) {
+			gtk_info_bar_set_revealed(priv->info_bar, TRUE);
+		}
+
+		return;
+	}
+
+	tllt_cp_window_add_user(TLLT_CP_WINDOW(gtk_window_get_transient_for(GTK_WINDOW(self))), user);
 	gtk_window_close(GTK_WINDOW(self));
 }
 
@@ -73,15 +99,52 @@ on_new_user_re_password_entry_activate(G_GNUC_UNUSED GtkEntry *widget,
 {}
 
 TlltCpLoginWindow *
-tllt_cp_login_window_new(const GtkWindow *parent)
+tllt_cp_login_window_new(const GtkWindow *parent, TlltCpClient *client)
 {
-	return g_object_new(TLLT_CP_TYPE_LOGIN_WINDOW, "transient-for", GTK_WINDOW(parent), NULL);
+	return g_object_new(TLLT_CP_TYPE_LOGIN_WINDOW, "transient-for", GTK_WINDOW(parent), "client",
+						client, NULL);
 }
 
 static void
-tllt_cp_login_window_finalize(GObject *object)
+tllt_cp_login_window_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpec *pspec)
 {
-	G_OBJECT_CLASS(tllt_cp_login_window_parent_class)->finalize(object);
+	TlltCpLoginWindow *self		   = TLLT_CP_LOGIN_WINDOW(obj);
+	TlltCpLoginWindowPrivate *priv = tllt_cp_login_window_get_instance_private(self);
+
+	switch (prop_id) {
+	case PROP_CLIENT:
+		g_value_set_object(val, priv->client);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
+	}
+}
+
+static void
+tllt_cp_login_window_set_property(GObject *obj, guint prop_id, const GValue *val, GParamSpec *pspec)
+{
+	TlltCpLoginWindow *self		   = TLLT_CP_LOGIN_WINDOW(obj);
+	TlltCpLoginWindowPrivate *priv = tllt_cp_login_window_get_instance_private(self);
+
+	switch (prop_id) {
+	case PROP_CLIENT:
+		priv->client = g_value_get_object(val);
+		g_object_ref(priv->client);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
+	}
+}
+
+static void
+tllt_cp_login_window_finalize(GObject *obj)
+{
+	TlltCpLoginWindow *self		   = TLLT_CP_LOGIN_WINDOW(obj);
+	TlltCpLoginWindowPrivate *priv = tllt_cp_login_window_get_instance_private(self);
+
+	g_object_unref(priv->client);
+
+	G_OBJECT_CLASS(tllt_cp_login_window_parent_class)->finalize(obj);
 }
 
 static void
@@ -90,7 +153,15 @@ tllt_cp_login_window_class_init(TlltCpLoginWindowClass *klass)
 	GObjectClass *obj_class   = G_OBJECT_CLASS(klass);
 	GtkWidgetClass *wid_class = GTK_WIDGET_CLASS(klass);
 
-	obj_class->finalize = tllt_cp_login_window_finalize;
+	obj_class->finalize		= tllt_cp_login_window_finalize;
+	obj_class->get_property = tllt_cp_login_window_get_property;
+	obj_class->set_property = tllt_cp_login_window_set_property;
+
+	obj_properties[PROP_CLIENT] = g_param_spec_object(
+		"client", _("Client"), _("Client to connect to server"), TLLT_CP_TYPE_CLIENT,
+		G_PARAM_CONSTRUCT_ONLY | G_PARAM_PRIVATE | G_PARAM_READWRITE);
+
+	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 
 	gtk_widget_class_set_template_from_resource(
 		wid_class, "/com/gitlab/tristan957/tllt-cp/ui/tllt-cp-login-window.ui");
@@ -106,6 +177,8 @@ tllt_cp_login_window_class_init(TlltCpLoginWindowClass *klass)
 												 new_user_password_entry);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow,
 												 new_user_re_password_entry);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow, info_bar);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow, info_bar_label);
 	gtk_widget_class_bind_template_callback(wid_class, on_new_user_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_login_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_cancel_button_clicked);
