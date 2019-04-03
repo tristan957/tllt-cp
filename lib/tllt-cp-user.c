@@ -6,6 +6,7 @@
 #include <json-glib/json-glib.h>
 
 #include "dto/tllt-cp-authentication-dto.h"
+#include "dto/tllt-cp-create-user-dto.h"
 #include "tllt-cp-client.h"
 #include "tllt-cp-user.h"
 
@@ -124,6 +125,25 @@ tllt_cp_user_authenticate(TlltCpClient *client, const char *email, const char *p
 	g_autoptr(TlltCpAuthenticationDto) dto = tllt_cp_authentication_dto_new(email, password);
 	g_autoptr(GString) endpoint			   = g_string_new(client->server);
 	g_string_append_printf(endpoint, "/users/authenticate");
+	GObject *obj =
+		tllt_cp_client_post_request(client, TLLT_CP_TYPE_USER, endpoint->str, G_OBJECT(dto), err);
+
+	if (err == NULL) {
+		return NULL;
+	}
+
+	return TLLT_CP_USER(obj);
+}
+
+TlltCpUser *
+tllt_cp_user_create(TlltCpClient *client, const char *name, const char *email, const char *password,
+					GError **err)
+{
+	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
+
+	g_autoptr(TlltCpCreateUserDto) dto = tllt_cp_create_user_dto_new(name, email, password);
+	g_autoptr(GString) endpoint		   = g_string_new(client->server);
+	g_string_append_printf(endpoint, "/users");
 	GObject *obj =
 		tllt_cp_client_post_request(client, TLLT_CP_TYPE_USER, endpoint->str, G_OBJECT(dto), err);
 

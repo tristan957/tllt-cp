@@ -106,7 +106,7 @@ tllt_cp_client_new_from_environment()
 static gboolean
 status_code_valid(const unsigned int status_code)
 {
-	if (status_code != 200 && status_code && 201 && status_code != 202) {
+	if (status_code != 200 && status_code != 201 && status_code != 202) {
 		return FALSE;
 	}
 

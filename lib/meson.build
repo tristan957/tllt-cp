@@ -25,6 +25,7 @@ configure_file(
 
 sources = [
 	'dto/tllt-cp-authentication-dto.c',
+	'dto/tllt-cp-create-user-dto.c',
 	'tllt-cp-client.c',
 	'tllt-cp-error.c',
 	'tllt-cp-recipe.c',

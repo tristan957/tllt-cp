@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
@@ -37,9 +39,8 @@ typedef enum TlltCpLoginWindowProps
 static GParamSpec *obj_properties[N_PROPS];
 
 static void
-login_user(gpointer user_data)
+login_user(TlltCpLoginWindow *self)
 {
-	TlltCpLoginWindow *self		   = TLLT_CP_LOGIN_WINDOW(user_data);
 	TlltCpLoginWindowPrivate *priv = tllt_cp_login_window_get_instance_private(self);
 
 	const char *email	= gtk_entry_get_text(priv->login_email_entry);
@@ -61,9 +62,41 @@ login_user(gpointer user_data)
 }
 
 static void
+create_user(TlltCpLoginWindow *self)
+{
+	TlltCpLoginWindowPrivate *priv = tllt_cp_login_window_get_instance_private(self);
+
+	const char *name		= gtk_entry_get_text(priv->new_user_name_entry);
+	const char *email		= gtk_entry_get_text(priv->new_user_email_entry);
+	const char *password	= gtk_entry_get_text(priv->new_user_password_entry);
+	const char *re_password = gtk_entry_get_text(priv->new_user_re_password_entry);
+
+	if (strcmp(password, re_password) != 0) {
+		gtk_label_set_label(priv->info_bar_label, "Passwords do not match");
+		if (!gtk_info_bar_get_revealed(priv->info_bar)) {
+			gtk_info_bar_set_revealed(priv->info_bar, TRUE);
+		}
+	}
+
+	GError *err		 = NULL;
+	TlltCpUser *user = tllt_cp_user_create(priv->client, name, email, password, &err);
+	if (err != NULL) {
+		gtk_label_set_label(priv->info_bar_label, err->message);
+		if (!gtk_info_bar_get_revealed(priv->info_bar)) {
+			gtk_info_bar_set_revealed(priv->info_bar, TRUE);
+		}
+
+		return;
+	}
+
+	tllt_cp_window_add_user(TLLT_CP_WINDOW(gtk_window_get_transient_for(GTK_WINDOW(self))), user);
+	gtk_window_close(GTK_WINDOW(self));
+}
+
+static void
 on_login_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
 {
-	login_user(user_data);
+	login_user(TLLT_CP_LOGIN_WINDOW(user_data));
 }
 
 static void
@@ -88,23 +121,20 @@ on_new_user_button_clicked(GtkButton *widget, gpointer user_data)
 static void
 on_create_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 {
-	TlltCpLoginWindow *self = TLLT_CP_LOGIN_WINDOW(user_data);
-
-	tllt_cp_window_add_user(TLLT_CP_WINDOW(gtk_window_get_transient_for(GTK_WINDOW(self))),
-							tllt_cp_user_new("Tristan Partin", "tristan.partin@your_mom.com", 2));
-	gtk_window_close(GTK_WINDOW(self));
+	create_user(TLLT_CP_LOGIN_WINDOW(user_data));
 }
 
 static void
-on_login_password_entry_activate(G_GNUC_UNUSED GtkEntry *widget, G_GNUC_UNUSED gpointer user_data)
+on_login_password_entry_activate(G_GNUC_UNUSED GtkEntry *widget, gpointer user_data)
 {
-	login_user(user_data);
+	login_user(TLLT_CP_LOGIN_WINDOW(user_data));
 }
 
 static void
-on_new_user_re_password_entry_activate(G_GNUC_UNUSED GtkEntry *widget,
-									   G_GNUC_UNUSED gpointer user_data)
-{}
+on_new_user_re_password_entry_activate(G_GNUC_UNUSED GtkEntry *widget, gpointer user_data)
+{
+	create_user(TLLT_CP_LOGIN_WINDOW(user_data));
+}
 
 static void
 on_info_bar_response(GtkInfoBar *widget, gint response_id, G_GNUC_UNUSED gpointer user_data)

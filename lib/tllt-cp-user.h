@@ -25,5 +25,7 @@ TlltCpUser *tllt_cp_user_new(const gchar *name, const gchar *email, const guint 
 TlltCpUser *tllt_cp_user_get_by_id(TlltCpClient *client, unsigned int id, GError **err);
 TlltCpUser *tllt_cp_user_authenticate(TlltCpClient *client, const char *email, const char *password,
 									  GError **err);
+TlltCpUser *tllt_cp_user_create(TlltCpClient *client, const char *name, const char *email,
+								const char *password, GError **err);
 
 G_END_DECLS
