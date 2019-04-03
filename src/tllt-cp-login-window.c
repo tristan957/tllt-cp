@@ -37,7 +37,7 @@ typedef enum TlltCpLoginWindowProps
 static GParamSpec *obj_properties[N_PROPS];
 
 static void
-on_login_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
+login_user(gpointer user_data)
 {
 	TlltCpLoginWindow *self		   = TLLT_CP_LOGIN_WINDOW(user_data);
 	TlltCpLoginWindowPrivate *priv = tllt_cp_login_window_get_instance_private(self);
@@ -58,6 +58,12 @@ on_login_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
 
 	tllt_cp_window_add_user(TLLT_CP_WINDOW(gtk_window_get_transient_for(GTK_WINDOW(self))), user);
 	gtk_window_close(GTK_WINDOW(self));
+}
+
+static void
+on_login_button_clicked(G_GNUC_UNUSED GtkButton *button, gpointer user_data)
+{
+	login_user(user_data);
 }
 
 static void
@@ -91,7 +97,9 @@ on_create_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 
 static void
 on_login_password_entry_activate(G_GNUC_UNUSED GtkEntry *widget, G_GNUC_UNUSED gpointer user_data)
-{}
+{
+	login_user(user_data);
+}
 
 static void
 on_new_user_re_password_entry_activate(G_GNUC_UNUSED GtkEntry *widget,
