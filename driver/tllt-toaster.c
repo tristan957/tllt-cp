@@ -10,6 +10,7 @@ typedef struct TlltToasterStartArgs
 {
 	TlltToaster *toaster;
 	unsigned long total_seconds;
+	unsigned int temperature;
 	TlltToasterUpdateFunc update;
 	gpointer user_data;
 } TlltToasterStartArgs;
@@ -24,7 +25,7 @@ typedef struct TlltToasterPrivate
 	gboolean running;
 	GCancellable *cancellable;
 	TlltScale *scale;
-	TlltThermistor *thermo;
+	TlltThermistor *thermistor;
 	GTimer *timer;
 } TlltToasterPrivate;
 
@@ -59,7 +60,7 @@ tllt_toaster_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpec *
 		g_value_set_object(val, priv->scale);
 		break;
 	case PROP_THERMISTOR:
-		g_value_set_object(val, priv->thermo);
+		g_value_set_object(val, priv->thermistor);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -77,7 +78,7 @@ tllt_toaster_set_property(GObject *obj, guint prop_id, const GValue *val, GParam
 		priv->scale = g_value_get_object(val);
 		break;
 	case PROP_THERMISTOR:
-		priv->thermo = g_value_get_object(val);
+		priv->thermistor = g_value_get_object(val);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -94,7 +95,7 @@ tllt_toaster_finalize(GObject *obj)
 
 	g_clear_object(&priv->cancellable);
 	g_clear_object(&priv->scale);
-	g_clear_object(&priv->thermo);
+	g_clear_object(&priv->thermistor);
 	g_timer_destroy(priv->timer);
 
 	G_OBJECT_CLASS(tllt_toaster_parent_class)->finalize(obj);
@@ -113,7 +114,7 @@ tllt_toaster_class_init(TlltToasterClass *klass)
 		g_param_spec_object("scale", _("Scale"), _("Pointer to scale object"), TLLT_TYPE_SCALE,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 	obj_properties[PROP_THERMISTOR] =
-		g_param_spec_object("thermistor", _("Thermister"), _("Pointer to thermo object"),
+		g_param_spec_object("thermistor", _("Thermister"), _("Pointer to thermistor object"),
 							TLLT_TYPE_THERMISTOR, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
@@ -135,12 +136,12 @@ tllt_toaster_init(TlltToaster *self)
 }
 
 TlltToaster *
-tllt_toaster_new(const unsigned char scale_gpio_pin, const unsigned char thermo_gpio_pin)
+tllt_toaster_new(const unsigned char scale_gpio_pin, const unsigned char thermistor_gpio_pin)
 {
-	g_return_val_if_fail(scale_gpio_pin != thermo_gpio_pin, NULL);
+	g_return_val_if_fail(scale_gpio_pin != thermistor_gpio_pin, NULL);
 
 	return g_object_new(TLLT_TYPE_TOASTER, "scale", tllt_scale_new(scale_gpio_pin), "thermistor",
-						tllt_thermistor_new(thermo_gpio_pin), NULL);
+						tllt_thermistor_new(thermistor_gpio_pin), NULL);
 }
 
 void
@@ -152,7 +153,7 @@ tllt_toaster_stop(TlltToaster *self)
 }
 
 static gboolean
-start_toaster(gpointer user_data)
+run_toaster(gpointer user_data)
 {
 	TlltToasterStartArgs *args = user_data;
 	TlltToasterPrivate *priv   = tllt_toaster_get_instance_private(args->toaster);
@@ -161,8 +162,17 @@ start_toaster(gpointer user_data)
 
 	const int delta = args->total_seconds - g_timer_elapsed(priv->timer, NULL);
 	if (delta > 0 && !g_cancellable_is_cancelled(priv->cancellable)) {
+		const double temp = tllt_sensor_read(TLLT_SENSOR(priv->thermistor));
+		if (temp < args->temperature) {
+			// tllt_heating_element_off(relays)
+		}
+		if (temp > args->temperature) {
+			// tllt_heating_element_on
+		}
+
 		args->update(delta / 60, delta % 60, 1 - ((double) delta) / args->total_seconds,
 					 args->user_data);
+
 		return TRUE;
 	}
 
@@ -170,6 +180,8 @@ start_toaster(gpointer user_data)
 	g_object_unref(priv->cancellable);
 
 	g_signal_emit(args->toaster, obj_signals[SIGNAL_STOPPED], 0);
+
+	tllt_sensor_off(TLLT_SENSOR(priv->thermistor));
 
 	g_object_unref(args->toaster);
 	g_free(args);
@@ -179,8 +191,8 @@ start_toaster(gpointer user_data)
 
 void
 tllt_toaster_start_with_time(TlltToaster *self, const unsigned int minutes,
-							 const unsigned int seconds, const TlltToasterUpdateFunc update,
-							 gpointer user_data)
+							 const unsigned int seconds, const unsigned int temperature,
+							 const TlltToasterUpdateFunc update, gpointer user_data)
 {
 	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
 
@@ -189,12 +201,15 @@ tllt_toaster_start_with_time(TlltToaster *self, const unsigned int minutes,
 	TlltToasterStartArgs *args = g_malloc(sizeof(TlltToasterStartArgs));
 	g_warn_if_fail(args != NULL);
 	args->total_seconds = minutes * 60 + seconds;
+	args->temperature   = temperature;
 	args->update		= update;
 	args->user_data		= user_data;
 	args->toaster		= self;
 
+	tllt_sensor_on(TLLT_SENSOR(priv->thermistor));
+
 	g_timer_start(priv->timer);
-	g_timeout_add(40, start_toaster, args);
+	g_timeout_add(40, run_toaster, args);
 
 	g_signal_emit(self, obj_signals[SIGNAL_STARTED], 0);
 }

@@ -26,6 +26,7 @@ typedef struct TlltCpWindowPrivate
 	GtkLabel *timer_seconds_label;
 	GtkSpinButton *timer_minutes_spin_button;
 	GtkSpinButton *timer_seconds_spin_button;
+	GtkScale *temperature_scale;
 
 	TlltToaster *toaster;
 	GSList *logged_in_users;
@@ -208,9 +209,10 @@ on_timer_start_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_dat
 	gtk_stack_set_visible_child_name(priv->timer_stack, "display-page");
 
 	g_object_ref(self);
-	tllt_toaster_start_with_time(
-		priv->toaster, gtk_spin_button_get_value_as_int(priv->timer_minutes_spin_button),
-		gtk_spin_button_get_value_as_int(priv->timer_seconds_spin_button), update_timer, self);
+	tllt_toaster_start_with_time(priv->toaster,
+								 gtk_spin_button_get_value_as_int(priv->timer_minutes_spin_button),
+								 gtk_spin_button_get_value_as_int(priv->timer_seconds_spin_button),
+								 gtk_scale_get_digits(priv->temperature_scale), update_timer, self);
 }
 
 static void
@@ -241,6 +243,13 @@ on_toaster_stopped(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
 
 	gtk_widget_set_visible(GTK_WIDGET(priv->toasting_progress_box), FALSE);
 	gtk_stack_set_visible_child_name(priv->timer_stack, "edit-page");
+}
+
+static gchar *
+on_temperature_scale_format_value(G_GNUC_UNUSED GtkScale *scale, gdouble value,
+								  G_GNUC_UNUSED gpointer user_data)
+{
+	return g_strdup_printf("%.0f °F", value);
 }
 
 TlltCpWindow *
@@ -282,6 +291,7 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 												 timer_minutes_spin_button);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow,
 												 timer_seconds_spin_button);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, temperature_scale);
 	gtk_widget_class_bind_template_callback(wid_class, on_login_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_logout_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_user_details_button_clicked);
@@ -294,6 +304,7 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 	gtk_widget_class_bind_template_callback(wid_class, on_timer_start_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_timer_reset_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_toaster_stop_button_clicked);
+	gtk_widget_class_bind_template_callback(wid_class, on_temperature_scale_format_value);
 }
 
 static void
@@ -314,4 +325,8 @@ tllt_cp_window_init(TlltCpWindow *self)
 
 	priv->toaster = tllt_toaster_new(0, 1);
 	g_object_connect(priv->toaster, "signal::stopped", G_CALLBACK(on_toaster_stopped), self, NULL);
+
+	for (int i = 275; i < 450; i += 25) {
+		gtk_scale_add_mark(priv->temperature_scale, i, GTK_POS_TOP, NULL);
+	}
 }

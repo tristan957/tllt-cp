@@ -27,7 +27,12 @@ tllt_thermistor_on(G_GNUC_UNUSED TlltThermistor *self)
 static double
 tllt_thermistor_read(G_GNUC_UNUSED TlltThermistor *self)
 {
-	return 0;
+	static int i = 0;
+	if (i & 2 == 0) {
+		return 350;
+	}
+
+	return 400;
 }
 
 static void
@@ -60,7 +65,7 @@ tllt_thermistor_set_property(GObject *obj, guint prop_id, const GValue *val, GPa
 	}
 }
 
-// Unfortunately the way GLib interface implementation is setup this is unavoidable
+// Unfortunately the way GLib abstract class implementation is setup this is unavoidable
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
 

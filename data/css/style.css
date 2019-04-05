@@ -6,6 +6,14 @@ flowboxchild:selected {
     font-size: 48pt;
 }
 
+.tllt-cp-timer-label {
+	font-size: 20pt;
+}
+
+#temperature-scale {
+	font-size: 20pt;
+}
+
 #tllt-cp-toasting-progress > trough {
 	min-height: 5px;
 }

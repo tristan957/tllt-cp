@@ -95,5 +95,6 @@ double
 tllt_sensor_read(TlltSensor *self)
 {
 	TlltSensorClass *klass = TLLT_SENSOR_GET_CLASS(self);
+
 	return klass->read(self);
 }
