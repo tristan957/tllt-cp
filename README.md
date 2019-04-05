@@ -21,7 +21,7 @@ to talk to the toaster.
 * `gtk >= 3.22`
 * `libjson-glib >= 1.4.2`
 
-**Disclaimer**: These are know working dependency versions. Previous versions
+**Disclaimer**: These are known working dependency versions. Previous versions
 may work fine.
 
 ## Development Environment
