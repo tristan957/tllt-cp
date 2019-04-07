@@ -55,10 +55,8 @@ tllt_cp_error_set_property(GObject *obj, guint prop_id, const GValue *val, GPara
 		priv->status_code = g_value_get_uint(val);
 		break;
 	case PROP_MESSAGE:
-		if (priv->message != NULL) {
-			g_free(priv->message);
-		}
-		g_value_set_string(val, priv->message);
+		g_free(priv->message);
+		priv->message = g_value_dup_string(val);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -72,9 +70,7 @@ tllt_cp_error_finalize(GObject *obj)
 	TlltCpError *self		 = TLLT_CP_ERROR(obj);
 	TlltCpErrorPrivate *priv = tllt_cp_error_get_instance_private(self);
 
-	if (priv->message != NULL) {
-		g_free(priv->message);
-	}
+	g_free(priv->message);
 
 	G_OBJECT_CLASS(tllt_cp_error_parent_class)->finalize(obj);
 }
