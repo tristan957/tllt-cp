@@ -20,6 +20,10 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">False</property>
+            <property name="margin_left">3</property>
+            <property name="margin_right">3</property>
+            <property name="margin_top">3</property>
+            <property name="margin_bottom">3</property>
             <property name="draw_indicator">True</property>
             <signal name="toggled" handler="on_theme_state_changed" swapped="no"/>
           </object>
@@ -138,23 +142,6 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton">
-            <property name="label" translatable="yes">Login</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Login or create an account</property>
-            <signal name="clicked" handler="on_login_button_clicked" object="TlltCpWindow" swapped="no"/>
-            <style>
-              <class name="suggested-action"/>
-            </style>
-          </object>
-          <packing>
-            <property name="pack_type">end</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkMenuButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -167,6 +154,23 @@
                 <property name="icon_name">open-menu-symbolic</property>
               </object>
             </child>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">Login</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Login or create an account</property>
+            <signal name="clicked" handler="on_login_button_clicked" object="TlltCpWindow" swapped="no"/>
+            <style>
+              <class name="suggested-action"/>
+            </style>
           </object>
           <packing>
             <property name="pack_type">end</property>
