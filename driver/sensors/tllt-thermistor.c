@@ -28,7 +28,7 @@ static double
 tllt_thermistor_read(G_GNUC_UNUSED TlltThermistor *self)
 {
 	static int i = 0;
-	if (i & 2 == 0) {
+	if ((i & 2) == 0) {
 		return 350;
 	}
 
@@ -65,10 +65,6 @@ tllt_thermistor_set_property(GObject *obj, guint prop_id, const GValue *val, GPa
 	}
 }
 
-// Unfortunately the way GLib abstract class implementation is setup this is unavoidable
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-
 static void
 tllt_thermistor_class_init(TlltThermistorClass *klass)
 {
@@ -78,9 +74,12 @@ tllt_thermistor_class_init(TlltThermistorClass *klass)
 	obj_class->get_property = tllt_thermistor_get_property;
 	obj_class->set_property = tllt_thermistor_set_property;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
 	sensor_class->off  = tllt_thermistor_off;
 	sensor_class->on   = tllt_thermistor_on;
 	sensor_class->read = tllt_thermistor_read;
+#pragma GCC diagnostic pop
 
 	obj_properties[PROP_GPIO_PIN] =
 		g_param_spec_uchar("gpio-pin", _("GPIO pin"), _("GPIO pin for the thermo"), 0, UCHAR_MAX, 0,
@@ -88,8 +87,6 @@ tllt_thermistor_class_init(TlltThermistorClass *klass)
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
-
-#pragma GCC diagnostic pop
 
 static void
 tllt_thermistor_init(G_GNUC_UNUSED TlltThermistor *self)

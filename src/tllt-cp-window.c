@@ -323,7 +323,7 @@ tllt_cp_window_init(TlltCpWindow *self)
 
 	priv->client = tllt_cp_client_new_from_environment();
 
-	priv->toaster = tllt_toaster_new(0, 1);
+	priv->toaster = tllt_toaster_new(0, 1, 2, 3);
 	g_object_connect(priv->toaster, "signal::stopped", G_CALLBACK(on_toaster_stopped), self, NULL);
 
 	for (int i = 275; i < 450; i += 25) {

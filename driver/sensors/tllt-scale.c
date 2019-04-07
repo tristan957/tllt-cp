@@ -59,10 +59,6 @@ tllt_scale_set_property(GObject *obj, guint prop_id, const GValue *val, GParamSp
 	}
 }
 
-// Unfortunately the way GLib abstract classes are setup this is unavoidable
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-
 static void
 tllt_scale_class_init(TlltScaleClass *klass)
 {
@@ -72,9 +68,12 @@ tllt_scale_class_init(TlltScaleClass *klass)
 	obj_class->get_property = tllt_scale_get_property;
 	obj_class->set_property = tllt_scale_set_property;
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
 	sensor_class->off  = tllt_scale_off;
 	sensor_class->on   = tllt_scale_on;
 	sensor_class->read = tllt_scale_read;
+#pragma GCC diagnostic pop
 
 	obj_properties[PROP_GPIO_PIN] =
 		g_param_spec_uchar("gpio-pin", _("GPIO pin"), _("GPIO pin for the scale"), 0, UCHAR_MAX, 0,
@@ -82,8 +81,6 @@ tllt_scale_class_init(TlltScaleClass *klass)
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
-
-#pragma GCC diagnostic pop
 
 static void
 tllt_scale_init(G_GNUC_UNUSED TlltScale *self)

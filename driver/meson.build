@@ -1,14 +1,18 @@
 sources = [
+	'components/tllt-heating-element.c',
 	'sensors/tllt-scale.c',
 	'sensors/tllt-sensor.c',
 	'sensors/tllt-thermistor.c',
+	'tllt-powerable.c',
 	'tllt-toaster.c',
 ]
 
 public_headers = [
+	'components/tllt-heating-element.h',
 	'sensors/tllt-scale.h',
 	'sensors/tllt-sensor.h',
 	'sensors/tllt-thermistor.h',
+	'tllt-powerable.h',
 	'tllt-toaster.h',
 ]
 
