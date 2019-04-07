@@ -1,7 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
-<interface>
+<!-- Generated with glade 3.22.1 
+
+Copyright (C) 
+
+This file is part of The Learning Little Toaster Control Panel.
+
+The Learning Little Toaster Control Panel is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+The Learning Little Toaster Control Panel is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with The Learning Little Toaster Control Panel.  If not, see <http://www.gnu.org/licenses/>.
+
+Author: Tristan Partin
+
+-->
+<interface domain="tllt-cp">
   <requires lib="gtk+" version="3.20"/>
+  <!-- interface-license-type gplv3 -->
+  <!-- interface-name The Learning Little Toaster Control Panel -->
+  <!-- interface-description The Learning Little Toaster Control Panel -->
+  <!-- interface-authors Tristan Partin -->
   <template class="TlltCpLoginWindow" parent="GtkWindow">
     <property name="can_focus">False</property>
     <property name="resizable">False</property>
