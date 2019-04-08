@@ -1,9 +1,9 @@
 #include <gio/gio.h>
 #include <glib-object.h>
 #include <glib/gi18n.h>
+#include <json-glib/json-glib.h>
 
 #include "components/tllt-heating-element.h"
-#include "sensors/tllt-scale.h"
 #include "sensors/tllt-thermistor.h"
 #include "tllt-toaster.h"
 
@@ -25,9 +25,8 @@ typedef struct TlltToasterPrivate
 {
 	gboolean running;
 	GCancellable *cancellable;
-	TlltHeatingElement *top_elem;
-	TlltHeatingElement *bottom_elem;
-	TlltScale *scale;
+	TlltHeatingElement *top_heating_element;
+	TlltHeatingElement *bottom_heating_element;
 	TlltThermistor *thermistor;
 	GTimer *timer;
 } TlltToasterPrivate;
@@ -36,10 +35,9 @@ G_DEFINE_TYPE_WITH_PRIVATE(TlltToaster, tllt_toaster, G_TYPE_OBJECT)
 
 typedef enum TlltToasterProps
 {
-	PROP_SCALE = 1,
-	PROP_THERMISTOR,
-	PROP_TOP_ELEM,
-	PROP_BOTTOM_ELEM,
+	PROP_THERMISTOR = 1,
+	PROP_TOP_HEATING_ELEMENT,
+	PROP_BOTTOM_HEATING_ELEMENT,
 	N_PROPS,
 } TlltToasterProps;
 
@@ -61,17 +59,14 @@ tllt_toaster_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpec *
 	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
 
 	switch (prop_id) {
-	case PROP_SCALE:
-		g_value_set_object(val, priv->scale);
-		break;
 	case PROP_THERMISTOR:
 		g_value_set_object(val, priv->thermistor);
 		break;
-	case PROP_TOP_ELEM:
-		g_value_set_object(val, priv->top_elem);
+	case PROP_TOP_HEATING_ELEMENT:
+		g_value_set_object(val, priv->top_heating_element);
 		break;
-	case PROP_BOTTOM_ELEM:
-		g_value_set_object(val, priv->bottom_elem);
+	case PROP_BOTTOM_HEATING_ELEMENT:
+		g_value_set_object(val, priv->bottom_heating_element);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -85,17 +80,14 @@ tllt_toaster_set_property(GObject *obj, guint prop_id, const GValue *val, GParam
 	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
 
 	switch (prop_id) {
-	case PROP_SCALE:
-		priv->scale = g_value_get_object(val);
-		break;
 	case PROP_THERMISTOR:
 		priv->thermistor = g_value_get_object(val);
 		break;
-	case PROP_TOP_ELEM:
-		priv->top_elem = g_value_get_object(val);
+	case PROP_TOP_HEATING_ELEMENT:
+		priv->top_heating_element = g_value_get_object(val);
 		break;
-	case PROP_BOTTOM_ELEM:
-		priv->bottom_elem = g_value_get_object(val);
+	case PROP_BOTTOM_HEATING_ELEMENT:
+		priv->bottom_heating_element = g_value_get_object(val);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -110,9 +102,10 @@ tllt_toaster_finalize(GObject *obj)
 
 	g_cancellable_cancel(priv->cancellable);
 
-	g_clear_object(&priv->cancellable);
-	g_clear_object(&priv->scale);
-	g_clear_object(&priv->thermistor);
+	g_object_unref(priv->cancellable);
+	g_object_unref(priv->thermistor);
+	g_object_unref(priv->top_heating_element);
+	g_object_unref(priv->bottom_heating_element);
 	g_timer_destroy(priv->timer);
 
 	G_OBJECT_CLASS(tllt_toaster_parent_class)->finalize(obj);
@@ -127,18 +120,15 @@ tllt_toaster_class_init(TlltToasterClass *klass)
 	obj_class->get_property = tllt_toaster_get_property;
 	obj_class->set_property = tllt_toaster_set_property;
 
-	obj_properties[PROP_SCALE] =
-		g_param_spec_object("scale", _("Scale"), _("Pointer to scale object"), TLLT_TYPE_SCALE,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 	obj_properties[PROP_THERMISTOR] =
 		g_param_spec_object("thermistor", _("Thermister"), _("Pointer to thermistor object"),
 							TLLT_TYPE_THERMISTOR, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
-	obj_properties[PROP_TOP_ELEM] =
-		g_param_spec_object("top-elem", _("Top heating element"), _("Top heating element"),
-							TLLT_TYPE_HEATING_ELEMENT, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
-	obj_properties[PROP_BOTTOM_ELEM] =
-		g_param_spec_object("bottom-elem", _("Bottom heating element"), _("Bottom heating element"),
-							TLLT_TYPE_HEATING_ELEMENT, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+	obj_properties[PROP_TOP_HEATING_ELEMENT] = g_param_spec_object(
+		"top-heating-element", _("Top heating element"), _("Top heating element"),
+		TLLT_TYPE_HEATING_ELEMENT, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+	obj_properties[PROP_BOTTOM_HEATING_ELEMENT] = g_param_spec_object(
+		"bottom-heating-element", _("Bottom heating element"), _("Bottom heating element"),
+		TLLT_TYPE_HEATING_ELEMENT, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 
@@ -159,13 +149,21 @@ tllt_toaster_init(TlltToaster *self)
 }
 
 TlltToaster *
-tllt_toaster_new(const unsigned char top_elem_gpio_pin, const unsigned char bottom_elem_gpio_pin,
-				 const unsigned char scale_gpio_pin, const unsigned char thermistor_gpio_pin)
+tllt_toaster_new_from_file(const gchar *file_name, GError **err)
 {
-	return g_object_new(TLLT_TYPE_TOASTER, "scale", tllt_scale_new(scale_gpio_pin), "thermistor",
-						tllt_thermistor_new(thermistor_gpio_pin), "top-elem",
-						tllt_heating_element_new(top_elem_gpio_pin), "bottom-elem",
-						tllt_heating_element_new(bottom_elem_gpio_pin), NULL);
+	g_return_val_if_fail(err == NULL || *err == NULL || file_name == NULL, NULL);
+
+	char *buffer;
+	if (!g_file_get_contents(file_name, &buffer, NULL, err)) {
+		return NULL;
+	}
+
+	GObject *obj = json_gobject_from_data(TLLT_TYPE_TOASTER, buffer, -1, err);
+	if (*err != NULL) {
+		return NULL;
+	}
+
+	return TLLT_TOASTER(obj);
 }
 
 void

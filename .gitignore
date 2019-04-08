@@ -4,3 +4,4 @@
 .vscode/c_cpp_properties.json
 .vscode/ipch
 build
+config.json

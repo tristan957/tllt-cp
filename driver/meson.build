@@ -23,9 +23,15 @@ libtllt_version = '1.0.0'
 pkgincludedir = join_paths(get_option('includedir'), 'tllt')
 
 c_args = []
+dependencies = [
+	libgio_dep,
+	libjson_glib_dep,
+]
 
-if get_option('with-gpio')
-	c_args += '-DTLLT_GPIO'
+if get_option('with-wiringPi')
+	c_args += '-DTLLT_WIRINGPI'
+	libwiringPi_dep = cc.find_library('wiringPi', required: true)
+	dependencies += libwiringPi_dep
 endif
 
 libtllt = library(
@@ -33,9 +39,7 @@ libtllt = library(
   	sources,
 	c_args: c_args,
 	version: libtllt_version,
-	dependencies: [
-		libgio_dep,
-	],
+	dependencies: dependencies,
   	install: true,
 )
 

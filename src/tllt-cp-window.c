@@ -264,7 +264,7 @@ tllt_cp_window_finalize(GObject *object)
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(TLLT_CP_WINDOW(object));
 
 	g_slist_free(priv->logged_in_users);
-	g_clear_object(&priv->css_provider);
+	g_object_unref(priv->css_provider);
 
 	G_OBJECT_CLASS(tllt_cp_window_parent_class)->finalize(object);
 }
@@ -323,7 +323,17 @@ tllt_cp_window_init(TlltCpWindow *self)
 
 	priv->client = tllt_cp_client_new_from_environment();
 
-	priv->toaster = tllt_toaster_new(0, 1, 2, 3);
+	const gchar *file_name = g_getenv("TLLT_CP_CONFIG_FILE_NAME");
+	if (file_name == NULL) {
+		g_error("No config file name set");
+	}
+
+	g_autoptr(GError) err = NULL;
+	priv->toaster		  = tllt_toaster_new_from_file(file_name, &err);
+	if (err != NULL) {
+		g_error("%s", err->message);
+	}
+
 	g_object_connect(priv->toaster, "signal::stopped", G_CALLBACK(on_toaster_stopped), self, NULL);
 
 	for (int i = 275; i < 450; i += 25) {
