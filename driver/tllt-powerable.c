@@ -31,3 +31,11 @@ tllt_powerable_on(TlltPowerable *self)
 	g_return_if_fail(iface->on != NULL);
 	iface->on(self);
 }
+
+gboolean
+tllt_powerable_running(TlltPowerable *self)
+{
+	TlltPowerableInterface *iface = TLLT_POWERABLE_GET_IFACE(self);
+
+	return iface->running;
+}

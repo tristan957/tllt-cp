@@ -17,6 +17,7 @@ struct _TlltPowerableInterface
 	void (*off)(TlltPowerable *self);
 };
 
+gboolean tllt_powerable_running(TlltPowerable *self);
 void tllt_powerable_off(TlltPowerable *self);
 void tllt_powerable_on(TlltPowerable *self);
 

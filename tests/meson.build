@@ -1,1 +1,2 @@
+subdir('driver')
 subdir('lib')
