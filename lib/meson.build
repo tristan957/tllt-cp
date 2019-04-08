@@ -7,7 +7,7 @@ config_h = configuration_data({
 	'LOCALEDIR': '"@0@"'.format(join_paths(get_option('prefix'), get_option('localedir'))),
 	'LIBDIR': '"@0@"'.format(join_paths(get_option('prefix'), get_option('libdir'))),
 	'PACKAGE_LICENSE': 'GTK_LICENSE_GPL_3_0_ONLY',
-	'PACKAGE_WEBSITE': '"@0@"'.format('https://gitlab.com/tristan957/tllt-cp'),
+	'PACKAGE_WEBSITE': '"@0@"'.format('https://git.sr.ht/~tristan957/tllt-cp'),
 	'PACKAGE_WEBSITE_LABEL': '"@0@"'.format('Repository'),
 })
 if get_option('buildtype') == 'release'

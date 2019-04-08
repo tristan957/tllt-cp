@@ -136,7 +136,7 @@ tllt_toaster_class_init(TlltToasterClass *klass)
 	obj_properties[PROP_TOP_ELEM] =
 		g_param_spec_object("top-elem", _("Top heating element"), _("Top heating element"),
 							TLLT_TYPE_HEATING_ELEMENT, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
-	obj_properties[PROP_TOP_ELEM] =
+	obj_properties[PROP_BOTTOM_ELEM] =
 		g_param_spec_object("bottom-elem", _("Bottom heating element"), _("Bottom heating element"),
 							TLLT_TYPE_HEATING_ELEMENT, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 

@@ -1,4 +1,7 @@
+#include <limits.h>
+
 #include <glib-object.h>
+#include <glib/gi18n.h>
 
 #include "tllt-heating-element.h"
 #include "tllt-powerable.h"
@@ -14,6 +17,8 @@ typedef enum TlltHeatingElementProps
 	PROP_GPIO_PIN = 1,
 	N_PROPS,
 } TlltHeatingElementProps;
+
+static GParamSpec *obj_properties[N_PROPS];
 
 static void
 tllt_heating_element_off(G_GNUC_UNUSED TlltHeatingElement *self)
@@ -70,6 +75,12 @@ tllt_heating_element_class_init(G_GNUC_UNUSED TlltHeatingElementClass *klass)
 
 	obj_class->get_property = tllt_heating_element_get_property;
 	obj_class->set_property = tllt_heating_element_set_property;
+
+	obj_properties[PROP_GPIO_PIN] =
+		g_param_spec_uchar("gpio-pin", _("GPIO pin"), _("GPIO pin for the scale"), 0, UCHAR_MAX, 0,
+						   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+
+	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
 
 static void
