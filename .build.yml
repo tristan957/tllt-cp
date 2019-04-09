@@ -5,13 +5,18 @@ packages:
   - gtk3-devel
   - meson
   - json-glib-devel
+  - make
+  - git
 sources:
   - https://git.sr.ht/~tristan957/tllt-cp
 tasks:
   - setup: |
-      cd tllt-cp
+      git clone git://git.drogon.net/wiringPi
+      cd wiringPi/wiringPi
+      make install
+      cd ../../tllt-cp
       CC=gcc meson build
-      meson configure build -Dwerror=true
+      meson configure -Dwerror=true -Dwith-wiringPi=true build
   - build: |
       cd tllt-cp
       ninja -C build
