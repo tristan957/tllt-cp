@@ -4,6 +4,7 @@
 #include "tllt-cp-config.h"
 #include "tllt-cp-resources.h"
 #include "tllt-cp-window.h"
+#include "tllt-driver.h"
 
 struct _TlltCpApplication
 {
@@ -73,8 +74,11 @@ tllt_cp_application_class_init(TlltCpApplicationClass *klass)
 static GActionEntry app_entries[] = {{.name = "about", .activate = tllt_cp_application_about}};
 
 static void
-tllt_cp_application_init(G_GNUC_UNUSED TlltCpApplication *self)
+tllt_cp_application_init(TlltCpApplication *self)
 {
+	// Initialize the driver
+	tllt_driver_init();
+
 	g_action_map_add_action_entries(G_ACTION_MAP(self), app_entries, G_N_ELEMENTS(app_entries),
 									self);
 }
