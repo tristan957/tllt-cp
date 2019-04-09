@@ -85,13 +85,13 @@ tllt_toaster_set_property(GObject *obj, guint prop_id, const GValue *val, GParam
 
 	switch (prop_id) {
 	case PROP_THERMISTOR:
-		priv->thermistor = g_value_get_object(val);
+		priv->thermistor = g_value_dup_object(val);
 		break;
 	case PROP_TOP_HEATING_ELEMENT:
-		priv->top_heating_element = g_value_get_object(val);
+		priv->top_heating_element = g_value_dup_object(val);
 		break;
 	case PROP_BOTTOM_HEATING_ELEMENT:
-		priv->bottom_heating_element = g_value_get_object(val);
+		priv->bottom_heating_element = g_value_dup_object(val);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -188,7 +188,7 @@ tllt_toaster_stop(TlltToaster *self)
 }
 
 static gboolean
-run_toaster(gpointer user_data)
+tllt_toaster_run(gpointer user_data)
 {
 	TlltToasterStartArgs *args = user_data;
 	TlltToasterPrivate *priv   = tllt_toaster_get_instance_private(args->toaster);
@@ -248,7 +248,7 @@ tllt_toaster_start_with_time(TlltToaster *self, const unsigned int minutes,
 	tllt_powerable_on(TLLT_POWERABLE(priv->thermistor));
 
 	g_timer_start(priv->timer);
-	g_timeout_add(40, run_toaster, args);
+	g_timeout_add(40, tllt_toaster_run, args);
 
 	g_signal_emit(self, obj_signals[SIGNAL_STARTED], 0);
 }
