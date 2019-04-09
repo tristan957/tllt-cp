@@ -38,7 +38,7 @@ CC={compiler of choice} meson build
 ## Environment Variables
 
 * `TLLT_CP_SERVER` - URL of the server
-* `TLLT_CP_TOASTER_CONFIG_FILE_PATH` - file path of the toaster config
+* `TLLT_TOASTER_CONFIG_FILE_PATH` - file path of the toaster config
 
 ## Driver Config File
 
