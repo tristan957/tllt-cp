@@ -2,7 +2,9 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <json-glib/json-glib.h>
-#include <wiringPi.h>
+#ifdef TLLT_WITH_WIRINGPI
+#	include <wiringPi.h>
+#endif
 
 #include "components/tllt-heating-element.h"
 #include "sensors/tllt-thermistor.h"
