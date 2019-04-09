@@ -2,7 +2,11 @@
 
 #include <glib-object.h>
 #include <glib/gi18n.h>
+#ifdef TLLT_WITH_WIRINGPI
+#	include <wiringPi.h>
+#endif
 
+#include "tllt-config.h"
 #include "tllt-scale.h"
 
 G_DEFINE_TYPE(TlltScale, tllt_scale, TLLT_TYPE_SENSOR)
@@ -16,12 +20,20 @@ typedef enum TlltScaleProps
 static GParamSpec *obj_properties[N_PROPS];
 
 static void
-tllt_scale_off(G_GNUC_UNUSED TlltScale *self)
-{}
+tllt_scale_off(TLLT_UNUSED TlltScale *self)
+{
+#ifdef TLLT_WITH_WIRINGPI
+	digitalWrite(self->gpio_pin, LOW);
+#endif
+}
 
 static void
-tllt_scale_on(G_GNUC_UNUSED TlltScale *self)
-{}
+tllt_scale_on(TLLT_UNUSED TlltScale *self)
+{
+#ifdef TLLT_WITH_WIRINGPI
+	digitalWrite(self->gpio_pin, HIGH);
+#endif
+}
 
 static double
 tllt_scale_read(G_GNUC_UNUSED TlltScale *self)
@@ -83,8 +95,12 @@ tllt_scale_class_init(TlltScaleClass *klass)
 }
 
 static void
-tllt_scale_init(G_GNUC_UNUSED TlltScale *self)
-{}
+tllt_scale_init(TLLT_UNUSED TlltScale *self)
+{
+#ifdef TLLT_WITH_WIRINGPI
+	pinMode(self->gpio_pin, OUTPUT);
+#endif
+}
 
 TlltScale *
 tllt_scale_new(const unsigned char gpio_pin)

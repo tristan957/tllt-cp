@@ -323,13 +323,8 @@ tllt_cp_window_init(TlltCpWindow *self)
 
 	priv->client = tllt_cp_client_new_from_environment();
 
-	const gchar *file_name = g_getenv("TLLT_CP_CONFIG_FILE_NAME");
-	if (file_name == NULL) {
-		g_error("No config file name set");
-	}
-
 	g_autoptr(GError) err = NULL;
-	priv->toaster		  = tllt_toaster_new_from_file(file_name, &err);
+	priv->toaster		  = tllt_toaster_new_from_config_file(&err);
 	if (err != NULL) {
 		g_error("%s", err->message);
 	}

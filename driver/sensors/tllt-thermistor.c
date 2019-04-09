@@ -2,7 +2,11 @@
 
 #include <glib-object.h>
 #include <glib/gi18n.h>
+#ifdef TLLT_WITH_WIRINGPI
+#	include <wiringPi.h>
+#endif
 
+#include "tllt-config.h"
 #include "tllt-sensor.h"
 #include "tllt-thermistor.h"
 
@@ -17,12 +21,20 @@ typedef enum TlltThermistorProps
 static GParamSpec *obj_properties[N_PROPS];
 
 static void
-tllt_thermistor_off(G_GNUC_UNUSED TlltThermistor *self)
-{}
+tllt_thermistor_off(TLLT_UNUSED TlltThermistor *self)
+{
+#ifdef TLLT_WITH_WIRINGPI
+	digitalWrite(self->gpio_pin, LOW);
+#endif
+}
 
 static void
-tllt_thermistor_on(G_GNUC_UNUSED TlltThermistor *self)
-{}
+tllt_thermistor_on(TLLT_UNUSED TlltThermistor *self)
+{
+#ifdef TLLT_WITH_WIRINGPI
+	digitalWrite(self->gpio_pin, HIGH);
+#endif
+}
 
 static double
 tllt_thermistor_read(G_GNUC_UNUSED TlltThermistor *self)
@@ -89,8 +101,12 @@ tllt_thermistor_class_init(TlltThermistorClass *klass)
 }
 
 static void
-tllt_thermistor_init(G_GNUC_UNUSED TlltThermistor *self)
-{}
+tllt_thermistor_init(TLLT_UNUSED TlltThermistor *self)
+{
+#ifdef TLLT_WITH_WIRINGPI
+	pinMode(self->gpio_pin, OUTPUT);
+#endif
+}
 
 TlltThermistor *
 tllt_thermistor_new(const unsigned char gpio_pin)

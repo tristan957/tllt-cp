@@ -2,9 +2,13 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 #include <json-glib/json-glib.h>
+#include <wiringPi.h>
 
 #include "components/tllt-heating-element.h"
 #include "sensors/tllt-thermistor.h"
+#include "tllt-config.h"
+#include "tllt-error.h"
+#include "tllt-powerable.h"
 #include "tllt-toaster.h"
 
 typedef struct TlltToasterStartArgs
@@ -138,6 +142,10 @@ tllt_toaster_class_init(TlltToasterClass *klass)
 	obj_signals[SIGNAL_STOPPED] =
 		g_signal_new("stopped", G_TYPE_FROM_CLASS(klass), G_SIGNAL_RUN_LAST, 0, NULL, NULL, NULL,
 					 G_TYPE_NONE, 0);
+
+#ifdef TLLT_WITH_WIRINGPI
+	wiringPiSetupGpio();
+#endif
 }
 
 static void
@@ -149,12 +157,17 @@ tllt_toaster_init(TlltToaster *self)
 }
 
 TlltToaster *
-tllt_toaster_new_from_file(const gchar *file_name, GError **err)
+tllt_toaster_new_from_config_file(GError **err)
 {
-	g_return_val_if_fail(err == NULL || *err == NULL || file_name == NULL, NULL);
+	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
+
+	const gchar *file_path = g_getenv("TLLT_TOASTER_CONFIG_FILE_PATH");
+	if (file_path == NULL) {
+		g_set_error(err, PACKAGE_DOMAIN, ERROR_ENV, "No config file path set");
+	}
 
 	char *buffer;
-	if (!g_file_get_contents(file_name, &buffer, NULL, err)) {
+	if (!g_file_get_contents(file_path, &buffer, NULL, err)) {
 		return NULL;
 	}
 
@@ -201,9 +214,11 @@ run_toaster(gpointer user_data)
 	g_timer_reset(priv->timer);
 	g_object_unref(priv->cancellable);
 
-	g_signal_emit(args->toaster, obj_signals[SIGNAL_STOPPED], 0);
+	tllt_powerable_off(TLLT_POWERABLE(priv->top_heating_element));
+	tllt_powerable_off(TLLT_POWERABLE(priv->bottom_heating_element));
+	tllt_powerable_off(TLLT_POWERABLE(priv->thermistor));
 
-	tllt_sensor_off(TLLT_SENSOR(priv->thermistor));
+	g_signal_emit(args->toaster, obj_signals[SIGNAL_STOPPED], 0);
 
 	g_object_unref(args->toaster);
 	g_free(args);
@@ -228,7 +243,9 @@ tllt_toaster_start_with_time(TlltToaster *self, const unsigned int minutes,
 	args->user_data		= user_data;
 	args->toaster		= self;
 
-	tllt_sensor_on(TLLT_SENSOR(priv->thermistor));
+	tllt_powerable_on(TLLT_POWERABLE(priv->top_heating_element));
+	tllt_powerable_on(TLLT_POWERABLE(priv->bottom_heating_element));
+	tllt_powerable_on(TLLT_POWERABLE(priv->thermistor));
 
 	g_timer_start(priv->timer);
 	g_timeout_add(40, run_toaster, args);

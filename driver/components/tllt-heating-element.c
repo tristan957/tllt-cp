@@ -2,7 +2,11 @@
 
 #include <glib-object.h>
 #include <glib/gi18n.h>
+#ifdef TLLT_WITH_WIRINGPI
+#	include <wiringPi.h>
+#endif
 
+#include "tllt-config.h"
 #include "tllt-heating-element.h"
 #include "tllt-powerable.h"
 
@@ -21,12 +25,20 @@ typedef enum TlltHeatingElementProps
 static GParamSpec *obj_properties[N_PROPS];
 
 static void
-tllt_heating_element_off(G_GNUC_UNUSED TlltHeatingElement *self)
-{}
+tllt_heating_element_off(TLLT_UNUSED TlltHeatingElement *self)
+{
+#ifdef TLLT_WITH_WIRINGPI
+	digitalWrite(self->gpio_pin, LOW);
+#endif
+}
 
 static void
-tllt_heating_element_on(G_GNUC_UNUSED TlltHeatingElement *self)
-{}
+tllt_heating_element_on(TLLT_UNUSED TlltHeatingElement *self)
+{
+#ifdef TLLT_WITH_WIRINGPI
+	digitalWrite(self->gpio_pin, HIGH);
+#endif
+}
 
 static void
 tllt_heating_element_powerable_init(TlltPowerableInterface *iface)
@@ -84,8 +96,12 @@ tllt_heating_element_class_init(G_GNUC_UNUSED TlltHeatingElementClass *klass)
 }
 
 static void
-tllt_heating_element_init(G_GNUC_UNUSED TlltHeatingElement *self)
-{}
+tllt_heating_element_init(TLLT_UNUSED TlltHeatingElement *self)
+{
+#ifdef TLLT_WITH_WIRINGPI
+	pinMode(self->gpio_pin, OUTPUT);
+#endif
+}
 
 TlltHeatingElement *
 tllt_heating_element_new(const unsigned char gpio_pin)

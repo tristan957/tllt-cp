@@ -1,4 +1,5 @@
 #include <glib-object.h>
+#include <glib/gi18n.h>
 
 #include "tllt-powerable.h"
 
@@ -7,7 +8,10 @@ G_DEFINE_INTERFACE(TlltPowerable, tllt_powerable, G_TYPE_OBJECT)
 static void
 tllt_powerable_default_init(TlltPowerableInterface *iface)
 {
-	iface->running = FALSE;
+	g_object_interface_install_property(
+		iface, g_param_spec_boolean("running", _("Running"),
+									_("Whether or not the powerable object is running"), FALSE,
+									G_PARAM_READWRITE));
 }
 
 void
