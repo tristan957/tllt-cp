@@ -55,13 +55,22 @@ tllt_thermistor_on(TlltThermistor *self)
 #endif
 }
 
+static gboolean
+tllt_thermistor_is_running(TlltThermistor *self)
+{
+	TlltThermistorPrivate *priv = tllt_thermistor_get_instance_private(self);
+
+	return priv->running;
+}
+
 static void
 tllt_thermistor_powerable_init(TlltPowerableInterface *iface)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-	iface->off = tllt_thermistor_off;
-	iface->on  = tllt_thermistor_on;
+	iface->off		  = tllt_thermistor_off;
+	iface->on		  = tllt_thermistor_on;
+	iface->is_running = tllt_thermistor_is_running;
 #pragma GCC diagnostic pop
 }
 

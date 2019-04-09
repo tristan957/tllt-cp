@@ -55,13 +55,22 @@ tllt_heating_element_on(TlltHeatingElement *self)
 #endif
 }
 
+static gboolean
+tllt_heating_element_is_running(TlltHeatingElement *self)
+{
+	TlltHeatingElementPrivate *priv = tllt_heating_element_get_instance_private(self);
+
+	return priv->running;
+}
+
 static void
 tllt_heating_element_powerable_init(TlltPowerableInterface *iface)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-	iface->off = tllt_heating_element_off;
-	iface->on  = tllt_heating_element_on;
+	iface->off		  = tllt_heating_element_off;
+	iface->on		  = tllt_heating_element_on;
+	iface->is_running = tllt_heating_element_is_running;
 #pragma GCC diagnostic pop
 }
 

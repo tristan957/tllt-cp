@@ -54,13 +54,22 @@ tllt_scale_on(TlltScale *self)
 #endif
 }
 
+static gboolean
+tllt_scale_is_running(TlltScale *self)
+{
+	TlltScalePrivate *priv = tllt_scale_get_instance_private(self);
+
+	return priv->running;
+}
+
 static void
 tllt_scale_powerable_init(TlltPowerableInterface *iface)
 {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wincompatible-pointer-types"
-	iface->off = tllt_scale_off;
-	iface->on  = tllt_scale_on;
+	iface->off		  = tllt_scale_off;
+	iface->on		  = tllt_scale_on;
+	iface->is_running = tllt_scale_is_running;
 #pragma GCC diagnostic pop
 }
 
