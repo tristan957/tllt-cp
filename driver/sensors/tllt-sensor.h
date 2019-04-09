@@ -11,8 +11,6 @@ struct _TlltSensorClass
 {
 	GObjectClass parent_class;
 
-	void (*on)(TlltSensor *self);
-	void (*off)(TlltSensor *self);
 	double (*read)(TlltSensor *self);
 };
 

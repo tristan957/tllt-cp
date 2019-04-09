@@ -24,6 +24,7 @@ sources = [
 	'sensors/tllt-scale.c',
 	'sensors/tllt-sensor.c',
 	'sensors/tllt-thermistor.c',
+	'tllt-driver.c',
 	'tllt-powerable.c',
 	'tllt-toaster.c',
 ]
@@ -33,6 +34,7 @@ public_headers = [
 	'sensors/tllt-scale.h',
 	'sensors/tllt-sensor.h',
 	'sensors/tllt-thermistor.h',
+	'tllt-driver.h',
 	'tllt-powerable.h',
 	'tllt-toaster.h',
 ]
