@@ -13,7 +13,7 @@ tasks:
   - setup: |
       git clone git://git.drogon.net/wiringPi
       cd wiringPi/wiringPi
-      make install
+      sudo make install
       cd ../../tllt-cp
       CC=gcc meson build
       meson configure -Dwerror=true -Dwith-wiringPi=true build
