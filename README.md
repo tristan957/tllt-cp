@@ -35,8 +35,37 @@ To initalize the build environment, run
 CC={compiler of choice} meson build
 ```
 
+## Environment Variables
+
+* `TLLT_CP_SERVER` - URL of the server
+* `TLLT_CP_TOASTER_CONFIG_FILE_PATH` - file path of the toaster config
+
+## Driver Config File
+
+JSON file like the following
+
+```json
+{
+    "top-heating-element": {
+        "gpio-pin": 1
+    },
+    "bottom-heating-element": {
+        "gpio-pin": 2
+    },
+    "thermistor": {
+        "gpio-pin": 3
+    }
+}
+```
+
 ## Building
 
 ```text
 ninja -C build
+```
+
+## Testing
+
+```text
+ninja test -C build
 ```
