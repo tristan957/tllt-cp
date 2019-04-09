@@ -35,9 +35,11 @@ tllt_powerable_on(TlltPowerable *self)
 }
 
 gboolean
-tllt_powerable_running(TlltPowerable *self)
+tllt_powerable_is_running(TlltPowerable *self)
 {
-	TlltPowerableInterface *iface = TLLT_POWERABLE_GET_IFACE(self);
+	g_return_val_if_fail(TLLT_IS_POWERABLE(self), FALSE);
 
-	return iface->running;
+	TlltPowerableInterface *iface = TLLT_POWERABLE_GET_IFACE(self);
+	g_return_val_if_fail(iface->is_running != NULL, FALSE);
+	return iface->is_running(self);
 }
