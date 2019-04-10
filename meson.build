@@ -25,9 +25,9 @@ add_project_arguments(c_args, language: 'c')
 i18n = import('i18n')
 gnome = import('gnome')
 
-libgio_dep = dependency('gio-2.0', version: '>= 2.56')
-libcurl_dep = dependency('libcurl', version: '>= 7.61')
-libjson_glib_dep = dependency('json-glib-1.0', version: '>= 1.4.2')
+libgio_dep = dependency('gio-2.0', version: '>= 2.50')
+libcurl_dep = dependency('libcurl', version: '>= 7.52')
+libjson_glib_dep = dependency('json-glib-1.0', version: '>= 1.2')
 libgtk_dep = dependency('gtk+-3.0', version: '>= 3.22')
 
 subdir('data')
