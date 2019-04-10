@@ -1,11 +1,6 @@
 config_h = configuration_data({
 	'PACKAGE_DOMAIN': '2',
 })
-if get_option('with-wiringPi')
-	config_h.set('TLLT_UNUSED', true)
-else
-	config_h.set('TLLT_UNUSED', 'G_GNUC_UNUSED')
-endif
 if get_option('buildtype') == 'release'
 	config_h.set('G_DISABLE_ASSERT', true)
 	config_h.set('G_DISABLE_CHECKS', true)
@@ -13,11 +8,6 @@ if get_option('buildtype') == 'release'
 elif get_option('buildtype').startswith('debug')
 	config_h.set('G_ENABLE_DEBUG', true)
 endif
-
-configure_file(
-	output: 'tllt-config.h',
-	configuration: config_h,
-)
 
 sources = [
 	'components/tllt-heating-element.c',
@@ -51,11 +41,20 @@ dependencies = [
 	libjson_glib_dep,
 ]
 
-if get_option('with-wiringPi')
+libwiringPi_dep = cc.find_library('wiringPi')
+
+if libwiringPi_dep.found()
+	config_h.set('TLLT_UNUSED', true)
 	c_args += '-DTLLT_WITH_WIRINGPI'
-	libwiringPi_dep = cc.find_library('wiringPi', required: true)
 	dependencies += libwiringPi_dep
+else
+	config_h.set('TLLT_UNUSED', 'G_GNUC_UNUSED')
 endif
+
+configure_file(
+	output: 'tllt-config.h',
+	configuration: config_h,
+)
 
 libtllt = library(
 	'tllt',

@@ -1,5 +1,2 @@
 option('with-docs', type: 'boolean', value: false)
-option('with-wiringPi', type: 'boolean', value: false,
-	description: '''Build libtllt with wiringPi support. If false, dummy values
-		are returned''')
 option('with-tests', type: 'boolean', value: true, description: 'Build with tests')
