@@ -35,12 +35,19 @@ To initalize the build environment, run
 CC={compiler of choice} meson build
 ```
 
+### WiringPi
+
+By default, the driver builds without support for WiringPi. To enable support,
+run `meson configure -Dwith-wiringPi=true build`. You will also need to make sure
+that WiringPi is installed on your system. Instructions for manually building
+it, can be found on the GitHub mirror.
+
 ## Environment Variables
 
 * `TLLT_CP_SERVER` - URL of the server
 * `TLLT_TOASTER_CONFIG_FILE_PATH` - file path of the toaster config
 
-## Driver Config File
+## Toaster Config File
 
 JSON file like the following
 
