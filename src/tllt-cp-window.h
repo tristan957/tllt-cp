@@ -10,6 +10,6 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE(TlltCpWindow, tllt_cp_window, TLLT_CP, WINDOW, GtkApplicationWindow)
 
 TlltCpWindow *tllt_cp_window_new(GApplication *app);
-void tllt_cp_window_add_user(TlltCpWindow *self, const TlltCpUser *user);
+void tllt_cp_window_add_user(TlltCpWindow *self, TlltCpUser *user);
 
 G_END_DECLS

@@ -17,8 +17,6 @@ G_DECLARE_FINAL_TYPE(TlltCpUser, tllt_cp_user, TLLT_CP, USER, GObject)
 struct _TlltCpUser
 {
 	GObject parent_instance;
-	gchar *name;
-	gchar *email;
 };
 
 TlltCpUser *tllt_cp_user_new(const gchar *name, const gchar *email, const guint user_id);
@@ -27,5 +25,8 @@ TlltCpUser *tllt_cp_user_authenticate(TlltCpClient *client, const char *email, c
 									  GError **err);
 TlltCpUser *tllt_cp_user_create(TlltCpClient *client, const char *name, const char *email,
 								const char *password, GError **err);
+unsigned int tllt_cp_user_get_id(TlltCpUser *self);
+char *tllt_cp_user_get_name(TlltCpUser *self);
+char *tllt_cp_user_get_email(TlltCpUser *self);
 
 G_END_DECLS

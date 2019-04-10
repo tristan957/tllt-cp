@@ -46,7 +46,7 @@ tllt_cp_window_user_tile_clicked(GtkButton *widget, gpointer flow_box)
 }
 
 void
-tllt_cp_window_add_user(TlltCpWindow *self, const TlltCpUser *user)
+tllt_cp_window_add_user(TlltCpWindow *self, TlltCpUser *user)
 {
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
@@ -63,7 +63,8 @@ tllt_cp_window_add_user(TlltCpWindow *self, const TlltCpUser *user)
 
 	gtk_box_pack_start(GTK_BOX(internal_box),
 					   gtk_image_new_from_icon_name("user-info", GTK_ICON_SIZE_DND), TRUE, TRUE, 0);
-	gtk_box_pack_end(GTK_BOX(internal_box), gtk_label_new(user->name), TRUE, TRUE, 0);
+	gtk_box_pack_end(GTK_BOX(internal_box), gtk_label_new(tllt_cp_user_get_name(user)), TRUE, TRUE,
+					 0);
 	gtk_container_add(GTK_CONTAINER(user_tile), internal_box);
 	gtk_container_add(GTK_CONTAINER(flow_box_child), user_tile);
 	gtk_container_add(GTK_CONTAINER(priv->user_profiles_flow_box), flow_box_child);
@@ -97,7 +98,7 @@ on_logout_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 	GtkWidget *dialog = gtk_message_dialog_new(
 		GTK_WINDOW(user_data), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
 		GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, _("Are you sure you would like to log %s out?"),
-		priv->selected_user->name);
+		tllt_cp_user_get_name(priv->selected_user));
 	GtkWidget *button	= gtk_dialog_get_widget_for_response(GTK_DIALOG(dialog), GTK_RESPONSE_YES);
 	GtkStyleContext *ctx = gtk_widget_get_style_context(button);
 	gtk_style_context_add_class(ctx, GTK_STYLE_CLASS_DESTRUCTIVE_ACTION);

@@ -12,7 +12,9 @@
 
 typedef struct TlltCpUserPrivate
 {
-	unsigned int user_id;
+	unsigned int id;
+	char *name;
+	char *email;
 } TlltCpUserPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE(TlltCpUser, tllt_cp_user, G_TYPE_OBJECT)
@@ -35,13 +37,13 @@ tllt_cp_user_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpec *
 
 	switch (prop_id) {
 	case PROP_NAME:
-		g_value_set_string(val, self->name);
+		g_value_set_string(val, priv->name);
 		break;
 	case PROP_EMAIL:
-		g_value_set_string(val, self->email);
+		g_value_set_string(val, priv->email);
 		break;
 	case PROP_USER_ID:
-		g_value_set_uint(val, priv->user_id);
+		g_value_set_uint(val, priv->id);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -57,15 +59,15 @@ tllt_cp_user_set_property(GObject *obj, guint prop_id, const GValue *val, GParam
 
 	switch (prop_id) {
 	case PROP_NAME:
-		g_free(self->name);
-		self->name = g_value_dup_string(val);
+		g_free(priv->name);
+		priv->name = g_value_dup_string(val);
 		break;
 	case PROP_EMAIL:
-		g_free(self->email);
-		self->email = g_value_dup_string(val);
+		g_free(priv->email);
+		priv->email = g_value_dup_string(val);
 		break;
 	case PROP_USER_ID:
-		priv->user_id = g_value_get_uint(val);
+		priv->id = g_value_get_uint(val);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -81,13 +83,15 @@ tllt_cp_user_class_init(TlltCpUserClass *klass)
 	obj_class->get_property = tllt_cp_user_get_property;
 	obj_class->set_property = tllt_cp_user_set_property;
 
-	obj_properties[PROP_NAME]  = g_param_spec_string("name", _("Name"), _("Name of the user"), NULL,
-													 G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
-	obj_properties[PROP_EMAIL] = g_param_spec_string("email", _("Email"), _("Email of the user"),
-													 NULL, G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+	obj_properties[PROP_NAME] =
+		g_param_spec_string("name", _("Name"), _("Name of the user"), NULL,
+							G_PARAM_PRIVATE | G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
+	obj_properties[PROP_EMAIL] =
+		g_param_spec_string("email", _("Email"), _("Email of the user"), NULL,
+							G_PARAM_PRIVATE | G_PARAM_CONSTRUCT | G_PARAM_READWRITE);
 	obj_properties[PROP_USER_ID] =
-		g_param_spec_uint("user-id", _("User ID"), _("ID of the user"), 0, UINT_MAX, 0,
-						  G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+		g_param_spec_uint("id", _("User ID"), _("ID of the user"), 0, UINT_MAX, 0,
+						  G_PARAM_PRIVATE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
@@ -152,4 +156,28 @@ tllt_cp_user_create(TlltCpClient *client, const char *name, const char *email, c
 	}
 
 	return TLLT_CP_USER(obj);
+}
+
+unsigned int
+tllt_cp_user_get_id(TlltCpUser *self)
+{
+	TlltCpUserPrivate *priv = tllt_cp_user_get_instance_private(self);
+
+	return priv->id;
+}
+
+char *
+tllt_cp_user_get_email(TlltCpUser *self)
+{
+	TlltCpUserPrivate *priv = tllt_cp_user_get_instance_private(self);
+
+	return priv->email;
+}
+
+char *
+tllt_cp_user_get_name(TlltCpUser *self)
+{
+	TlltCpUserPrivate *priv = tllt_cp_user_get_instance_private(self);
+
+	return priv->name;
 }

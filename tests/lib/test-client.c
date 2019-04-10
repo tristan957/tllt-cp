@@ -15,7 +15,7 @@ main(G_GNUC_UNUSED int argc, G_GNUC_UNUSED char *argv[])
 	if (err != NULL) {
 		g_printerr("%s\n", err->message);
 	} else {
-		g_print("%s\n", user->name);
+		g_print("%s\n", tllt_cp_user_get_name(user));
 	}
 
 	return 0;
