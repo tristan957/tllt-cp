@@ -60,7 +60,9 @@ JSON file like the following
         "gpio-pin": 2
     },
     "thermistor": {
-        "gpio-pin": 3
+        "spi-chan": 0,
+        "base-pin": 100,
+        "number-of-pins": 8
     }
 }
 ```
