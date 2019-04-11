@@ -8,6 +8,7 @@ dependencies = [
 ]
 
 if libwiringPi_dep.found()
+	c_args += '-DTLLT_WITH_WIRINGPI'
 	dependencies += libwiringPi_dep
 endif
 
