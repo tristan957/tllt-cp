@@ -25,7 +25,7 @@ typedef enum TlltThermistorProps
 static GParamSpec *obj_properties[N_PROPS];
 
 static double
-tllt_thermistor_read(TlltThermistor *self)
+tllt_thermistor_read(TLLT_UNUSED TlltThermistor *self)
 {
 	double value = 0;
 #ifdef TLLT_WITH_WIRINGPI
