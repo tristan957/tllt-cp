@@ -23,8 +23,8 @@ main(G_GNUC_UNUSED int argc, G_GNUC_UNUSED char *argv[])
 			result[i] = analogRead(BASE_PIN + i);
 		}
 
-		g_print("%4d, %4d, %4d, %4d, %4d, %4d, %4d, %4d\n", result[0], result[1], result[2],
-				result[3], result[4], result[5], result[6], result[7]);
+		g_print("%4d %4d %4d %4d %4d %4d %4d %4d\n", result[0], result[1], result[2], result[3],
+				result[4], result[5], result[6], result[7]);
 		delay(500);
 	} while (FOREVER);
 
