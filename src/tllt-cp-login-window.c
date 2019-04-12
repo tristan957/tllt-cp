@@ -22,8 +22,9 @@ typedef struct TlltCpLoginWindowPrivate
 	GtkEntry *new_user_email_entry;
 	GtkEntry *new_user_password_entry;
 	GtkEntry *new_user_re_password_entry;
-	GtkInfoBar *info_bar;
-	GtkLabel *info_bar_label;
+	GtkRevealer *login_info_revealer;
+	GtkRevealer *new_user_info_revealer;
+	GtkLabel *new_user_info_label;
 
 	TlltCpClient *client;
 } TlltCpLoginWindowPrivate;
@@ -43,15 +44,18 @@ login_user(TlltCpLoginWindow *self)
 {
 	TlltCpLoginWindowPrivate *priv = tllt_cp_login_window_get_instance_private(self);
 
+	if (gtk_revealer_get_child_revealed(priv->login_info_revealer)) {
+		gtk_revealer_set_reveal_child(priv->login_info_revealer, FALSE);
+	}
+
 	const char *email	= gtk_entry_get_text(priv->login_email_entry);
 	const char *password = gtk_entry_get_text(priv->login_password_entry);
 
-	GError *err		 = NULL;
-	TlltCpUser *user = tllt_cp_user_authenticate(priv->client, email, password, &err);
+	g_autoptr(GError) err = NULL;
+	TlltCpUser *user	  = tllt_cp_user_authenticate(priv->client, email, password, &err);
 	if (err != NULL) {
-		gtk_label_set_label(priv->info_bar_label, err->message);
-		if (!gtk_info_bar_get_revealed(priv->info_bar)) {
-			gtk_info_bar_set_revealed(priv->info_bar, TRUE);
+		if (!gtk_revealer_get_child_revealed(priv->login_info_revealer)) {
+			gtk_revealer_set_reveal_child(priv->login_info_revealer, TRUE);
 		}
 
 		return;
@@ -66,24 +70,55 @@ create_user(TlltCpLoginWindow *self)
 {
 	TlltCpLoginWindowPrivate *priv = tllt_cp_login_window_get_instance_private(self);
 
-	const char *name		= gtk_entry_get_text(priv->new_user_name_entry);
-	const char *email		= gtk_entry_get_text(priv->new_user_email_entry);
+	if (gtk_revealer_get_child_revealed(priv->new_user_info_revealer)) {
+		gtk_revealer_set_reveal_child(priv->new_user_info_revealer, FALSE);
+	}
+
+	/**
+	 * GtkEntry expects its internal string to not be modified, so we duplicate it and strip the
+	 * whitespace
+	 */
+	g_autofree char *name   = g_strstrip(g_strdup(gtk_entry_get_text(priv->new_user_name_entry)));
+	g_autofree char *email  = g_strstrip(g_strdup(gtk_entry_get_text(priv->new_user_email_entry)));
 	const char *password	= gtk_entry_get_text(priv->new_user_password_entry);
 	const char *re_password = gtk_entry_get_text(priv->new_user_re_password_entry);
 
-	if (strcmp(password, re_password) != 0) {
-		gtk_label_set_label(priv->info_bar_label, "Passwords do not match");
-		if (!gtk_info_bar_get_revealed(priv->info_bar)) {
-			gtk_info_bar_set_revealed(priv->info_bar, TRUE);
+	if (strlen(name) == 0) {
+		gtk_label_set_label(priv->new_user_info_label, "Name cannot be empty");
+		if (!gtk_revealer_get_child_revealed(priv->new_user_info_revealer)) {
+			gtk_revealer_set_reveal_child(priv->new_user_info_revealer, TRUE);
 		}
+
+		return;
 	}
 
-	GError *err		 = NULL;
-	TlltCpUser *user = tllt_cp_user_create(priv->client, name, email, password, &err);
+	if (strlen(email) == 0) {
+		// TODO: regex check for valid email?
+		gtk_label_set_label(priv->new_user_info_label, "Email cannot be empty");
+		if (!gtk_revealer_get_child_revealed(priv->new_user_info_revealer)) {
+			gtk_revealer_set_reveal_child(priv->new_user_info_revealer, TRUE);
+		}
+
+		return;
+	}
+
+	if (g_strcmp0(password, re_password) != 0) {
+		gtk_label_set_label(priv->new_user_info_label, "Passwords do not match");
+		if (!gtk_revealer_get_child_revealed(priv->new_user_info_revealer)) {
+			gtk_revealer_set_reveal_child(priv->new_user_info_revealer, TRUE);
+		}
+
+		return;
+	}
+
+	g_autoptr(GError) err = NULL;
+	TlltCpUser *user	  = tllt_cp_user_create(priv->client, name, email, password, &err);
 	if (err != NULL) {
-		gtk_label_set_label(priv->info_bar_label, err->message);
-		if (!gtk_info_bar_get_revealed(priv->info_bar)) {
-			gtk_info_bar_set_revealed(priv->info_bar, TRUE);
+		g_autoptr(GString) message = g_string_new(NULL);
+		g_string_printf(message, "Error creating new user: %s", err->message);
+		gtk_label_set_label(priv->new_user_info_label, message->str);
+		if (!gtk_revealer_get_child_revealed(priv->new_user_info_revealer)) {
+			gtk_revealer_set_reveal_child(priv->new_user_info_revealer, TRUE);
 		}
 
 		return;
@@ -223,8 +258,10 @@ tllt_cp_login_window_class_init(TlltCpLoginWindowClass *klass)
 												 new_user_password_entry);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow,
 												 new_user_re_password_entry);
-	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow, info_bar);
-	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow, info_bar_label);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow, login_info_revealer);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow,
+												 new_user_info_revealer);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpLoginWindow, new_user_info_label);
 	gtk_widget_class_bind_template_callback(wid_class, on_new_user_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_login_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_cancel_button_clicked);

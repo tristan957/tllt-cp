@@ -62,60 +62,6 @@ Author: Tristan Partin
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkInfoBar" id="info_bar">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="message_type">error</property>
-            <property name="show_close_button">True</property>
-            <property name="revealed">False</property>
-            <signal name="response" handler="on_info_bar_response" swapped="no"/>
-            <child internal-child="action_area">
-              <object class="GtkButtonBox">
-                <property name="can_focus">False</property>
-                <property name="no_show_all">True</property>
-                <property name="spacing">6</property>
-                <property name="layout_style">end</property>
-                <child>
-                  <placeholder/>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child internal-child="content_area">
-              <object class="GtkBox">
-                <property name="can_focus">False</property>
-                <property name="spacing">16</property>
-                <child>
-                  <object class="GtkLabel" id="info_bar_label">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="xalign">0</property>
-                  </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkStack" id="login_stack">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
@@ -197,6 +143,29 @@ Author: Tristan Partin
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkRevealer" id="login_info_revealer">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="transition_type">crossfade</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Invalid email or password</property>
+                        <property name="xalign">1</property>
+                        <attributes>
+                          <attribute name="foreground" value="#efef29292929"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkButtonBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -237,7 +206,7 @@ Author: Tristan Partin
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
@@ -365,6 +334,28 @@ Author: Tristan Partin
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkRevealer" id="new_user_info_revealer">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="transition_type">none</property>
+                    <child>
+                      <object class="GtkLabel" id="new_user_info_label">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="xalign">1</property>
+                        <attributes>
+                          <attribute name="foreground" value="#efef29292929"/>
+                        </attributes>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkButtonBox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
@@ -405,7 +396,7 @@ Author: Tristan Partin
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
