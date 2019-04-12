@@ -1,2 +1,3 @@
 option('with-docs', type: 'boolean', value: false)
 option('with-tests', type: 'boolean', value: true, description: 'Build with tests')
+option('with-wiringPi', type: 'boolean', value: true, description: 'Override building with libwiringPi')

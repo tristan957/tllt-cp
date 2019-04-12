@@ -43,7 +43,7 @@ dependencies = [
 
 libwiringPi_dep = cc.find_library('wiringPi')
 
-if libwiringPi_dep.found()
+if libwiringPi_dep.found() and get_option('with-wiringPi')
 	config_h.set('TLLT_UNUSED', true)
 	c_args += '-DTLLT_WITH_WIRINGPI'
 	dependencies += libwiringPi_dep
