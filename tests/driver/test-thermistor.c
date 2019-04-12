@@ -10,6 +10,7 @@
 #define BASE_PIN 100
 #define NUM_OF_PINS 8
 #define FOREVER 0
+#define DELAY 500
 
 int
 main(G_GNUC_UNUSED int argc, G_GNUC_UNUSED char *argv[])
@@ -25,7 +26,7 @@ main(G_GNUC_UNUSED int argc, G_GNUC_UNUSED char *argv[])
 
 		g_print("%4d %4d %4d %4d %4d %4d %4d %4d\n", result[0], result[1], result[2], result[3],
 				result[4], result[5], result[6], result[7]);
-		delay(500);
+		delay(DELAY);
 	} while (FOREVER);
 
 	return 0;
