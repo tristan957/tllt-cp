@@ -171,14 +171,6 @@ on_new_user_re_password_entry_activate(G_GNUC_UNUSED GtkEntry *widget, gpointer 
 	create_user(TLLT_CP_LOGIN_WINDOW(user_data));
 }
 
-static void
-on_info_bar_response(GtkInfoBar *widget, gint response_id, G_GNUC_UNUSED gpointer user_data)
-{
-	if (gtk_info_bar_get_revealed(widget) && response_id == GTK_RESPONSE_CLOSE) {
-		gtk_info_bar_set_revealed(widget, FALSE);
-	}
-}
-
 TlltCpLoginWindow *
 tllt_cp_login_window_new(const GtkWindow *parent, TlltCpClient *client)
 {
@@ -268,7 +260,6 @@ tllt_cp_login_window_class_init(TlltCpLoginWindowClass *klass)
 	gtk_widget_class_bind_template_callback(wid_class, on_login_password_entry_activate);
 	gtk_widget_class_bind_template_callback(wid_class, on_new_user_re_password_entry_activate);
 	gtk_widget_class_bind_template_callback(wid_class, on_create_button_clicked);
-	gtk_widget_class_bind_template_callback(wid_class, on_info_bar_response);
 }
 
 static void
