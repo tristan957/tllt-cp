@@ -27,15 +27,14 @@ static GParamSpec *obj_properties[N_PROPS];
 static double
 tllt_thermistor_read(TLLT_UNUSED TlltThermistor *self)
 {
-	double value = 0;
+	double value = 1024;
 #ifdef TLLT_WITH_WIRINGPI
 	g_autofree int *result = g_malloc(self->num_pins * sizeof(int));
 	for (unsigned int i = 0; i < self->num_pins; i++) {
 		result[i] = analogRead(self->base_pin + i);
-		g_print("%d\n", result[i]);
 	}
-#else
-	value = 400;
+
+	value = result[0];
 #endif
 
 	return value;

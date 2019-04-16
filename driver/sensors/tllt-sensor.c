@@ -19,5 +19,7 @@ tllt_sensor_read(TlltSensor *self)
 {
 	TlltSensorClass *klass = TLLT_SENSOR_GET_CLASS(self);
 
+	g_return_val_if_fail(klass->read != NULL, 0);
+
 	return klass->read(self);
 }

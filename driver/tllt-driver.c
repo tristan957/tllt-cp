@@ -8,6 +8,6 @@ void
 tllt_driver_init(void)
 {
 #ifdef TLLT_WITH_WIRINGPI
-	wiringPiSetup();
+	wiringPiSetupGpio();
 #endif
 }

@@ -7,6 +7,7 @@
 #include <glib-object.h>
 
 #include "tllt-cp-client.h"
+#include "tllt-cp-recipe.h"
 #include "tllt-cp-user.h"
 
 G_BEGIN_DECLS
@@ -19,7 +20,6 @@ struct _TlltCpUser
 	GObject parent_instance;
 };
 
-TlltCpUser *tllt_cp_user_new(const gchar *name, const gchar *email, const guint user_id);
 TlltCpUser *tllt_cp_user_get_by_id(TlltCpClient *client, unsigned int id, GError **err);
 TlltCpUser *tllt_cp_user_authenticate(TlltCpClient *client, const char *email, const char *password,
 									  GError **err);
@@ -28,5 +28,9 @@ TlltCpUser *tllt_cp_user_create(TlltCpClient *client, const char *name, const ch
 unsigned int tllt_cp_user_get_id(TlltCpUser *self);
 char *tllt_cp_user_get_name(TlltCpUser *self);
 char *tllt_cp_user_get_email(TlltCpUser *self);
+GList *tllt_cp_user_get_recipes(TlltCpUser *self);
+TlltCpRecipe *tllt_cp_user_add_recipe(TlltCpUser *self, TlltCpClient *client, const char *name,
+									  const TlltCpRecipeType type, GError **err);
+void tllt_cp_user_remove_recipe(TlltCpUser *self, TlltCpRecipe *recipe, GError **err);
 
 G_END_DECLS

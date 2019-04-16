@@ -144,10 +144,6 @@ tllt_toaster_class_init(TlltToasterClass *klass)
 	obj_signals[SIGNAL_STOPPED] =
 		g_signal_new("stopped", G_TYPE_FROM_CLASS(klass), G_SIGNAL_RUN_LAST, 0, NULL, NULL, NULL,
 					 G_TYPE_NONE, 0);
-
-#ifdef TLLT_WITH_WIRINGPI
-	wiringPiSetupGpio();
-#endif
 }
 
 static void
@@ -218,7 +214,6 @@ tllt_toaster_run(gpointer user_data)
 
 	tllt_powerable_off(TLLT_POWERABLE(priv->top_heating_element));
 	tllt_powerable_off(TLLT_POWERABLE(priv->bottom_heating_element));
-	tllt_powerable_off(TLLT_POWERABLE(priv->thermistor));
 
 	g_signal_emit(args->toaster, obj_signals[SIGNAL_STOPPED], 0);
 
@@ -247,7 +242,6 @@ tllt_toaster_start_with_time(TlltToaster *self, const unsigned int minutes,
 
 	tllt_powerable_on(TLLT_POWERABLE(priv->top_heating_element));
 	tllt_powerable_on(TLLT_POWERABLE(priv->bottom_heating_element));
-	tllt_powerable_on(TLLT_POWERABLE(priv->thermistor));
 
 	g_timer_start(priv->timer);
 	g_timeout_add(40, tllt_toaster_run, args);
