@@ -21,3 +21,13 @@ test_thermistor = executable(
 	dependencies: dependencies,
 	include_directories: include_directories('../../driver'),
 )
+
+test_heating_elements = executable(
+	'test-heating-elements',
+	[
+		'test-heating-elements.c'
+	],
+	c_args: c_args,
+	dependencies: dependencies,
+	include_directories: include_directories('../../driver'),
+)
