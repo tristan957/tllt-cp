@@ -12,7 +12,7 @@
 #include "tllt-cp-application.h"
 
 int
-main(int argc, char *argv[])
+main(int argc, const char *argv[])
 {
 	bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
