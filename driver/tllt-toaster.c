@@ -191,8 +191,6 @@ tllt_toaster_run(gpointer user_data)
 	TlltToasterStartArgs *args = user_data;
 	TlltToasterPrivate *priv   = tllt_toaster_get_instance_private(args->toaster);
 
-	g_object_ref(args->toaster);
-
 	const int delta = args->total_seconds - g_timer_elapsed(priv->timer, NULL);
 	if (delta > 0 && !g_cancellable_is_cancelled(priv->cancellable)) {
 		const double temp = tllt_sensor_read(TLLT_SENSOR(priv->thermistor));
@@ -244,6 +242,7 @@ tllt_toaster_start_with_time(TlltToaster *self, const unsigned int minutes,
 	tllt_powerable_on(TLLT_POWERABLE(priv->bottom_heating_element));
 
 	g_timer_start(priv->timer);
+	g_object_ref(args->toaster);
 	g_timeout_add(40, tllt_toaster_run, args);
 
 	g_signal_emit(self, obj_signals[SIGNAL_STARTED], 0);
