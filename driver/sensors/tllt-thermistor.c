@@ -66,10 +66,10 @@ tllt_thermistor_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpe
 
 	switch (prop_id) {
 	case PROP_SPI_CHAN:
-		g_value_set_uint(val, self->spi_chan);
+		g_value_set_int(val, self->spi_chan);
 		break;
 	case PROP_BASE_PIN:
-		g_value_set_uint(val, self->base_pin);
+		g_value_set_int(val, self->base_pin);
 		break;
 	case PROP_NUMBER_OF_PINS:
 		g_value_set_uint(val, self->num_pins);
@@ -87,10 +87,10 @@ tllt_thermistor_set_property(GObject *obj, guint prop_id, const GValue *val, GPa
 
 	switch (prop_id) {
 	case PROP_SPI_CHAN:
-		self->spi_chan = g_value_get_uint(val);
+		self->spi_chan = g_value_get_int(val);
 		break;
 	case PROP_BASE_PIN:
-		self->base_pin = g_value_get_uint(val);
+		self->base_pin = g_value_get_int(val);
 		break;
 	case PROP_NUMBER_OF_PINS:
 		self->num_pins = g_value_get_uint(val);
@@ -116,12 +116,12 @@ tllt_thermistor_class_init(TlltThermistorClass *klass)
 #pragma GCC diagnostic pop
 
 	obj_properties[PROP_SPI_CHAN] =
-		g_param_spec_uint("spi-chan", _("SPI Channel"), _("SPI channel for the thermistor"), 0, 1,
-						  0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+		g_param_spec_int("spi-chan", _("SPI Channel"), _("SPI channel for the thermistor"), 0, 1, 0,
+						 G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 	obj_properties[PROP_BASE_PIN] =
-		g_param_spec_uint("base-pin", _("Base Pin"),
-						  _("Base pin for the thermistor, keeping in mind this is a virtual pin"),
-						  0, UINT_MAX - 8, 100, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
+		g_param_spec_int("base-pin", _("Base Pin"),
+						 _("Base pin for the thermistor, keeping in mind this is a virtual pin"), 0,
+						 UINT_MAX - 8, 100, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 	obj_properties[PROP_NUMBER_OF_PINS] = g_param_spec_uint(
 		"number-of-pins", _("Number of Pins"), _("Number of virtual pins used by the thermistor"),
 		0, UINT_MAX, 8, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
@@ -138,8 +138,7 @@ tllt_thermistor_init(TLLT_UNUSED TlltThermistor *self)
 }
 
 TlltThermistor *
-tllt_thermistor_new(const unsigned int spi_chan, const unsigned int base_pin,
-					const unsigned int num_pins)
+tllt_thermistor_new(const int spi_chan, const int base_pin, const unsigned int num_pins)
 {
 	return g_object_new(TLLT_TYPE_THERMISTOR, "spi-chan", spi_chan, "base-pin", base_pin,
 						"number-of-pins", num_pins, NULL);
