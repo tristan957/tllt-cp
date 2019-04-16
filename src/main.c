@@ -1,8 +1,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "tllt-cp-config.h"
-
 // We have to set the domain here in order to avoid a macro redefinition
 #ifdef G_LOG_DOMAIN
 #	undef G_LOG_DOMAIN
@@ -10,6 +8,7 @@
 #endif
 
 #include "tllt-cp-application.h"
+#include "tllt-cp-config.h"
 
 int
 main(int argc, const char *argv[])
