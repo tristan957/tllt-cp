@@ -224,6 +224,18 @@ on_update_toaster_destroy(gpointer user_data)
 	g_free(args);
 }
 
+/**
+ * This is the function for controlling how the toaster will stay at a consistant temperature.
+ * It is essentially a state machine. There are 3 states, which can be found in TlltThermistor.h.
+ * Starting in a read state, the value is read from the thermistor. If it is higher than the
+ * necessary temperature, the heating elements are turned off, and the state is set to read again,
+ * so we always recheck every X seconds if the heating elements are off. In the case where the
+ * sensor reading is lower than what we want, the heating elements are powered on and the state is
+ * set to no read. On the no read state, the state then moves to a waiting state, so that the
+ * heating elements can stay on for 2X seconds. The waiting state, then sets the state to the read
+ * state. In the waiting state, the heating elements are turned off for X seconds to allow for a
+ * thermistor reading.
+ */
 static gboolean
 control_toaster(gpointer user_data)
 {
@@ -241,6 +253,8 @@ control_toaster(gpointer user_data)
 
 		return FALSE;
 	}
+
+	g_print("%d\n", state);
 
 	switch (state) {
 	case STATE_READ: {
