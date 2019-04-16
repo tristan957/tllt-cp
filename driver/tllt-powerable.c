@@ -18,7 +18,7 @@ void
 tllt_powerable_off(TlltPowerable *self)
 {
 	g_return_if_fail(TLLT_IS_POWERABLE(self));
-	g_return_if_fail(tllt_powerable_is_running(self));
+	// g_return_if_fail(tllt_powerable_is_running(self));
 
 	TlltPowerableInterface *iface = TLLT_POWERABLE_GET_IFACE(self);
 	g_return_if_fail(iface->off != NULL);
@@ -29,7 +29,7 @@ void
 tllt_powerable_on(TlltPowerable *self)
 {
 	g_return_if_fail(TLLT_IS_POWERABLE(self));
-	g_return_if_fail(!tllt_powerable_is_running(self));
+	// g_return_if_fail(!tllt_powerable_is_running(self));
 
 	TlltPowerableInterface *iface = TLLT_POWERABLE_GET_IFACE(self);
 	g_return_if_fail(iface->on != NULL);

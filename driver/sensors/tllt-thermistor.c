@@ -1,4 +1,5 @@
 #include <limits.h>
+#include <math.h>
 
 #include <glib-object.h>
 #include <glib/gi18n.h>
@@ -13,7 +14,7 @@
 #include "tllt-thermistor.h"
 #include "tllt-util.h"
 
-// Correlate temperatures with known redaings of thermistor
+// Correlate temperatures with known readings of the thermistor
 static const int readings[10][2] = {
 	{175, 520}, {200, 690}, {225, 740}, {250, 800},  {275, 830},
 	{300, 880}, {325, 940}, {375, 985}, {400, 1000}, {425, 1010},
@@ -51,7 +52,8 @@ tllt_thermistor_read(TLLT_UNUSED TlltThermistor *self)
 
 	value = result[0];
 #else
-	value = 400;
+	// Note: this is 325 deg
+	value = 940;
 #endif
 
 	return value;
@@ -150,7 +152,7 @@ tllt_thermistor_reading_to_farenheit(const double reading)
 	double relativity = 0;
 	for (int i = 0; i < (int) ARR_SIZE(readings); i++) {
 		double r = reading / readings[i][1];
-		if ((1 - r) < (1 - relativity)) {
+		if (fabs(1 - r) < fabs(1 - relativity)) {
 			relativity  = r;
 			temperature = readings[i][0];
 		}

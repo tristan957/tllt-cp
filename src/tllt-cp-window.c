@@ -213,7 +213,7 @@ on_timer_start_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_dat
 	tllt_toaster_start(priv->toaster,
 					   gtk_spin_button_get_value_as_int(priv->timer_minutes_spin_button),
 					   gtk_spin_button_get_value_as_int(priv->timer_seconds_spin_button),
-					   gtk_scale_get_digits(priv->temperature_scale), update_timer, self);
+					   gtk_range_get_value(GTK_RANGE(priv->temperature_scale)), update_timer, self);
 }
 
 static void

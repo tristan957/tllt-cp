@@ -6,6 +6,13 @@
 
 G_BEGIN_DECLS
 
+typedef enum TlltThermistorState
+{
+	STATE_READ,
+	STATE_NO_READ,
+	STATE_WAIT,
+} TlltThermistorState;
+
 struct _TlltThermistor
 {
 	TlltSensor parent_instance;
