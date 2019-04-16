@@ -256,8 +256,6 @@ control_toaster(gpointer user_data)
 		return FALSE;
 	}
 
-	g_print("%d\n", state);
-
 	switch (state) {
 	case STATE_READ: {
 		const double temp =

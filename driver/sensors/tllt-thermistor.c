@@ -102,11 +102,22 @@ tllt_thermistor_set_property(GObject *obj, guint prop_id, const GValue *val, GPa
 }
 
 static void
+tllt_thermistor_constructed(GObject *obj)
+{
+	TLLT_UNUSED TlltThermistor *self = TLLT_THERMISTOR(obj);
+
+#ifdef TLLT_WITH_WIRINGPI
+	mcp3004Setup(self->base_pin, self->spi_chan);
+#endif
+}
+
+static void
 tllt_thermistor_class_init(TlltThermistorClass *klass)
 {
 	GObjectClass *obj_class		  = G_OBJECT_CLASS(klass);
 	TlltSensorClass *sensor_class = TLLT_SENSOR_CLASS(klass);
 
+	obj_class->constructed  = tllt_thermistor_constructed;
 	obj_class->get_property = tllt_thermistor_get_property;
 	obj_class->set_property = tllt_thermistor_set_property;
 
@@ -130,13 +141,8 @@ tllt_thermistor_class_init(TlltThermistorClass *klass)
 }
 
 static void
-tllt_thermistor_init(TLLT_UNUSED TlltThermistor *self)
-{
-#ifdef TLLT_WITH_WIRINGPI
-	g_print("base pin: %d, spi chan%d\n", self->base_pin, self->spi_chan);
-	mcp3004Setup(self->base_pin, self->spi_chan);
-#endif
-}
+tllt_thermistor_init(G_GNUC_UNUSED TlltThermistor *self)
+{}
 
 TlltThermistor *
 tllt_thermistor_new(const int spi_chan, const int base_pin, const unsigned int num_pins)

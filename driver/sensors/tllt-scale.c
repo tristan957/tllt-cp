@@ -118,11 +118,22 @@ tllt_scale_set_property(GObject *obj, guint prop_id, const GValue *val, GParamSp
 }
 
 static void
+tllt_scale_constructed(GObject *obj)
+{
+	TLLT_UNUSED TlltScale *self = TLLT_SCALE(obj);
+
+#ifdef TLLT_WITH_WIRINGPI
+	pinMode(self->gpio_pin, OUTPUT);
+#endif
+}
+
+static void
 tllt_scale_class_init(TlltScaleClass *klass)
 {
 	GObjectClass *obj_class		  = G_OBJECT_CLASS(klass);
 	TlltSensorClass *sensor_class = TLLT_SENSOR_CLASS(klass);
 
+	obj_class->constructed  = tllt_scale_constructed;
 	obj_class->get_property = tllt_scale_get_property;
 	obj_class->set_property = tllt_scale_set_property;
 
@@ -143,12 +154,8 @@ tllt_scale_class_init(TlltScaleClass *klass)
 }
 
 static void
-tllt_scale_init(TLLT_UNUSED TlltScale *self)
-{
-#ifdef TLLT_WITH_WIRINGPI
-	pinMode(self->gpio_pin, OUTPUT);
-#endif
-}
+tllt_scale_init(G_GNUC_UNUSED TlltScale *self)
+{}
 
 TlltScale *
 tllt_scale_new(const int gpio_pin)
