@@ -6,7 +6,7 @@ project(
         'GPL-3.0',
     ],
     default_options: [
-        'c_std=gnu11',
+        'c_std=c11',
     ],
 )
 
