@@ -90,7 +90,7 @@ tllt_scale_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpec *ps
 		g_value_set_boolean(val, priv->running);
 		break;
 	case PROP_GPIO_PIN:
-		g_value_set_uchar(val, self->gpio_pin);
+		g_value_set_int(val, self->gpio_pin);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -109,7 +109,7 @@ tllt_scale_set_property(GObject *obj, guint prop_id, const GValue *val, GParamSp
 		priv->running = g_value_get_boolean(val);
 		break;
 	case PROP_GPIO_PIN:
-		self->gpio_pin = g_value_get_uchar(val);
+		self->gpio_pin = g_value_get_int(val);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -135,8 +135,8 @@ tllt_scale_class_init(TlltScaleClass *klass)
 		g_param_spec_boolean("running", _("Running"), _("Whether the scale is running"), FALSE,
 							 G_PARAM_PRIVATE | G_PARAM_READABLE | G_PARAM_CONSTRUCT_ONLY);
 	obj_properties[PROP_GPIO_PIN] =
-		g_param_spec_uchar("gpio-pin", _("GPIO pin"), _("GPIO pin for the scale"), 0, UCHAR_MAX, 0,
-						   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+		g_param_spec_int("gpio-pin", _("GPIO pin"), _("GPIO pin for the scale"), 0, INT_MAX, 0,
+						 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
 	g_object_class_override_property(obj_class, PROP_RUNNING, "running");
 	g_object_class_install_property(obj_class, PROP_GPIO_PIN, obj_properties[PROP_GPIO_PIN]);
@@ -151,7 +151,7 @@ tllt_scale_init(TLLT_UNUSED TlltScale *self)
 }
 
 TlltScale *
-tllt_scale_new(const unsigned char gpio_pin)
+tllt_scale_new(const int gpio_pin)
 {
 	return g_object_new(TLLT_TYPE_SCALE, "gpio-pin", gpio_pin, NULL);
 }

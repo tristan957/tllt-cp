@@ -11,9 +11,9 @@ struct _TlltHeatingElement
 {
 	GObject parent_instance;
 
-	unsigned char gpio_pin;
+	int gpio_pin;
 };
 
-TlltHeatingElement *tllt_heating_element_new(const unsigned char gpio_pin);
+TlltHeatingElement *tllt_heating_element_new(const int gpio_pin);
 
 G_END_DECLS

@@ -10,12 +10,12 @@ struct _TlltScale
 {
 	TlltSensor parent_instance;
 
-	unsigned char gpio_pin;
+	int gpio_pin;
 };
 
 #define TLLT_TYPE_SCALE (tllt_scale_get_type())
 G_DECLARE_FINAL_TYPE(TlltScale, tllt_scale, TLLT, SCALE, TlltSensor)
 
-TlltScale *tllt_scale_new(const unsigned char gpio_pin);
+TlltScale *tllt_scale_new(const int gpio_pin);
 
 G_END_DECLS
