@@ -133,7 +133,7 @@ static void
 tllt_thermistor_init(TLLT_UNUSED TlltThermistor *self)
 {
 #ifdef TLLT_WITH_WIRINGPI
-	g_print("base pin: %d, spi chan%d\n");
+	g_print("base pin: %d, spi chan%d\n", self->base_pin, self->spi_chan);
 	mcp3004Setup(self->base_pin, self->spi_chan);
 #endif
 }
