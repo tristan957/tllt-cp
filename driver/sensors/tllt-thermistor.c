@@ -11,6 +11,18 @@
 #include "tllt-powerable.h"
 #include "tllt-sensor.h"
 #include "tllt-thermistor.h"
+#include "tllt-util.h"
+
+// Correlate temperatures with known redaings of thermistor
+static const int const *const readings[2] = {
+	{175, 520}, {200, 690}, {225, 740}, {250, 800},  {275, 830},
+	{300, 880}, {325, 940}, {375, 985}, {400, 1000}, {425, 1010},
+};
+
+// Correlate temperatures with the amount of time it takes in seconds to heat up to that temp
+static const int const *const heat_up_timings[2] = {
+	{300, 120}, {325, 155}, {350, 170}, {375, 185}, {400, 210}, {425, 230}, {450, 245},
+};
 
 G_DEFINE_TYPE(TlltThermistor, tllt_thermistor, TLLT_TYPE_SENSOR)
 
@@ -27,7 +39,7 @@ static GParamSpec *obj_properties[N_PROPS];
 static double
 tllt_thermistor_read(TLLT_UNUSED TlltThermistor *self)
 {
-	double value = 1024;
+	double value = 0;
 #ifdef TLLT_WITH_WIRINGPI
 	g_autofree int *result = g_malloc(self->num_pins * sizeof(int));
 	for (unsigned int i = 0; i < self->num_pins; i++) {
@@ -35,6 +47,8 @@ tllt_thermistor_read(TLLT_UNUSED TlltThermistor *self)
 	}
 
 	value = result[0];
+#else
+	value = 400;
 #endif
 
 	return value;
@@ -124,4 +138,20 @@ tllt_thermistor_new(const unsigned int spi_chan, const unsigned int base_pin,
 {
 	return g_object_new(TLLT_TYPE_THERMISTOR, "spi-chan", spi_chan, "base-pin", base_pin,
 						"number-of-pins", num_pins, NULL);
+}
+
+double
+tllt_thermistor_reading_to_farenheit(const double reading)
+{
+	int temperature   = 0;
+	double relativity = 0;
+	for (int i = 0; i < ARR_SIZE(readings); i++) {
+		double r = reading / readings[i][1];
+		if ((1 - r) < (1 - relativity)) {
+			relativity  = r;
+			temperature = readings[i][0];
+		}
+	}
+
+	return temperature;
 }
