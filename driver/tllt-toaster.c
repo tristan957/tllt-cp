@@ -17,7 +17,7 @@ typedef struct TlltToasterStartArgs
 {
 	TlltToaster *toaster;
 	unsigned long total_seconds;
-	unsigned int temperature;
+	int temperature;
 	TlltToasterUpdateFunc update;
 	gpointer user_data;
 } TlltToasterStartArgs;
@@ -222,9 +222,8 @@ tllt_toaster_run(gpointer user_data)
 }
 
 void
-tllt_toaster_start_with_time(TlltToaster *self, const unsigned int minutes,
-							 const unsigned int seconds, const unsigned int temperature,
-							 const TlltToasterUpdateFunc update, gpointer user_data)
+tllt_toaster_start(TlltToaster *self, const unsigned int minutes, const unsigned int seconds,
+				   const int temperature, const TlltToasterUpdateFunc update, gpointer user_data)
 {
 	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
 

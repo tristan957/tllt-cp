@@ -210,10 +210,10 @@ on_timer_start_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_dat
 	gtk_stack_set_visible_child_name(priv->timer_stack, "display-page");
 
 	g_object_ref(self);
-	tllt_toaster_start_with_time(priv->toaster,
-								 gtk_spin_button_get_value_as_int(priv->timer_minutes_spin_button),
-								 gtk_spin_button_get_value_as_int(priv->timer_seconds_spin_button),
-								 gtk_scale_get_digits(priv->temperature_scale), update_timer, self);
+	tllt_toaster_start(priv->toaster,
+					   gtk_spin_button_get_value_as_int(priv->timer_minutes_spin_button),
+					   gtk_spin_button_get_value_as_int(priv->timer_seconds_spin_button),
+					   gtk_scale_get_digits(priv->temperature_scale), update_timer, self);
 }
 
 static void

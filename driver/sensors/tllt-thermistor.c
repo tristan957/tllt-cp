@@ -14,15 +14,18 @@
 #include "tllt-util.h"
 
 // Correlate temperatures with known redaings of thermistor
-static const int const *const readings[2] = {
+static const int readings[10][2] = {
 	{175, 520}, {200, 690}, {225, 740}, {250, 800},  {275, 830},
 	{300, 880}, {325, 940}, {375, 985}, {400, 1000}, {425, 1010},
 };
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-const-variable"
 // Correlate temperatures with the amount of time it takes in seconds to heat up to that temp
-static const int const *const heat_up_timings[2] = {
+static const int heat_up_timings[7][2] = {
 	{300, 120}, {325, 155}, {350, 170}, {375, 185}, {400, 210}, {425, 230}, {450, 245},
 };
+#pragma GCC diagnostic pop
 
 G_DEFINE_TYPE(TlltThermistor, tllt_thermistor, TLLT_TYPE_SENSOR)
 
@@ -145,7 +148,7 @@ tllt_thermistor_reading_to_farenheit(const double reading)
 {
 	int temperature   = 0;
 	double relativity = 0;
-	for (int i = 0; i < ARR_SIZE(readings); i++) {
+	for (int i = 0; i < (int) ARR_SIZE(readings); i++) {
 		double r = reading / readings[i][1];
 		if ((1 - r) < (1 - relativity)) {
 			relativity  = r;
