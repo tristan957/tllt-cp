@@ -137,9 +137,6 @@ tllt_scale_class_init(TlltScaleClass *klass)
 	obj_properties[PROP_GPIO_PIN] =
 		g_param_spec_int("gpio-pin", _("GPIO pin"), _("GPIO pin for the scale"), 0, INT_MAX, 0,
 						 G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
-	if (obj_properties[PROP_GPIO_PIN] == NULL) {
-		g_print("Scale PROP_GPIO_PIN is NULL\n");
-	}
 
 	g_object_class_override_property(obj_class, PROP_RUNNING, "running");
 	g_object_class_install_property(obj_class, PROP_GPIO_PIN, obj_properties[PROP_GPIO_PIN]);
