@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <schemalist gettext-domain="tllt-cp">
-	<schema id="com.gitlab.tristan957.tllt-cp" path="/com/gitlab/tristan957/tllt-cp/">
+	<schema id="ht.sr.git.tristan957.tllt-cp" path="/ht/sr/git/tristan957/tllt-cp/">
 	</schema>
 </schemalist>

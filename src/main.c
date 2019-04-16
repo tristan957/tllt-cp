@@ -12,7 +12,7 @@
 int
 main(int argc, char *argv[])
 {
-	g_autoptr(TlltCpApplication) app = tllt_cp_application_new("com.gitlab.tristan957.tllt-cp");
+	g_autoptr(TlltCpApplication) app = tllt_cp_application_new("ht.sr.git.tristan957.tllt-cp");
 
 	g_set_application_name(_("The Learning Little Toaster Control Panel"));
 

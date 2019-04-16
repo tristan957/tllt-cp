@@ -1,5 +1,3 @@
-#include <gtk/gtk.h>
-
 #include "tllt-cp-application.h"
 #include "tllt-cp-config.h"
 #include "tllt-cp-resources.h"
@@ -57,7 +55,7 @@ static void
 tllt_cp_application_startup(GApplication *self)
 {
 	g_resources_register(tllt_cp_get_resource());
-	g_application_set_resource_base_path(self, "/com/gitlab/tristan957/tllt-cp");
+	g_application_set_resource_base_path(self, "/ht/sr/git/tristan957/tllt-cp");
 
 	G_APPLICATION_CLASS(tllt_cp_application_parent_class)->startup(self);
 }

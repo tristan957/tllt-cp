@@ -1,8 +1,7 @@
 [Desktop Entry]
-Name=TlltCp
-GenericName=The Learning Little Toaster Control Panel
+Name=The Learning Little Toaster
 Comment=Get the perfect output every time
-Keywords=Toaster
+Keywords=toaster
 Exec=tllt-cp
 Terminal=false
 Type=Application
