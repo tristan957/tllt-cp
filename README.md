@@ -37,10 +37,10 @@ CC={compiler of choice} meson build
 
 ### WiringPi
 
-By default, the driver builds without support for WiringPi. To enable support,
-run `meson configure -Dwith-wiringPi=true build`. You will also need to make sure
-that WiringPi is installed on your system. Instructions for manually building
-it, can be found on the GitHub mirror.
+By default, the driver builds with support for WiringPi. To disable support,
+run `meson configure -Dwith-wiringPi=false build`. You will need to make sure
+that WiringPi is installed on your system if you don't disable the option.
+Instructions for manually building it, can be found in the wiringPi repository.
 
 ## Environment Variables
 
