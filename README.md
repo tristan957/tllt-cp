@@ -16,10 +16,10 @@ to talk to the toaster.
 
 ## Dependencies
 
-* `libcurl >= 7.61.1`
-* `glib >= 2.56`
+* `libcurl >= 7.52.1`
+* `glib >= 2.50.3`
 * `gtk >= 3.22`
-* `libjson-glib >= 1.4.2`
+* `libjson-glib >= 1.2.6`
 
 **Disclaimer**: These are known working dependency versions. Previous versions
 may work fine.
@@ -78,3 +78,16 @@ ninja -C build
 ```text
 ninja test -C build
 ```
+
+## Running
+
+### GUI
+
+```text
+./build/src/tllt-cp
+```
+
+### Tests
+
+```text
+./build/tests/{path to test executable}
