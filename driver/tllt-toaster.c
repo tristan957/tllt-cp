@@ -242,7 +242,8 @@ control_toaster(gpointer user_data)
 	TlltControlToasterArgs *args = user_data;
 	TlltToasterPrivate *priv	 = tllt_toaster_get_instance_private(args->toaster);
 
-	static TlltThermistorState state = STATE_READ;
+	// Start in wait state because we are starting every operation with heating elements on
+	static TlltThermistorState state = STATE_WAIT;
 
 	if (g_cancellable_is_cancelled(priv->cancellable)) {
 		// Reset the state before exit
@@ -323,6 +324,9 @@ tllt_toaster_start(TlltToaster *self, const unsigned int minutes, const unsigned
 	control_toaster_args->toaster	 = self;
 	control_toaster_args->temperature = temperature;
 	g_object_ref(self);
+
+	tllt_powerable_on(TLLT_POWERABLE(priv->top_heating_element));
+	tllt_powerable_on(TLLT_POWERABLE(priv->bottom_heating_element));
 
 	g_timer_start(priv->timer);
 	g_timeout_add_full(G_PRIORITY_DEFAULT, 40, update_toaster, toaster_update_args,
