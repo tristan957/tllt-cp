@@ -31,3 +31,13 @@ test_heating_elements = executable(
 	dependencies: dependencies,
 	include_directories: include_directories('../../driver'),
 )
+
+test_wiringPi = executable(
+	'test-wiringPi',
+	[
+		'test-wiringPi.c'
+	],
+	c_args: c_args,
+	dependencies: dependencies,
+	include_directories: include_directories('../../driver'),
+)
