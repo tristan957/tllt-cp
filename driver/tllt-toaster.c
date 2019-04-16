@@ -167,6 +167,7 @@ tllt_toaster_new_from_config_file(GError **err)
 	const gchar *file_path = g_getenv("TLLT_TOASTER_CONFIG_FILE_PATH");
 	if (file_path == NULL) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_ENV, "No config file path set");
+		return NULL;
 	}
 
 	char *buffer;
