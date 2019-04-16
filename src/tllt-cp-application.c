@@ -71,7 +71,8 @@ tllt_cp_application_class_init(TlltCpApplicationClass *klass)
 	app_class->startup  = tllt_cp_application_startup;
 }
 
-static GActionEntry app_entries[] = {{.name = "about", .activate = tllt_cp_application_about}};
+static const GActionEntry app_entries[] = {
+	{.name = "about", .activate = tllt_cp_application_about}};
 
 static void
 tllt_cp_application_init(TlltCpApplication *self)
