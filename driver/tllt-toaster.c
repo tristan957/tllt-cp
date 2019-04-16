@@ -281,6 +281,8 @@ control_toaster(gpointer user_data)
 		break;
 	case STATE_WAIT:
 		state = STATE_READ;
+		tllt_powerable_off(TLLT_POWERABLE(priv->top_heating_element));
+		tllt_powerable_off(TLLT_POWERABLE(priv->bottom_heating_element));
 		break;
 	default:
 		g_warn_if_reached();
