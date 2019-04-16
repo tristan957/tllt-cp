@@ -117,14 +117,14 @@ tllt_thermistor_class_init(TlltThermistorClass *klass)
 
 	obj_properties[PROP_SPI_CHAN] =
 		g_param_spec_uint("spi-chan", _("SPI Channel"), _("SPI channel for the thermistor"), 0, 1,
-						  0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+						  0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 	obj_properties[PROP_BASE_PIN] =
 		g_param_spec_uint("base-pin", _("Base Pin"),
 						  _("Base pin for the thermistor, keeping in mind this is a virtual pin"),
-						  0, UINT_MAX - 8, 100, G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+						  0, UINT_MAX - 8, 100, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 	obj_properties[PROP_NUMBER_OF_PINS] = g_param_spec_uint(
 		"number-of-pins", _("Number of Pins"), _("Number of virtual pins used by the thermistor"),
-		0, UINT_MAX, 8, G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+		0, UINT_MAX, 8, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }
