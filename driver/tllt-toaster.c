@@ -313,6 +313,7 @@ preheat_toaster(gpointer user_data)
 	}
 
 	if (g_cancellable_is_cancelled(priv->cancellable)) {
+		g_signal_emit(args->toaster, obj_signals[SIGNAL_STOPPED], 0);
 		toaster_operation_destroy(args);
 	} else {
 		args->ref_count++;
