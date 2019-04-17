@@ -189,9 +189,5 @@ tllt_thermistor_time_to_preheat(const double goal_temp, const double curr_temp)
 		}
 	}
 
-	if (goal_seconds <= curr_seconds) {
-		return 0;
-	}
-
-	return goal_seconds - curr_seconds;
+	return fabs(goal_seconds - curr_seconds);
 }
