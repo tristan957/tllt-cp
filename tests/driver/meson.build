@@ -41,3 +41,13 @@ test_wiringPi = executable(
 	dependencies: dependencies,
 	include_directories: include_directories('../../driver'),
 )
+
+test_thermistor_raw = executable(
+	'test-thermistor-raw',
+	[
+		'test-thermistor-raw.c'
+	],
+	c_args: c_args,
+	dependencies: dependencies,
+	include_directories: include_directories('../../driver'),
+)
