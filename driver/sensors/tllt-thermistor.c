@@ -38,12 +38,12 @@ tllt_thermistor_read(TLLT_UNUSED TlltThermistor *self)
 
 	value = result[0];
 #else
-	// Note: this is 325 deg
+	// Note: this is ~296 deg
 	value = 940;
 #endif
 
 	const double temp =
-		4.64 * pow(10, -6) * pow(value, 3) - 0.0103 * pow(value, 2) + 8.07 * value - 1962.7;
+		2.55 * pow(10, -6) * pow(value, 3) - 0.005 * pow(value, 2) + 3.48 * value - 674.48;
 
 	return temp;
 }
