@@ -14,7 +14,7 @@
 int
 main(G_GNUC_UNUSED int argc, G_GNUC_UNUSED char *argv[])
 {
-	wiringPiSetup();
+	wiringPiSetupGpio();
 	mcp3004Setup(BASE_PIN, SPI_CHAN);
 
 	do {
