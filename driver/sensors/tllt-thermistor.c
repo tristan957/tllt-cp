@@ -156,7 +156,7 @@ tllt_thermistor_reading_to_farenheit(const double reading)
 {
 	int temperature   = 0;
 	double relativity = 0;
-	for (int i = 0; i < (int) ARR_SIZE(readings); i++) {
+	for (unsigned int i = 0; i < ARR_SIZE(readings); i++) {
 		double r = reading / readings[i][1];
 		if (fabs(1 - r) < fabs(1 - relativity)) {
 			relativity  = r;
@@ -165,4 +165,33 @@ tllt_thermistor_reading_to_farenheit(const double reading)
 	}
 
 	return temperature;
+}
+
+double
+tllt_thermistor_time_to_preheat(const double goal_temp, const double curr_temp)
+{
+	double curr_relativity = 0;
+	double curr_seconds	= 0;
+	double goal_relatvity  = 0;
+	double goal_seconds	= 0;
+	for (unsigned int i = 0; i < ARR_SIZE(heat_up_timings); i++) {
+		double curr_r = curr_temp / heat_up_timings[i][0];
+		double goal_r = goal_temp / heat_up_timings[i][0];
+
+		if (fabs(1 - curr_r) < fabs(1 - curr_relativity)) {
+			curr_relativity = curr_r;
+			curr_seconds	= heat_up_timings[i][1];
+		}
+
+		if (fabs(1 - goal_r) < fabs(1 - goal_relatvity)) {
+			goal_relatvity = goal_r;
+			goal_seconds   = heat_up_timings[i][1];
+		}
+	}
+
+	if (goal_seconds <= curr_seconds) {
+		return 0;
+	}
+
+	return goal_seconds - curr_seconds;
 }

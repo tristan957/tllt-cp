@@ -28,5 +28,6 @@ G_DECLARE_FINAL_TYPE(TlltThermistor, tllt_thermistor, TLLT, THERMISTOR, TlltSens
 TlltThermistor *tllt_thermistor_new(const int spi_chan, const int base_pin,
 									const unsigned int num_pins);
 double tllt_thermistor_reading_to_farenheit(const double reading);
+double tllt_thermistor_time_to_preheat(const double goal_temp, const double curr_temp);
 
 G_END_DECLS

@@ -11,7 +11,7 @@
 #include "tllt-cp-config.h"
 
 int
-main(int argc, const char *argv[])
+main(int argc, char *argv[])
 {
 	bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");

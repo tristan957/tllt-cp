@@ -16,16 +16,17 @@
 typedef struct TlltToasterUpdateArgs
 {
 	TlltToaster *toaster;
-	unsigned long total_seconds;
+	int total_seconds;
 	TlltToasterUpdateFunc update;
 	gpointer user_data;
 } TlltToasterUpdateArgs;
 
-typedef struct TlltControlToasterArgs
+typedef struct TlltToasterOperationArgs
 {
 	TlltToaster *toaster;
 	int temperature;
-} TlltControlToasterArgs;
+	int total_seconds;
+} TlltToasterOperationArgs;
 
 struct _TlltToaster
 {
@@ -56,6 +57,7 @@ static GParamSpec *obj_properties[N_PROPS];
 
 typedef enum TlltToasterSignals
 {
+	SIGNAL_PREHEATING,
 	SIGNAL_STARTED,
 	SIGNAL_STOPPED,
 	N_SIGNALS,
@@ -143,6 +145,9 @@ tllt_toaster_class_init(TlltToasterClass *klass)
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 
+	obj_signals[SIGNAL_PREHEATING] =
+		g_signal_new("preheating", G_TYPE_FROM_CLASS(klass), G_SIGNAL_RUN_LAST, 0, NULL, NULL, NULL,
+					 G_TYPE_NONE, 0);
 	obj_signals[SIGNAL_STARTED] =
 		g_signal_new("started", G_TYPE_FROM_CLASS(klass), G_SIGNAL_RUN_LAST, 0, NULL, NULL, NULL,
 					 G_TYPE_NONE, 0);
@@ -240,8 +245,8 @@ on_update_toaster_destroy(gpointer user_data)
 static gboolean
 control_toaster(gpointer user_data)
 {
-	TlltControlToasterArgs *args = user_data;
-	TlltToasterPrivate *priv	 = tllt_toaster_get_instance_private(args->toaster);
+	TlltToasterOperationArgs *args = user_data;
+	TlltToasterPrivate *priv	   = tllt_toaster_get_instance_private(args->toaster);
 
 	// Start in wait state because we are starting every operation with heating elements on
 	static TlltThermistorState state = STATE_WAIT;
@@ -253,7 +258,7 @@ control_toaster(gpointer user_data)
 		tllt_powerable_off(TLLT_POWERABLE(priv->top_heating_element));
 		tllt_powerable_off(TLLT_POWERABLE(priv->bottom_heating_element));
 
-		return FALSE;
+		return G_SOURCE_REMOVE;
 	}
 
 	switch (state) {
@@ -288,16 +293,43 @@ control_toaster(gpointer user_data)
 		g_warn_if_reached();
 	}
 
-	return TRUE;
+	return G_SOURCE_CONTINUE;
 }
 
 static void
-on_control_toaster_destroy(gpointer user_data)
+on_toaster_operation_destroy(gpointer user_data)
 {
-	TlltControlToasterArgs *args = user_data;
+	TlltToasterOperationArgs *args = user_data;
 
 	g_object_unref(args->toaster);
 	g_free(user_data);
+}
+
+static gboolean
+preheat_toaster(gpointer user_data)
+{
+	TlltToasterOperationArgs *args = user_data;
+	TlltToasterPrivate *priv	   = tllt_toaster_get_instance_private(args->toaster);
+
+	tllt_powerable_on(TLLT_POWERABLE(priv->top_heating_element));
+	tllt_powerable_on(TLLT_POWERABLE(priv->bottom_heating_element));
+	g_timer_start(priv->timer);
+
+	gdouble elapsed = 0;
+	do {
+		elapsed = g_timer_elapsed(priv->timer, NULL);
+	} while (elapsed < args->total_seconds && !g_cancellable_is_cancelled(priv->cancellable));
+
+	if (g_cancellable_is_cancelled(priv->cancellable)) {
+		on_toaster_operation_destroy(args);
+	} else {
+		g_signal_emit(args->toaster, obj_signals[SIGNAL_STARTED], 0);
+		g_timer_start(priv->timer);
+		g_timeout_add_seconds_full(G_PRIORITY_DEFAULT, 15, control_toaster, args,
+								   on_toaster_operation_destroy);
+	}
+
+	return G_SOURCE_REMOVE;
 }
 
 void
@@ -318,20 +350,21 @@ tllt_toaster_start(TlltToaster *self, const unsigned int minutes, const unsigned
 	toaster_update_args->toaster	   = self;
 	g_object_ref(self);
 
-	TlltControlToasterArgs *control_toaster_args = g_malloc(sizeof(TlltControlToasterArgs));
-	g_return_if_fail(control_toaster_args != NULL);
-	control_toaster_args->toaster	 = self;
-	control_toaster_args->temperature = temperature;
+	TlltToasterOperationArgs *toaster_op_args = g_malloc(sizeof(TlltToasterOperationArgs));
+	g_return_if_fail(toaster_op_args != NULL);
+	toaster_op_args->toaster	   = self;
+	toaster_op_args->temperature   = temperature;
+	toaster_op_args->total_seconds = tllt_thermistor_time_to_preheat(
+		temperature,
+		tllt_thermistor_reading_to_farenheit(tllt_sensor_read(TLLT_SENSOR(priv->thermistor))));
 	g_object_ref(self);
 
 	tllt_powerable_on(TLLT_POWERABLE(priv->top_heating_element));
 	tllt_powerable_on(TLLT_POWERABLE(priv->bottom_heating_element));
 
-	g_timer_start(priv->timer);
 	g_timeout_add_full(G_PRIORITY_DEFAULT, 40, update_toaster, toaster_update_args,
 					   on_update_toaster_destroy);
-	g_timeout_add_seconds_full(G_PRIORITY_DEFAULT, 15, control_toaster, control_toaster_args,
-							   on_control_toaster_destroy);
+	g_idle_add_full(G_PRIORITY_HIGH, preheat_toaster, toaster_op_args, NULL);
 
 	g_signal_emit(self, obj_signals[SIGNAL_STARTED], 0);
 }
