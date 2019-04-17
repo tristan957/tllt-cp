@@ -2,11 +2,14 @@
 
 #include "sensors/tllt-sensor.h"
 #include "sensors/tllt-thermistor.h"
+#include "tllt-driver.h"
 #include "tllt-toaster.h"
 
 int
 main(G_GNUC_UNUSED int argc, G_GNUC_UNUSED char *argv[])
 {
+	tllt_driver_init();
+
 	g_autoptr(GError) err = NULL;
 	g_autoptr(TlltToaster) toaster =
 		tllt_toaster_new_from_config_file("./tests/driver/test.config.json", &err);
