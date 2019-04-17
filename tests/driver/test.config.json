@@ -1,13 +1,13 @@
 {
 	"top-heating-element": {
-		"gpio-pin": 1
-	},
-	"bottom-heating-element": {
 		"gpio-pin": 2
 	},
+	"bottom-heating-element": {
+		"gpio-pin": 3
+	},
 	"thermistor": {
-		"spi-chan": 0,
+		"spi-chan": 1,
 		"base-pin": 100,
-		"number-of-pins": 4
+		"number-of-pins": 8
 	}
 }

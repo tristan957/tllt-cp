@@ -6,7 +6,7 @@
 #include <mcp3004.h>
 #include <wiringPi.h>
 
-#define SPI_CHAN 0
+#define SPI_CHAN 1
 #define BASE_PIN 100
 #define NUM_OF_PINS 8
 #define DELAY 500
