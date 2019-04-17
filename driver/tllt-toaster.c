@@ -18,24 +18,15 @@ typedef struct TlltToasterOperationArgs
 	TlltToaster *toaster;
 	int temperature;
 	int total_time_seconds;
-	int preheat_time_seconds;
 	unsigned int ref_count;
 	TlltToasterUpdateFunc update;
 	gpointer user_data;
 } TlltToasterOperationArgs;
 
-struct _TlltToaster
-{
-	GObject parent_instance;
-};
-
 typedef struct TlltToasterPrivate
 {
 	gboolean running;
 	GCancellable *cancellable;
-	TlltHeatingElement *top_heating_element;
-	TlltHeatingElement *bottom_heating_element;
-	TlltThermistor *thermistor;
 	GTimer *timer;
 } TlltToasterPrivate;
 
@@ -53,7 +44,7 @@ static GParamSpec *obj_properties[N_PROPS];
 
 typedef enum TlltToasterSignals
 {
-	SIGNAL_PREHEATING,
+	SIGNAL_PREPARING,
 	SIGNAL_STARTED,
 	SIGNAL_STOPPED,
 	N_SIGNALS,
@@ -64,18 +55,17 @@ static guint obj_signals[N_SIGNALS];
 static void
 tllt_toaster_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpec *pspec)
 {
-	TlltToaster *self		 = TLLT_TOASTER(obj);
-	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
+	TlltToaster *self = TLLT_TOASTER(obj);
 
 	switch (prop_id) {
 	case PROP_THERMISTOR:
-		g_value_set_object(val, priv->thermistor);
+		g_value_set_object(val, self->thermistor);
 		break;
 	case PROP_TOP_HEATING_ELEMENT:
-		g_value_set_object(val, priv->top_heating_element);
+		g_value_set_object(val, self->top_heating_element);
 		break;
 	case PROP_BOTTOM_HEATING_ELEMENT:
-		g_value_set_object(val, priv->bottom_heating_element);
+		g_value_set_object(val, self->bottom_heating_element);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -85,18 +75,17 @@ tllt_toaster_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpec *
 static void
 tllt_toaster_set_property(GObject *obj, guint prop_id, const GValue *val, GParamSpec *pspec)
 {
-	TlltToaster *self		 = TLLT_TOASTER(obj);
-	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
+	TlltToaster *self = TLLT_TOASTER(obj);
 
 	switch (prop_id) {
 	case PROP_THERMISTOR:
-		priv->thermistor = g_value_dup_object(val);
+		self->thermistor = g_value_dup_object(val);
 		break;
 	case PROP_TOP_HEATING_ELEMENT:
-		priv->top_heating_element = g_value_dup_object(val);
+		self->top_heating_element = g_value_dup_object(val);
 		break;
 	case PROP_BOTTOM_HEATING_ELEMENT:
-		priv->bottom_heating_element = g_value_dup_object(val);
+		self->bottom_heating_element = g_value_dup_object(val);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -112,9 +101,9 @@ tllt_toaster_finalize(GObject *obj)
 	g_cancellable_cancel(priv->cancellable);
 
 	g_object_unref(priv->cancellable);
-	g_object_unref(priv->thermistor);
-	g_object_unref(priv->top_heating_element);
-	g_object_unref(priv->bottom_heating_element);
+	g_object_unref(self->thermistor);
+	g_object_unref(self->top_heating_element);
+	g_object_unref(self->bottom_heating_element);
 	g_timer_destroy(priv->timer);
 
 	G_OBJECT_CLASS(tllt_toaster_parent_class)->finalize(obj);
@@ -141,8 +130,8 @@ tllt_toaster_class_init(TlltToasterClass *klass)
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 
-	obj_signals[SIGNAL_PREHEATING] =
-		g_signal_new("preheating", G_TYPE_FROM_CLASS(klass), G_SIGNAL_RUN_LAST, 0, NULL, NULL, NULL,
+	obj_signals[SIGNAL_PREPARING] =
+		g_signal_new("preparing", G_TYPE_FROM_CLASS(klass), G_SIGNAL_RUN_LAST, 0, NULL, NULL, NULL,
 					 G_TYPE_NONE, 0);
 	obj_signals[SIGNAL_STARTED] =
 		g_signal_new("started", G_TYPE_FROM_CLASS(klass), G_SIGNAL_RUN_LAST, 0, NULL, NULL, NULL,
@@ -161,11 +150,10 @@ tllt_toaster_init(TlltToaster *self)
 }
 
 TlltToaster *
-tllt_toaster_new_from_config_file(GError **err)
+tllt_toaster_new_from_config_file(const char *file_path, GError **err)
 {
 	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
 
-	const gchar *file_path = g_getenv("TLLT_TOASTER_CONFIG_FILE_PATH");
 	if (file_path == NULL) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_ENV, "No config file path set");
 		return NULL;
@@ -260,26 +248,25 @@ control_toaster(gpointer user_data)
 		// Reset the state before exit
 		state = STATE_READ;
 
-		tllt_powerable_off(TLLT_POWERABLE(priv->top_heating_element));
-		tllt_powerable_off(TLLT_POWERABLE(priv->bottom_heating_element));
+		tllt_powerable_off(TLLT_POWERABLE(args->toaster->top_heating_element));
+		tllt_powerable_off(TLLT_POWERABLE(args->toaster->bottom_heating_element));
 
 		return G_SOURCE_REMOVE;
 	}
 
 	switch (state) {
 	case STATE_READ: {
-		const double temp =
-			tllt_thermistor_reading_to_farenheit(tllt_sensor_read(TLLT_SENSOR(priv->thermistor)));
+		const double temp = tllt_sensor_read(TLLT_SENSOR(args->toaster->thermistor));
 		if (temp < args->temperature) {
-			tllt_powerable_on(TLLT_POWERABLE(priv->top_heating_element));
-			tllt_powerable_on(TLLT_POWERABLE(priv->bottom_heating_element));
+			tllt_powerable_on(TLLT_POWERABLE(args->toaster->top_heating_element));
+			tllt_powerable_on(TLLT_POWERABLE(args->toaster->bottom_heating_element));
 
 			state = STATE_NO_READ;
 		}
 
 		if (temp > args->temperature) {
-			tllt_powerable_off(TLLT_POWERABLE(priv->top_heating_element));
-			tllt_powerable_off(TLLT_POWERABLE(priv->bottom_heating_element));
+			tllt_powerable_off(TLLT_POWERABLE(args->toaster->top_heating_element));
+			tllt_powerable_off(TLLT_POWERABLE(args->toaster->bottom_heating_element));
 
 			state = STATE_READ;
 		}
@@ -291,8 +278,8 @@ control_toaster(gpointer user_data)
 		break;
 	case STATE_WAIT:
 		state = STATE_READ;
-		tllt_powerable_off(TLLT_POWERABLE(priv->top_heating_element));
-		tllt_powerable_off(TLLT_POWERABLE(priv->bottom_heating_element));
+		tllt_powerable_off(TLLT_POWERABLE(args->toaster->top_heating_element));
+		tllt_powerable_off(TLLT_POWERABLE(args->toaster->bottom_heating_element));
 		break;
 	default:
 		g_warn_if_reached();
@@ -319,8 +306,9 @@ preheat_toaster(gpointer user_data)
 	TlltToasterOperationArgs *args = user_data;
 	TlltToasterPrivate *priv	   = tllt_toaster_get_instance_private(args->toaster);
 
-	const gdouble elapsed = g_timer_elapsed(priv->timer, NULL);
-	if (elapsed < args->preheat_time_seconds && !g_cancellable_is_cancelled(priv->cancellable)) {
+	const double temp = tllt_sensor_read(TLLT_SENSOR(args->toaster->thermistor));
+	if (!(temp < args->temperature + 10 && temp > args->temperature - 10) &&
+		!g_cancellable_is_cancelled(priv->cancellable)) {
 		return G_SOURCE_CONTINUE;
 	}
 
@@ -352,29 +340,23 @@ tllt_toaster_start(TlltToaster *self, const unsigned int minutes, const unsigned
 
 	TlltToasterOperationArgs *toaster_op_args = g_malloc(sizeof(TlltToasterOperationArgs));
 	g_return_if_fail(toaster_op_args != NULL);
-	toaster_op_args->total_time_seconds   = minutes * 60 + seconds;
-	toaster_op_args->update				  = update;
-	toaster_op_args->user_data			  = user_data;
-	toaster_op_args->toaster			  = self;
-	toaster_op_args->temperature		  = temperature;
-	toaster_op_args->preheat_time_seconds = tllt_thermistor_time_to_preheat(
-		temperature,
-		tllt_thermistor_reading_to_farenheit(tllt_sensor_read(TLLT_SENSOR(priv->thermistor))));
-	toaster_op_args->ref_count = 1;
+	toaster_op_args->total_time_seconds = minutes * 60 + seconds;
+	toaster_op_args->update				= update;
+	toaster_op_args->user_data			= user_data;
+	toaster_op_args->toaster			= self;
+	toaster_op_args->temperature		= temperature;
+	toaster_op_args->ref_count			= 1;
 	g_object_ref(self);
-	g_print("preheat %d\n", toaster_op_args->preheat_time_seconds);
 
-	if (toaster_op_args->preheat_time_seconds <= 0) {
-		g_print("cooling down\n");
-		tllt_powerable_off(TLLT_POWERABLE(priv->top_heating_element));
-		tllt_powerable_off(TLLT_POWERABLE(priv->bottom_heating_element));
+	const double temp = tllt_sensor_read(TLLT_SENSOR(self->thermistor));
+	if (temp < temperature) {
+		tllt_powerable_on(TLLT_POWERABLE(self->top_heating_element));
+		tllt_powerable_on(TLLT_POWERABLE(self->bottom_heating_element));
 	} else {
-		g_print("heating up\n");
-		tllt_powerable_on(TLLT_POWERABLE(priv->top_heating_element));
-		tllt_powerable_on(TLLT_POWERABLE(priv->bottom_heating_element));
+		tllt_powerable_off(TLLT_POWERABLE(self->top_heating_element));
+		tllt_powerable_off(TLLT_POWERABLE(self->bottom_heating_element));
 	}
 
-	g_timer_start(priv->timer);
 	g_timeout_add(500, preheat_toaster, toaster_op_args);
-	g_signal_emit(self, obj_signals[SIGNAL_PREHEATING], 0);
+	g_signal_emit(self, obj_signals[SIGNAL_PREPARING], 0);
 }

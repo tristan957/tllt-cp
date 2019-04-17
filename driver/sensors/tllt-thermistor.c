@@ -14,20 +14,6 @@
 #include "tllt-thermistor.h"
 #include "tllt-util.h"
 
-// Correlate temperatures with known readings of the thermistor
-static const int readings[10][2] = {
-	{175, 520}, {200, 690}, {225, 740}, {250, 800},  {275, 830},
-	{300, 880}, {325, 940}, {375, 985}, {400, 1000}, {425, 1010},
-};
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-const-variable"
-// Correlate temperatures with the amount of time it takes in seconds to heat up to that temp
-static const int heat_up_timings[7][2] = {
-	{300, 120}, {325, 155}, {350, 170}, {375, 185}, {400, 210}, {425, 230}, {450, 245},
-};
-#pragma GCC diagnostic pop
-
 G_DEFINE_TYPE(TlltThermistor, tllt_thermistor, TLLT_TYPE_SENSOR)
 
 typedef enum TlltThermistorProps
@@ -56,7 +42,10 @@ tllt_thermistor_read(TLLT_UNUSED TlltThermistor *self)
 	value = 940;
 #endif
 
-	return value;
+	const double temp =
+		2.97 * pow(10, -6) * pow(value, 3) - 0.006 * pow(value, 2) + 4.4 * value - 931.27;
+
+	return temp;
 }
 
 static void
@@ -149,45 +138,4 @@ tllt_thermistor_new(const int spi_chan, const int base_pin, const unsigned int n
 {
 	return g_object_new(TLLT_TYPE_THERMISTOR, "spi-chan", spi_chan, "base-pin", base_pin,
 						"number-of-pins", num_pins, NULL);
-}
-
-double
-tllt_thermistor_reading_to_farenheit(const double reading)
-{
-	int temperature   = 0;
-	double relativity = 0;
-	for (unsigned int i = 0; i < ARR_SIZE(readings); i++) {
-		double r = reading / readings[i][1];
-		if (fabs(1 - r) < fabs(1 - relativity)) {
-			relativity  = r;
-			temperature = readings[i][0];
-		}
-	}
-
-	return temperature;
-}
-
-double
-tllt_thermistor_time_to_preheat(const double goal_temp, const double curr_temp)
-{
-	double curr_relativity = 0;
-	double curr_seconds	= 0;
-	double goal_relatvity  = 0;
-	double goal_seconds	= 0;
-	for (unsigned int i = 0; i < ARR_SIZE(heat_up_timings); i++) {
-		double curr_r = curr_temp / heat_up_timings[i][0];
-		double goal_r = goal_temp / heat_up_timings[i][0];
-
-		if (fabs(1 - curr_r) < fabs(1 - curr_relativity)) {
-			curr_relativity = curr_r;
-			curr_seconds	= heat_up_timings[i][1];
-		}
-
-		if (fabs(1 - goal_r) < fabs(1 - goal_relatvity)) {
-			goal_relatvity = goal_r;
-			goal_seconds   = heat_up_timings[i][1];
-		}
-	}
-
-	return fabs(goal_seconds - curr_seconds);
 }
