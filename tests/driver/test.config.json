@@ -6,7 +6,7 @@
 		"gpio-pin": 3
 	},
 	"thermistor": {
-		"spi-chan": 1,
+		"spi-chan": 0,
 		"base-pin": 100,
 		"number-of-pins": 8
 	}
