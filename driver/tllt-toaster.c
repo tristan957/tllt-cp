@@ -375,6 +375,6 @@ tllt_toaster_start(TlltToaster *self, const unsigned int minutes, const unsigned
 	}
 
 	g_timer_start(priv->timer);
-	g_idle_add_full(G_PRIORITY_DEFAULT, preheat_toaster, toaster_op_args, NULL);
+	g_timeout_add(500, preheat_toaster, toaster_op_args);
 	g_signal_emit(self, obj_signals[SIGNAL_PREHEATING], 0);
 }
