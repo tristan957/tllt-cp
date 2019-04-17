@@ -43,7 +43,7 @@ tllt_thermistor_read(TLLT_UNUSED TlltThermistor *self)
 #endif
 
 	const double temp =
-		2.97 * pow(10, -6) * pow(value, 3) - 0.006 * pow(value, 2) + 4.4 * value - 931.27;
+		4.64 * pow(10, -6) * pow(value, 3) - 0.0103 * pow(value, 2) + 8.07 * value - 1962.7;
 
 	return temp;
 }
