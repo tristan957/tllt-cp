@@ -185,6 +185,8 @@ tllt_toaster_operations_args_unref(TlltToasterOperationArgs *args)
 {
 	args->ref_count--;
 	if (args->ref_count == 0) {
+		tllt_powerable_off(TLLT_POWERABLE(args->toaster->top_heating_element));
+		tllt_powerable_off(TLLT_POWERABLE(args->toaster->bottom_heating_element));
 		g_free(args);
 	}
 }
