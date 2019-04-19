@@ -77,20 +77,12 @@ tllt_cp_user_set_property(GObject *obj, guint prop_id, const GValue *val, GParam
 		priv->id = g_value_get_uint(val);
 		break;
 	case PROP_RECIPES:
-		priv->recipes = g_value_get_pointer(val);
+		priv->recipes = g_list_copy_deep(g_value_get_pointer(val), (GCopyFunc) g_object_ref, NULL);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
 		break;
 	}
-}
-
-static void
-on_recipes_list_destroy(gpointer user_data)
-{
-	TlltCpRecipe *recipe = TLLT_CP_RECIPE(user_data);
-
-	g_object_unref(recipe);
 }
 
 static void
@@ -101,7 +93,7 @@ tllt_cp_user_finalize(GObject *obj)
 
 	g_free(priv->name);
 	g_free(priv->email);
-	g_list_free_full(priv->recipes, on_recipes_list_destroy);
+	g_list_free_full(priv->recipes, g_object_unref);
 
 	G_OBJECT_CLASS(tllt_cp_user_parent_class)->finalize(obj);
 }
