@@ -32,17 +32,18 @@ tllt_thermistor_read(TLLT_UNUSED TlltThermistor *self)
 	double value = 0;
 #ifdef TLLT_WITH_WIRINGPI
 	g_autofree int *result = g_malloc(self->num_pins * sizeof(int));
-	for (unsigned int i = 0; i < self->num_pins; i++) {
-		result[i] = analogRead(self->base_pin + i);
-	}
+	for (int j = 0; j < 10; j++) {
+		for (unsigned int i = 0; i < self->num_pins; i++) {
+			result[i] = analogRead(self->base_pin + i);
+		}
 
-	value = result[0];
+		value += result[0];
+	}
 #else
-	// Note: this is ~296 deg
-	value = 940;
+	value = 940 * 10;
 #endif
 
-	const double temp = 21.38 * exp(0.00293 * value);
+	const double temp = 21.38 * exp(0.00293 * value / 10);
 
 	return temp;
 }
