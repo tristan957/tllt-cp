@@ -20,7 +20,12 @@ typedef struct TlltCpUserPrivate
 	GList *recipes;	// TlltCpRecipe *
 } TlltCpUserPrivate;
 
-G_DEFINE_TYPE_WITH_PRIVATE(TlltCpUser, tllt_cp_user, G_TYPE_OBJECT)
+static void tllt_cp_user_json_serializable_init(JsonSerializableIface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(TlltCpUser, tllt_cp_user, G_TYPE_OBJECT,
+						G_ADD_PRIVATE(TlltCpUser)
+							G_IMPLEMENT_INTERFACE(JSON_TYPE_SERIALIZABLE,
+												  tllt_cp_user_json_serializable_init))
 
 typedef enum TlltCpUserProperties
 {
@@ -32,6 +37,38 @@ typedef enum TlltCpUserProperties
 } TlltCpUserProperties;
 
 static GParamSpec *obj_properties[N_PROPS];
+
+static gboolean
+tllt_cp_user_deserialize_property(JsonSerializable *serializable, const gchar *prop_name,
+								  GValue *val, GParamSpec *pspec, JsonNode *prop_node)
+{
+	if (g_strcmp0("recipes", prop_name) == 0) {
+		GList *recipes = NULL;
+		JsonArray *arr = json_node_get_array(prop_node);
+		for (guint i = 0; i < json_array_get_length(arr); i++) {
+			GObject *obj =
+				json_gobject_deserialize(TLLT_CP_TYPE_RECIPE, json_array_get_element(arr, i));
+			if (obj == NULL) {
+				return FALSE;
+			}
+
+			recipes = g_list_append(recipes, TLLT_CP_RECIPE(obj));
+		}
+
+		g_value_set_pointer(val, recipes);
+
+		return TRUE;
+	}
+
+	return json_serializable_default_deserialize_property(serializable, prop_name, val, pspec,
+														  prop_node);
+}
+
+static void
+tllt_cp_user_json_serializable_init(JsonSerializableIface *iface)
+{
+	iface->deserialize_property = tllt_cp_user_deserialize_property;
+}
 
 static void
 tllt_cp_user_get_property(GObject *obj, guint prop_id, GValue *val, GParamSpec *pspec)
@@ -77,7 +114,10 @@ tllt_cp_user_set_property(GObject *obj, guint prop_id, const GValue *val, GParam
 		priv->id = g_value_get_uint(val);
 		break;
 	case PROP_RECIPES:
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
 		priv->recipes = g_list_copy_deep(g_value_get_pointer(val), (GCopyFunc) g_object_ref, NULL);
+#pragma GCC diagnostic pop
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);

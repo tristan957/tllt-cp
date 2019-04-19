@@ -45,7 +45,7 @@ tllt_cp_recipe_set_property(GObject *obj, guint prop_id, const GValue *val, GPar
 		priv->name = g_value_dup_string(val);
 		break;
 	case PROP_TYPE:
-		priv->type = g_value_get_enum(val);
+		priv->type = g_value_get_uint(val);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -96,13 +96,13 @@ tllt_cp_recipe_class_init(TlltCpRecipeClass *klass)
 	obj_class->set_property = tllt_cp_recipe_set_property;
 
 	obj_properties[PROP_ID] =
-		g_param_spec_uint("id", _("Recipe ID"), _("ID of the recipe"), 1, UINT_MAX, 0,
+		g_param_spec_uint("id", _("Recipe ID"), _("ID of the recipe"), 0, UINT_MAX, 0,
 						  G_PARAM_PRIVATE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	obj_properties[PROP_NAME] =
 		g_param_spec_string("name", _("Name"), _("Name of the recipe"), NULL,
 							G_PARAM_PRIVATE | G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	obj_properties[PROP_TYPE] =
-		g_param_spec_enum("type", _("Type"), _("Type of the recipe"), G_TYPE_ENUM, 0,
+		g_param_spec_uint("type", _("Type"), _("Type of the recipe"), TOAST, BAGEL, TOAST,
 						  G_PARAM_PRIVATE | G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY);
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
