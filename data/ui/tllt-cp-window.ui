@@ -167,23 +167,6 @@ Author: Tristan Partin
           </object>
         </child>
         <child>
-          <object class="GtkButton">
-            <property name="label" translatable="yes">Login</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Login or create an account</property>
-            <signal name="clicked" handler="on_login_button_clicked" object="TlltCpWindow" swapped="no"/>
-            <style>
-              <class name="suggested-action"/>
-            </style>
-          </object>
-          <packing>
-            <property name="pack_type">end</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkMenuButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -196,6 +179,23 @@ Author: Tristan Partin
                 <property name="icon_name">open-menu-symbolic</property>
               </object>
             </child>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">Login</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Login or create an account</property>
+            <signal name="clicked" handler="on_login_button_clicked" object="TlltCpWindow" swapped="no"/>
+            <style>
+              <class name="suggested-action"/>
+            </style>
           </object>
           <packing>
             <property name="pack_type">end</property>
@@ -616,7 +616,7 @@ Author: Tristan Partin
                     <property name="adjustment">temperature_adjustment</property>
                     <property name="show_fill_level">True</property>
                     <property name="fill_level">450</property>
-                    <property name="round_digits">1</property>
+                    <property name="round_digits">25</property>
                     <property name="digits">0</property>
                     <signal name="format-value" handler="on_temperature_scale_format_value" swapped="no"/>
                   </object>
