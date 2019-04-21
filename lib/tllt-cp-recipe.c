@@ -111,3 +111,30 @@ tllt_cp_recipe_class_init(TlltCpRecipeClass *klass)
 static void
 tllt_cp_recipe_init(G_GNUC_UNUSED TlltCpRecipe *self)
 {}
+
+const char *
+tllt_cp_recipe_get_name(TlltCpRecipe *self)
+{
+	TlltCpRecipePrivate *priv = tllt_cp_recipe_get_instance_private(self);
+
+	return priv->name;
+}
+
+void
+tllt_cp_recipe_set_name(TlltCpRecipe *self, const char *name)
+{
+	TlltCpRecipePrivate *priv = tllt_cp_recipe_get_instance_private(self);
+
+	if (g_strcmp0(name, priv->name) != 0) {
+		g_free(priv->name);
+		priv->name = g_strstrip(g_strdup(name));
+	}
+}
+
+TlltCpRecipeType
+tllt_cp_recipe_get_rtype(TlltCpRecipe *self)
+{
+	TlltCpRecipePrivate *priv = tllt_cp_recipe_get_instance_private(self);
+
+	return priv->type;
+}

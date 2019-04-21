@@ -79,12 +79,21 @@ tllt_toaster_set_property(GObject *obj, guint prop_id, const GValue *val, GParam
 
 	switch (prop_id) {
 	case PROP_THERMISTOR:
+		if (self->thermistor != NULL) {
+			g_object_unref(self->thermistor);
+		}
 		self->thermistor = g_value_dup_object(val);
 		break;
 	case PROP_TOP_HEATING_ELEMENT:
+		if (self->top_heating_element != NULL) {
+			g_object_unref(self->top_heating_element);
+		}
 		self->top_heating_element = g_value_dup_object(val);
 		break;
 	case PROP_BOTTOM_HEATING_ELEMENT:
+		if (self->bottom_heating_element != NULL) {
+			g_object_unref(self->bottom_heating_element);
+		}
 		self->bottom_heating_element = g_value_dup_object(val);
 		break;
 	default:

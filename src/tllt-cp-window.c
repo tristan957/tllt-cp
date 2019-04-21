@@ -4,6 +4,8 @@
 #include <gtk/gtk.h>
 
 #include "tllt-cp-login-window.h"
+#include "tllt-cp-new-recipe-window.h"
+#include "tllt-cp-recipe-list-item.h"
 #include "tllt-cp-window.h"
 #include "tllt-cp.h"
 #include "tllt-toaster.h"
@@ -27,6 +29,7 @@ typedef struct TlltCpWindowPrivate
 	GtkSpinButton *timer_minutes_spin_button;
 	GtkSpinButton *timer_seconds_spin_button;
 	GtkScale *temperature_scale;
+	GtkListBox *recipe_list_box;
 
 	TlltToaster *toaster;
 	GSList *logged_in_users;
@@ -133,14 +136,36 @@ on_theme_state_changed(GtkCheckButton *widget, G_GNUC_UNUSED gpointer user_data)
 }
 
 static void
+recipe_list_box_remove_all(GtkWidget *widget, gpointer data)
+{
+	gtk_container_remove(GTK_CONTAINER(data), widget);
+}
+
+static void
 on_user_profiles_flow_box_child_activated(G_GNUC_UNUSED GtkFlowBox *widget, GtkFlowBoxChild *child,
 										  gpointer user_data)
 {
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
 	const gint index		  = gtk_flow_box_child_get_index(child);
+	TlltCpUser *prev_selected = priv->selected_user;
 	priv->selected_user		  = TLLT_CP_USER(g_slist_nth_data(priv->logged_in_users, index));
-	g_warn_if_fail(priv->selected_user != NULL);
+	g_return_if_fail(priv->selected_user != NULL);
+
+	// Block the refresh for performance reasons if you click the same person
+	if (prev_selected == NULL ||
+		tllt_cp_user_get_id(prev_selected) != tllt_cp_user_get_id(priv->selected_user)) {
+		GList *recipes = tllt_cp_user_get_recipes(priv->selected_user);
+
+		GtkContainer *container = GTK_CONTAINER(priv->recipe_list_box);
+		gtk_container_foreach(container, recipe_list_box_remove_all, container);
+
+		for (guint i = 0; i < g_list_length(recipes); i++) {
+			gtk_container_add(container, GTK_WIDGET(tllt_cp_recipe_list_item_new(
+											 TLLT_CP_RECIPE(g_list_nth(recipes, i)->data))));
+		}
+	}
 
 	if (!gtk_revealer_get_child_revealed(priv->user_actions_revealer)) {
 		gtk_revealer_set_reveal_child(priv->user_actions_revealer, TRUE);
@@ -161,9 +186,15 @@ on_user_actions_revealer_close_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer
 }
 
 static void
-on_recipe_revealer_new_button_clicked(G_GNUC_UNUSED GtkButton *widget,
-									  G_GNUC_UNUSED gpointer user_data)
-{}
+on_recipe_revealer_new_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
+{
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	TlltCpNewRecipeWindow *recipe_window =
+		tllt_cp_new_recipe_window_new(GTK_WINDOW(self), priv->selected_user);
+	gtk_window_present(GTK_WINDOW(recipe_window));
+}
 
 static void
 on_recipe_revealer_close_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
@@ -293,6 +324,7 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow,
 												 timer_seconds_spin_button);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, temperature_scale);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, recipe_list_box);
 	gtk_widget_class_bind_template_callback(wid_class, on_login_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_logout_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_user_details_button_clicked);

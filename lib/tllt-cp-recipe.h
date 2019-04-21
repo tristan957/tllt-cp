@@ -15,6 +15,7 @@ typedef enum TlltCpRecipeType
 	TOAST,
 	PIZZA,
 	BAGEL,
+	POPTART,
 } TlltCpRecipeType;
 
 #define TLLT_CP_TYPE_RECIPE (tllt_cp_recipe_get_type())
@@ -22,5 +23,8 @@ G_DECLARE_FINAL_TYPE(TlltCpRecipe, tllt_cp_recipe, TLLT_CP, RECIPE, GObject)
 
 TlltCpRecipe *tllt_cp_recipe_create(TlltCpClient *client, const char *name,
 									const TlltCpRecipeType type, GError *err);
+const char *tllt_cp_recipe_get_name(TlltCpRecipe *self);
+void tllt_cp_recipe_set_name(TlltCpRecipe *self, const char *name);
+TlltCpRecipeType tllt_cp_recipe_get_rtype(TlltCpRecipe *self);
 
 G_END_DECLS

@@ -2,6 +2,8 @@ sources = [
 	'main.c',
 	'tllt-cp-application.c',
 	'tllt-cp-login-window.c',
+	'tllt-cp-new-recipe-window.c',
+	'tllt-cp-recipe-list-item.c',
 	'tllt-cp-window.c',
 ]
 

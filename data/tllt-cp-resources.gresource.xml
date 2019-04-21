@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
   <gresource prefix="/ht/sr/git/tristan957/tllt-cp">
-    <file preprocess="xml-stripblanks">ui/tllt-cp-window.ui</file>
     <file preprocess="xml-stripblanks">ui/tllt-cp-login-window.ui</file>
+    <file preprocess="xml-stripblanks">ui/tllt-cp-recipe-list-item.ui</file>
+    <file preprocess="xml-stripblanks">ui/tllt-cp-new-recipe-window.ui</file>
+    <file preprocess="xml-stripblanks">ui/tllt-cp-window.ui</file>
     <file>css/style.css</file>
   </gresource>
 </gresources>
