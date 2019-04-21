@@ -490,7 +490,7 @@ Author: Tristan Partin
                 <property name="row_spacing">5</property>
                 <property name="column_spacing">5</property>
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="manual_start_button">
                     <property name="label" translatable="yes">Start</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -630,10 +630,11 @@ Author: Tristan Partin
                     <property name="row_spacing">5</property>
                     <property name="column_spacing">15</property>
                     <child>
-                      <object class="GtkSwitch">
+                      <object class="GtkSwitch" id="top_heating_element_switch">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="active">True</property>
+                        <signal name="state-set" handler="on_heating_element_swtich_state_set" object="TlltCpWindow" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -641,10 +642,11 @@ Author: Tristan Partin
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkSwitch">
+                      <object class="GtkSwitch" id="bottom_heating_element_switch">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="active">True</property>
+                        <signal name="state-set" handler="on_heating_element_swtich_state_set" object="TlltCpWindow" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>

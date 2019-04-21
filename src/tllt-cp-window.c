@@ -33,6 +33,9 @@ typedef struct TlltCpWindowPrivate
 	GtkListBox *recipe_list_box;
 	GtkStack *status_stack;
 	GtkSpinner *preparation_spinner;
+	GtkSwitch *top_heating_element_switch;
+	GtkSwitch *bottom_heating_element_switch;
+	GtkButton *manual_start_button;
 
 	TlltToaster *toaster;
 	GSList *logged_in_users;
@@ -234,11 +237,39 @@ update_timer(const unsigned int minutes, const unsigned int seconds, const doubl
 	gtk_progress_bar_set_fraction(priv->toasting_progress_bar, progress);
 }
 
+static gboolean
+on_heating_element_swtich_state_set(G_GNUC_UNUSED GtkSwitch *widget, G_GNUC_UNUSED gboolean state,
+									gpointer user_data)
+{
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	if (!gtk_switch_get_active(priv->top_heating_element_switch) &&
+		!gtk_switch_get_active(priv->bottom_heating_element_switch)) {
+		gtk_widget_set_sensitive(GTK_WIDGET(priv->manual_start_button), FALSE);
+	} else {
+		if (!gtk_widget_get_sensitive(GTK_WIDGET(priv->manual_start_button))) {
+			gtk_widget_set_sensitive(GTK_WIDGET(priv->manual_start_button), TRUE);
+		}
+	}
+
+	return FALSE;
+}
+
 static void
 on_timer_start_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 {
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	// Reset switches for next run
+	if (!gtk_switch_get_active(priv->top_heating_element_switch)) {
+		gtk_switch_set_active(priv->top_heating_element_switch, TRUE);
+	}
+
+	if (!gtk_switch_get_active(priv->bottom_heating_element_switch)) {
+		gtk_switch_set_active(priv->top_heating_element_switch, TRUE);
+	}
 
 	g_object_ref(self);
 	tllt_toaster_start(priv->toaster,
@@ -360,6 +391,11 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, recipe_list_box);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, preparation_spinner);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, status_stack);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow,
+												 top_heating_element_switch);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow,
+												 bottom_heating_element_switch);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, manual_start_button);
 	gtk_widget_class_bind_template_callback(wid_class, on_login_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_logout_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_user_details_button_clicked);
@@ -373,6 +409,7 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 	gtk_widget_class_bind_template_callback(wid_class, on_timer_reset_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_toaster_stop_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_temperature_scale_format_value);
+	gtk_widget_class_bind_template_callback(wid_class, on_heating_element_swtich_state_set);
 }
 
 static void
