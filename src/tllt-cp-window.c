@@ -21,15 +21,18 @@ typedef struct TlltCpWindowPrivate
 	GtkFlowBox *user_profiles_flow_box;
 	GtkRevealer *user_actions_revealer;
 	GtkRevealer *recipe_revealer;
-	GtkBox *toasting_progress_box;
+	GtkBox *toasting_status_box;
 	GtkProgressBar *toasting_progress_bar;
-	GtkStack *timer_stack;
+	GtkStack *manual_stack;
 	GtkLabel *timer_minutes_label;
 	GtkLabel *timer_seconds_label;
 	GtkSpinButton *timer_minutes_spin_button;
 	GtkSpinButton *timer_seconds_spin_button;
+	GtkButton *timer_reset_button;
 	GtkScale *temperature_scale;
 	GtkListBox *recipe_list_box;
+	GtkStack *status_stack;
+	GtkSpinner *preparation_spinner;
 
 	TlltToaster *toaster;
 	GSList *logged_in_users;
@@ -237,9 +240,6 @@ on_timer_start_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_dat
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
-	gtk_widget_set_visible(GTK_WIDGET(priv->toasting_progress_box), TRUE);
-	gtk_stack_set_visible_child_name(priv->timer_stack, "display-page");
-
 	g_object_ref(self);
 	tllt_toaster_start(priv->toaster,
 					   gtk_spin_button_get_value_as_int(priv->timer_minutes_spin_button),
@@ -273,8 +273,8 @@ on_toaster_stopped(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
 
 	g_object_unref(self);
 
-	gtk_widget_set_visible(GTK_WIDGET(priv->toasting_progress_box), FALSE);
-	gtk_stack_set_visible_child_name(priv->timer_stack, "edit-page");
+	gtk_widget_set_visible(GTK_WIDGET(priv->toasting_status_box), FALSE);
+	gtk_stack_set_visible_child_name(priv->manual_stack, "edit-page");
 }
 
 static gchar *
@@ -282,6 +282,38 @@ on_temperature_scale_format_value(G_GNUC_UNUSED GtkScale *scale, gdouble value,
 								  G_GNUC_UNUSED gpointer user_data)
 {
 	return g_strdup_printf("%.0f °F", value);
+}
+
+static void
+on_toaster_started(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
+{
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	gtk_spinner_stop(priv->preparation_spinner);
+	gtk_widget_set_sensitive(GTK_WIDGET(priv->timer_reset_button), TRUE);
+	gtk_stack_set_visible_child_name(priv->status_stack, "progress-page");
+}
+
+static void
+on_toaster_preparing(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
+{
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	char buffer[3];
+	sprintf(buffer, "%02d", gtk_spin_button_get_value_as_int(priv->timer_minutes_spin_button));
+	gtk_label_set_label(priv->timer_minutes_label, buffer);
+	sprintf(buffer, "%02d", gtk_spin_button_get_value_as_int(priv->timer_seconds_spin_button));
+	gtk_label_set_label(priv->timer_seconds_label, buffer);
+
+	gtk_widget_set_visible(GTK_WIDGET(priv->toasting_status_box), TRUE);
+	gtk_widget_set_sensitive(GTK_WIDGET(priv->timer_reset_button), FALSE);
+
+	gtk_spinner_start(priv->preparation_spinner);
+
+	gtk_stack_set_visible_child_name(priv->status_stack, "preparation-page");
+	gtk_stack_set_visible_child_name(priv->manual_stack, "display-page");
 }
 
 TlltCpWindow *
@@ -314,17 +346,20 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_profiles_flow_box);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, user_actions_revealer);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, recipe_revealer);
-	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, toasting_progress_box);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, toasting_status_box);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, toasting_progress_bar);
-	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, timer_stack);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, manual_stack);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, timer_minutes_label);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, timer_seconds_label);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, timer_reset_button);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow,
 												 timer_minutes_spin_button);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow,
 												 timer_seconds_spin_button);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, temperature_scale);
 	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, recipe_list_box);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, preparation_spinner);
+	gtk_widget_class_bind_template_child_private(wid_class, TlltCpWindow, status_stack);
 	gtk_widget_class_bind_template_callback(wid_class, on_login_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_logout_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_user_details_button_clicked);
@@ -363,6 +398,9 @@ tllt_cp_window_init(TlltCpWindow *self)
 		g_error("%s", err->message);
 	}
 
+	g_object_connect(priv->toaster, "signal::preparing", G_CALLBACK(on_toaster_preparing), self,
+					 NULL);
+	g_object_connect(priv->toaster, "signal::started", G_CALLBACK(on_toaster_started), self, NULL);
 	g_object_connect(priv->toaster, "signal::stopped", G_CALLBACK(on_toaster_stopped), self, NULL);
 
 	for (int i = 275; i < 450; i += 25) {

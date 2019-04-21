@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.22.1 
 
-Copyright (C) 
+Copyright (C)
 
 This file is part of The Learning Little Toaster Control Panel.
 
@@ -112,7 +112,7 @@ Author: Tristan Partin
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkBox" id="toasting_progress_box">
+          <object class="GtkBox" id="toasting_status_box">
             <property name="can_focus">False</property>
             <property name="spacing">5</property>
             <child>
@@ -141,12 +141,61 @@ Author: Tristan Partin
               </packing>
             </child>
             <child>
-              <object class="GtkProgressBar" id="toasting_progress_bar">
-                <property name="name">tllt-cp-toasting-progress</property>
+              <object class="GtkStack" id="status_stack">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="valign">center</property>
-                <property name="pulse_step">0.050000000000000003</property>
+                <property name="transition_duration">500</property>
+                <property name="transition_type">crossfade</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Preparing toaster...</property>
+                        <property name="xalign">0</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSpinner" id="preparation_spinner">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_right">15</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="pack_type">end</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="name">preparation-page</property>
+                    <property name="title" translatable="yes">Preparation</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkProgressBar" id="toasting_progress_bar">
+                    <property name="name">tllt-cp-toasting-progress</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="valign">center</property>
+                    <property name="pulse_step">0.050000000000000003</property>
+                  </object>
+                  <packing>
+                    <property name="name">progress-page</property>
+                    <property name="title" translatable="yes">Progress</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -424,7 +473,7 @@ Author: Tristan Partin
           </packing>
         </child>
         <child>
-          <object class="GtkStack" id="timer_stack">
+          <object class="GtkStack" id="manual_stack">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="transition_type">crossfade</property>
@@ -630,7 +679,7 @@ Author: Tristan Partin
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton">
+                  <object class="GtkButton" id="timer_reset_button">
                     <property name="label" translatable="yes">Reset</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>

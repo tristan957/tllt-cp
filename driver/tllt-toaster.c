@@ -312,7 +312,7 @@ toaster_operation_destroy(gpointer user_data)
 }
 
 static gboolean
-preheat_toaster(gpointer user_data)
+prepare_toaster(gpointer user_data)
 {
 	TlltToasterOperationArgs *args = user_data;
 	TlltToasterPrivate *priv	   = tllt_toaster_get_instance_private(args->toaster);
@@ -369,6 +369,6 @@ tllt_toaster_start(TlltToaster *self, const unsigned int minutes, const unsigned
 		tllt_powerable_off(TLLT_POWERABLE(self->bottom_heating_element));
 	}
 
-	g_timeout_add(500, preheat_toaster, toaster_op_args);
+	g_timeout_add(500, prepare_toaster, toaster_op_args);
 	g_signal_emit(self, obj_signals[SIGNAL_PREPARING], 0);
 }

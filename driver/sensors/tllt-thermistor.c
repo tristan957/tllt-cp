@@ -40,6 +40,7 @@ tllt_thermistor_read(TLLT_UNUSED TlltThermistor *self)
 		value += result[0];
 	}
 #else
+	// Note: this is around 335.84 degrees
 	value = 940 * 10;
 #endif
 
