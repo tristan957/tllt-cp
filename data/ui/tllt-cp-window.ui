@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.22.1 
 
-Copyright (C)
+Copyright (C) 
 
 This file is part of The Learning Little Toaster Control Panel.
 
@@ -216,23 +216,6 @@ Author: Tristan Partin
           </object>
         </child>
         <child>
-          <object class="GtkButton">
-            <property name="label" translatable="yes">Login</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Login or create an account</property>
-            <signal name="clicked" handler="on_login_button_clicked" object="TlltCpWindow" swapped="no"/>
-            <style>
-              <class name="suggested-action"/>
-            </style>
-          </object>
-          <packing>
-            <property name="pack_type">end</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkMenuButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -245,6 +228,23 @@ Author: Tristan Partin
                 <property name="icon_name">open-menu-symbolic</property>
               </object>
             </child>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">Login</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Login or create an account</property>
+            <signal name="clicked" handler="on_login_button_clicked" object="TlltCpWindow" swapped="no"/>
+            <style>
+              <class name="suggested-action"/>
+            </style>
           </object>
           <packing>
             <property name="pack_type">end</property>
@@ -502,7 +502,7 @@ Author: Tristan Partin
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
-                    <property name="top_attach">4</property>
+                    <property name="top_attach">5</property>
                     <property name="width">3</property>
                   </packing>
                 </child>
@@ -511,7 +511,7 @@ Author: Tristan Partin
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="margin_bottom">20</property>
-                    <property name="label" translatable="yes">Temperature</property>
+                    <property name="label" translatable="yes">Heating</property>
                     <style>
                       <class name="tllt-cp-timer-label"/>
                     </style>
@@ -526,6 +526,8 @@ Author: Tristan Partin
                   <object class="GtkSpinButton" id="timer_minutes_spin_button">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
                     <property name="max_length">2</property>
                     <property name="width_chars">2</property>
                     <property name="caps_lock_warning">False</property>
@@ -542,13 +544,14 @@ Author: Tristan Partin
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
-                    <property name="top_attach">3</property>
+                    <property name="top_attach">4</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">center</property>
                     <property name="label" translatable="yes">:</property>
                     <style>
                       <class name="tllt-cp-timer-text"/>
@@ -556,13 +559,15 @@ Author: Tristan Partin
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
-                    <property name="top_attach">3</property>
+                    <property name="top_attach">4</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkSpinButton" id="timer_seconds_spin_button">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
                     <property name="max_length">2</property>
                     <property name="width_chars">2</property>
                     <property name="caps_lock_warning">False</property>
@@ -579,7 +584,7 @@ Author: Tristan Partin
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
-                    <property name="top_attach">3</property>
+                    <property name="top_attach">4</property>
                   </packing>
                 </child>
                 <child>
@@ -611,6 +616,65 @@ Author: Tristan Partin
                     <style>
                       <class name="tllt-cp-timer-label"/>
                     </style>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">3</property>
+                    <property name="width">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkGrid">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="row_spacing">5</property>
+                    <property name="column_spacing">15</property>
+                    <child>
+                      <object class="GtkSwitch">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="active">True</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="active">True</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="top_attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Top Heating Element</property>
+                        <property name="xalign">0</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Bottom Heating Element</property>
+                        <property name="xalign">0</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">1</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
