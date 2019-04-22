@@ -553,7 +553,7 @@ Author: Tristan Partin
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">center</property>
-                    <property name="margin_bottom">20</property>
+                    <property name="margin_bottom">10</property>
                     <property name="label" translatable="yes">:</property>
                     <style>
                       <class name="tllt-cp-timer-text"/>
