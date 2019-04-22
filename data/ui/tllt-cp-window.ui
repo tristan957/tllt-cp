@@ -107,6 +107,7 @@ Author: Tristan Partin
     <property name="window_position">center</property>
     <property name="default_width">900</property>
     <property name="default_height">900</property>
+    <property name="show_menubar">False</property>
     <child type="titlebar">
       <object class="GtkHeaderBar" id="header_bar">
         <property name="visible">True</property>
@@ -509,7 +510,7 @@ Author: Tristan Partin
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_bottom">20</property>
+                    <property name="margin_bottom">10</property>
                     <property name="label" translatable="yes">Heating</property>
                     <style>
                       <class name="tllt-cp-timer-label"/>
@@ -527,7 +528,7 @@ Author: Tristan Partin
                     <property name="can_focus">True</property>
                     <property name="halign">end</property>
                     <property name="valign">center</property>
-                    <property name="margin_bottom">20</property>
+                    <property name="margin_bottom">10</property>
                     <property name="max_length">2</property>
                     <property name="width_chars">2</property>
                     <property name="caps_lock_warning">False</property>
@@ -569,7 +570,7 @@ Author: Tristan Partin
                     <property name="can_focus">True</property>
                     <property name="halign">start</property>
                     <property name="valign">center</property>
-                    <property name="margin_bottom">20</property>
+                    <property name="margin_bottom">10</property>
                     <property name="max_length">2</property>
                     <property name="width_chars">2</property>
                     <property name="caps_lock_warning">False</property>
@@ -612,8 +613,8 @@ Author: Tristan Partin
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_top">20</property>
-                    <property name="margin_bottom">20</property>
+                    <property name="margin_top">10</property>
+                    <property name="margin_bottom">10</property>
                     <property name="label" translatable="yes">Time</property>
                     <style>
                       <class name="tllt-cp-timer-label"/>

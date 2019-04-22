@@ -3,15 +3,15 @@ flowboxchild:selected {
 }
 
 .tllt-cp-timer-text {
-    font-size: 48pt;
+	font-size: 32pt;
 }
 
 .tllt-cp-timer-label {
-	font-size: 20pt;
+	font-size: 16pt;
 }
 
 #temperature-scale {
-	font-size: 20pt;
+	font-size: 16pt;
 }
 
 #tllt-cp-toasting-progress > trough {
