@@ -12,7 +12,6 @@
 #include "tllt-powerable.h"
 #include "tllt-sensor.h"
 #include "tllt-thermistor.h"
-#include "tllt-util.h"
 
 G_DEFINE_TYPE(TlltThermistor, tllt_thermistor, TLLT_TYPE_SENSOR)
 
