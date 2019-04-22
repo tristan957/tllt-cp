@@ -510,7 +510,7 @@ Author: Tristan Partin
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_bottom">10</property>
+                    <property name="margin_bottom">7</property>
                     <property name="label" translatable="yes">Heating</property>
                     <style>
                       <class name="tllt-cp-timer-label"/>
@@ -528,7 +528,7 @@ Author: Tristan Partin
                     <property name="can_focus">True</property>
                     <property name="halign">end</property>
                     <property name="valign">center</property>
-                    <property name="margin_bottom">10</property>
+                    <property name="margin_bottom">7</property>
                     <property name="max_length">2</property>
                     <property name="width_chars">2</property>
                     <property name="caps_lock_warning">False</property>
@@ -553,7 +553,7 @@ Author: Tristan Partin
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">center</property>
-                    <property name="margin_bottom">10</property>
+                    <property name="margin_bottom">7</property>
                     <property name="label" translatable="yes">:</property>
                     <style>
                       <class name="tllt-cp-timer-text"/>
@@ -570,7 +570,7 @@ Author: Tristan Partin
                     <property name="can_focus">True</property>
                     <property name="halign">start</property>
                     <property name="valign">center</property>
-                    <property name="margin_bottom">10</property>
+                    <property name="margin_bottom">7</property>
                     <property name="max_length">2</property>
                     <property name="width_chars">2</property>
                     <property name="caps_lock_warning">False</property>
@@ -613,8 +613,8 @@ Author: Tristan Partin
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="margin_top">10</property>
-                    <property name="margin_bottom">10</property>
+                    <property name="margin_top">7</property>
+                    <property name="margin_bottom">7</property>
                     <property name="label" translatable="yes">Time</property>
                     <style>
                       <class name="tllt-cp-timer-label"/>
