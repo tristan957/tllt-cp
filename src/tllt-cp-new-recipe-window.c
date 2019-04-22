@@ -13,7 +13,7 @@ struct _TlltCpNewRecipeWindow
 typedef struct TlltCpNewRecipeWindowPrivate
 {
 	GtkEntry *recipe_name_entry;
-	GtkComboBox recipe_type_combo;
+	GtkComboBoxText recipe_type_combo;
 
 	TlltCpUser *author;
 } TlltCpNewRecipeWindowPrivate;

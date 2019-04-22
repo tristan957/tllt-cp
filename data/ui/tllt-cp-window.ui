@@ -216,6 +216,23 @@ Author: Tristan Partin
           </object>
         </child>
         <child>
+          <object class="GtkButton">
+            <property name="label" translatable="yes">Login</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="tooltip_text" translatable="yes">Login or create an account</property>
+            <signal name="clicked" handler="on_login_button_clicked" object="TlltCpWindow" swapped="no"/>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkMenuButton">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
@@ -228,23 +245,6 @@ Author: Tristan Partin
                 <property name="icon_name">open-menu-symbolic</property>
               </object>
             </child>
-          </object>
-          <packing>
-            <property name="pack_type">end</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton">
-            <property name="label" translatable="yes">Login</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="tooltip_text" translatable="yes">Login or create an account</property>
-            <signal name="clicked" handler="on_login_button_clicked" object="TlltCpWindow" swapped="no"/>
-            <style>
-              <class name="suggested-action"/>
-            </style>
           </object>
           <packing>
             <property name="pack_type">end</property>
@@ -488,7 +488,6 @@ Author: Tristan Partin
                 <property name="margin_top">5</property>
                 <property name="margin_bottom">5</property>
                 <property name="row_spacing">5</property>
-                <property name="column_spacing">5</property>
                 <child>
                   <object class="GtkButton" id="manual_start_button">
                     <property name="label" translatable="yes">Start</property>
@@ -526,8 +525,9 @@ Author: Tristan Partin
                   <object class="GtkSpinButton" id="timer_minutes_spin_button">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="halign">center</property>
+                    <property name="halign">end</property>
                     <property name="valign">center</property>
+                    <property name="margin_bottom">20</property>
                     <property name="max_length">2</property>
                     <property name="width_chars">2</property>
                     <property name="caps_lock_warning">False</property>
@@ -552,6 +552,7 @@ Author: Tristan Partin
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">center</property>
+                    <property name="margin_bottom">20</property>
                     <property name="label" translatable="yes">:</property>
                     <style>
                       <class name="tllt-cp-timer-text"/>
@@ -566,8 +567,9 @@ Author: Tristan Partin
                   <object class="GtkSpinButton" id="timer_seconds_spin_button">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="halign">center</property>
+                    <property name="halign">start</property>
                     <property name="valign">center</property>
+                    <property name="margin_bottom">20</property>
                     <property name="max_length">2</property>
                     <property name="width_chars">2</property>
                     <property name="caps_lock_warning">False</property>

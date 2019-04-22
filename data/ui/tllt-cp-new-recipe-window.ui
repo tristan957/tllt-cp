@@ -2,14 +2,6 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkTreeStore" id="recipe_type_tree">
-    <columns>
-      <!-- column-name name -->
-      <column type="gchararray"/>
-      <!-- column-name type -->
-      <column type="gint"/>
-    </columns>
-  </object>
   <template class="TlltCpNewRecipeWindow" parent="GtkWindow">
     <property name="can_focus">False</property>
     <property name="resizable">False</property>
@@ -80,10 +72,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkComboBox" id="recipe_type_combo">
+              <object class="GtkComboBoxText" id="recipe_type_combo">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="model">recipe_type_tree</property>
+                <items>
+                  <item id="0" translatable="yes">Toast</item>
+                  <item id="1" translatable="yes">Pizza</item>
+                  <item id="2" translatable="yes">Bagel</item>
+                  <item id="3" translatable="yes">Poptart</item>
+                </items>
               </object>
               <packing>
                 <property name="left_attach">1</property>
