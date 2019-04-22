@@ -38,6 +38,14 @@ typedef enum TlltCpUserProperties
 
 static GParamSpec *obj_properties[N_PROPS];
 
+typedef enum TlltCpUserSignals
+{
+	SIGNAL_RECIPE_ADDED,
+	N_SIGNALS,
+} TlltCpUserSignals;
+
+static guint obj_signals[N_SIGNALS];
+
 static gboolean
 tllt_cp_user_deserialize_property(JsonSerializable *serializable, const gchar *prop_name,
 								  GValue *val, GParamSpec *pspec, JsonNode *prop_node)
@@ -160,6 +168,10 @@ tllt_cp_user_class_init(TlltCpUserClass *klass)
 														G_PARAM_PRIVATE | G_PARAM_READWRITE);
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
+
+	obj_signals[SIGNAL_RECIPE_ADDED] =
+		g_signal_new("recipe-added", G_TYPE_FROM_CLASS(klass), G_SIGNAL_RUN_LAST, 0, NULL, NULL,
+					 NULL, G_TYPE_NONE, 1, TLLT_CP_TYPE_RECIPE);
 }
 
 static void
@@ -211,7 +223,7 @@ tllt_cp_user_create(TlltCpClient *client, const char *name, const char *email, c
 	GObject *obj =
 		tllt_cp_client_post_request(client, TLLT_CP_TYPE_USER, endpoint->str, G_OBJECT(dto), err);
 
-	if (err == NULL) {
+	if (*err != NULL) {
 		return NULL;
 	}
 
@@ -227,17 +239,19 @@ tllt_cp_user_add_recipe(TlltCpUser *self, TlltCpClient *client, const char *name
 	TlltCpUserPrivate *priv = tllt_cp_user_get_instance_private(self);
 
 	g_autoptr(TlltCpCreateRecipeDto) dto = tllt_cp_create_recipe_dto_new(name, type);
-	g_autoptr(GString) endpoint			 = g_string_new("/users");
-	g_string_append_printf(endpoint, "/%u/recipes", priv->id);
+	g_autoptr(GString) endpoint			 = g_string_new(client->server);
+	g_string_append_printf(endpoint, "/users/%u/recipes", priv->id);
 	GObject *obj =
 		tllt_cp_client_post_request(client, TLLT_CP_TYPE_RECIPE, endpoint->str, G_OBJECT(dto), err);
 
-	if (err == NULL) {
+	if (*err != NULL) {
 		return NULL;
 	}
 
 	TlltCpRecipe *recipe = TLLT_CP_RECIPE(obj);
 	priv->recipes		 = g_list_append(priv->recipes, recipe);
+
+	g_signal_emit(self, obj_signals[SIGNAL_RECIPE_ADDED], 0, recipe);
 
 	return recipe;
 }

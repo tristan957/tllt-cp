@@ -11,6 +11,7 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE(TlltCpNewRecipeWindow, tllt_cp_new_recipe_window, TLLT_CP, NEW_RECIPE_WINDOW,
 					 GtkWindow)
 
-TlltCpNewRecipeWindow *tllt_cp_new_recipe_window_new(GtkWindow *parent, TlltCpUser *author);
+TlltCpNewRecipeWindow *tllt_cp_new_recipe_window_new(GtkWindow *parent, TlltCpClient *client,
+													 TlltCpUser *author);
 
 G_END_DECLS

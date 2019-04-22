@@ -48,7 +48,7 @@ tllt_cp_create_recipe_dto_get_property(GObject *obj, guint prop_id, GValue *val,
 		g_value_set_string(val, priv->name);
 		break;
 	case PROP_TYPE:
-		g_value_set_enum(val, priv->type);
+		g_value_set_uint(val, priv->type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -69,7 +69,7 @@ tllt_cp_create_recipe_dto_set_property(GObject *obj, guint prop_id, const GValue
 		priv->name = g_value_dup_string(val);
 		break;
 	case PROP_TYPE:
-		priv->type = g_value_get_enum(val);
+		priv->type = g_value_get_uint(val);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(obj, prop_id, pspec);
@@ -86,11 +86,12 @@ tllt_cp_create_recipe_dto_class_init(TlltCpCreateRecipeDtoClass *klass)
 	obj_class->get_property = tllt_cp_create_recipe_dto_get_property;
 	obj_class->set_property = tllt_cp_create_recipe_dto_set_property;
 
-	obj_properties[PROP_NAME] = g_param_spec_string("name", _("Name"), _("Name of the recipe"),
-													NULL, G_PARAM_CONSTRUCT_ONLY | G_PARAM_PRIVATE);
+	obj_properties[PROP_NAME] =
+		g_param_spec_string("name", _("Name"), _("Name of the recipe"), NULL,
+							G_PARAM_CONSTRUCT_ONLY | G_PARAM_PRIVATE | G_PARAM_READWRITE);
 	obj_properties[PROP_TYPE] =
-		g_param_spec_enum("type", _("Type"), _("Type of the recipe"), G_TYPE_ENUM, 0,
-						  G_PARAM_CONSTRUCT_ONLY | G_PARAM_PRIVATE);
+		g_param_spec_uint("type", _("Type"), _("Type of the recipe"), 0, POPTART, TOAST,
+						  G_PARAM_CONSTRUCT_ONLY | G_PARAM_PRIVATE | G_PARAM_READWRITE);
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
 }

@@ -12,7 +12,7 @@ G_BEGIN_DECLS
 
 typedef enum TlltCpRecipeType
 {
-	TOAST,
+	TOAST = 1,
 	PIZZA,
 	BAGEL,
 	POPTART,

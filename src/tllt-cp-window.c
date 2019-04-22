@@ -54,32 +54,11 @@ tllt_cp_window_user_tile_clicked(GtkButton *widget, gpointer flow_box)
 						  GTK_FLOW_BOX_CHILD(gtk_widget_get_parent(GTK_WIDGET(widget))), NULL);
 }
 
-void
-tllt_cp_window_add_user(TlltCpWindow *self, TlltCpUser *user)
+static void
+recipe_list_box_toggle_run_buttons(GtkWidget *widget, gpointer user_data)
 {
-	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
-
-	GtkWidget *flow_box_child = gtk_flow_box_child_new();
-	GtkWidget *user_tile	  = gtk_button_new();
-	GtkWidget *internal_box   = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-
-	gtk_widget_set_halign(flow_box_child, GTK_ALIGN_FILL);
-	gtk_widget_set_valign(flow_box_child, GTK_ALIGN_CENTER);
-
-	g_object_connect((gpointer) user_tile, "signal::clicked",
-					 G_CALLBACK(tllt_cp_window_user_tile_clicked), priv->user_profiles_flow_box,
-					 NULL);
-
-	gtk_box_pack_start(GTK_BOX(internal_box),
-					   gtk_image_new_from_icon_name("user-info", GTK_ICON_SIZE_DND), TRUE, TRUE, 0);
-	gtk_box_pack_end(GTK_BOX(internal_box), gtk_label_new(tllt_cp_user_get_name(user)), TRUE, TRUE,
-					 0);
-	gtk_container_add(GTK_CONTAINER(user_tile), internal_box);
-	gtk_container_add(GTK_CONTAINER(flow_box_child), user_tile);
-	gtk_container_add(GTK_CONTAINER(priv->user_profiles_flow_box), flow_box_child);
-	gtk_widget_show_all(GTK_WIDGET(priv->user_profiles_flow_box));
-
-	priv->logged_in_users = g_slist_append(priv->logged_in_users, (gpointer) user);
+	TlltCpRecipeListItem *list_item = TLLT_CP_RECIPE_LIST_ITEM(gtk_bin_get_child(GTK_BIN(widget)));
+	tllt_cp_recipe_list_item_toggle_run_button(list_item, *(gboolean *) user_data);
 }
 
 static void
@@ -96,6 +75,12 @@ static void
 remove_children_from_user_profiles_flow_box(gpointer data, gpointer user_data)
 {
 	gtk_container_remove(GTK_CONTAINER(user_data), GTK_WIDGET(data));
+}
+
+static void
+recipe_list_box_remove_all(GtkWidget *widget, gpointer data)
+{
+	gtk_container_remove(GTK_CONTAINER(data), widget);
 }
 
 static void
@@ -125,6 +110,9 @@ on_logout_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 
 		gtk_revealer_set_reveal_child(priv->user_actions_revealer, FALSE);
 		gtk_revealer_set_reveal_child(priv->recipe_revealer, FALSE);
+
+		GtkContainer *container = GTK_CONTAINER(priv->recipe_list_box);
+		gtk_container_foreach(container, recipe_list_box_remove_all, container);
 	}
 }
 
@@ -139,47 +127,6 @@ on_theme_state_changed(GtkCheckButton *widget, G_GNUC_UNUSED gpointer user_data)
 {
 	g_object_set(gtk_settings_get_default(), "gtk-application-prefer-dark-theme",
 				 gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)), NULL);
-}
-
-static void
-recipe_list_box_remove_all(GtkWidget *widget, gpointer data)
-{
-	gtk_container_remove(GTK_CONTAINER(data), widget);
-}
-
-static void
-on_user_profiles_flow_box_child_activated(G_GNUC_UNUSED GtkFlowBox *widget, GtkFlowBoxChild *child,
-										  gpointer user_data)
-{
-	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
-	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
-
-	const gint index		  = gtk_flow_box_child_get_index(child);
-	TlltCpUser *prev_selected = priv->selected_user;
-	priv->selected_user		  = TLLT_CP_USER(g_slist_nth_data(priv->logged_in_users, index));
-	g_return_if_fail(priv->selected_user != NULL);
-
-	// Block the refresh for performance reasons if you click the same person
-	if (prev_selected == NULL ||
-		tllt_cp_user_get_id(prev_selected) != tllt_cp_user_get_id(priv->selected_user)) {
-		GList *recipes = tllt_cp_user_get_recipes(priv->selected_user);
-
-		GtkContainer *container = GTK_CONTAINER(priv->recipe_list_box);
-		gtk_container_foreach(container, recipe_list_box_remove_all, container);
-
-		for (guint i = 0; i < g_list_length(recipes); i++) {
-			gtk_container_add(container, GTK_WIDGET(tllt_cp_recipe_list_item_new(
-											 TLLT_CP_RECIPE(g_list_nth(recipes, i)->data))));
-		}
-	}
-
-	if (!gtk_revealer_get_child_revealed(priv->user_actions_revealer)) {
-		gtk_revealer_set_reveal_child(priv->user_actions_revealer, TRUE);
-	}
-
-	if (!gtk_revealer_get_child_revealed(priv->recipe_revealer)) {
-		gtk_revealer_set_reveal_child(priv->recipe_revealer, TRUE);
-	}
 }
 
 static void
@@ -198,7 +145,7 @@ on_recipe_revealer_new_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer 
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
 	TlltCpNewRecipeWindow *recipe_window =
-		tllt_cp_new_recipe_window_new(GTK_WINDOW(self), priv->selected_user);
+		tllt_cp_new_recipe_window_new(GTK_WINDOW(self), priv->client, priv->selected_user);
 	gtk_window_present(GTK_WINDOW(recipe_window));
 }
 
@@ -235,6 +182,103 @@ update_timer(const unsigned int minutes, const unsigned int seconds, const doubl
 	sprintf(buffer, "%02d", seconds);
 	gtk_label_set_label(priv->timer_seconds_label, buffer);
 	gtk_progress_bar_set_fraction(priv->toasting_progress_bar, progress);
+}
+
+static void
+on_recipe_started(G_GNUC_UNUSED TlltCpRecipeListItem *list_item, G_GNUC_UNUSED TlltCpRecipe *recipe,
+				  gpointer user_data)
+{
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	// TODO: Get info from recipe
+	g_object_ref(self);
+	tllt_toaster_start(priv->toaster, 2, 0, 425, update_timer, self);
+}
+
+static void
+on_user_recipe_added(G_GNUC_UNUSED TlltCpUser *user, TlltCpRecipe *recipe, gpointer user_data)
+{
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	TlltCpRecipeListItem *list_item = tllt_cp_recipe_list_item_new(recipe);
+	g_object_connect(list_item, "signal::recipe-started", G_CALLBACK(on_recipe_started), self,
+					 NULL);
+
+	gtk_container_add(GTK_CONTAINER(priv->recipe_list_box), GTK_WIDGET(list_item));
+}
+
+void
+tllt_cp_window_add_user(G_GNUC_UNUSED TlltCpWindow *self, TlltCpUser *user)
+{
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	GtkWidget *flow_box_child = gtk_flow_box_child_new();
+	GtkWidget *user_tile	  = gtk_button_new();
+	GtkWidget *internal_box   = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+
+	gtk_widget_set_halign(flow_box_child, GTK_ALIGN_FILL);
+	gtk_widget_set_valign(flow_box_child, GTK_ALIGN_CENTER);
+
+	g_object_connect((gpointer) user_tile, "signal::clicked",
+					 G_CALLBACK(tllt_cp_window_user_tile_clicked), priv->user_profiles_flow_box,
+					 NULL);
+
+	gtk_box_pack_start(GTK_BOX(internal_box),
+					   gtk_image_new_from_icon_name("user-info", GTK_ICON_SIZE_DND), TRUE, TRUE, 0);
+	gtk_box_pack_end(GTK_BOX(internal_box), gtk_label_new(tllt_cp_user_get_name(user)), TRUE, TRUE,
+					 0);
+	gtk_container_add(GTK_CONTAINER(user_tile), internal_box);
+	gtk_container_add(GTK_CONTAINER(flow_box_child), user_tile);
+	gtk_container_add(GTK_CONTAINER(priv->user_profiles_flow_box), flow_box_child);
+	gtk_widget_show_all(GTK_WIDGET(priv->user_profiles_flow_box));
+
+	g_object_connect(user, "signal::recipe-added", G_CALLBACK(on_user_recipe_added), self, NULL);
+
+	priv->logged_in_users = g_slist_append(priv->logged_in_users, (gpointer) user);
+}
+
+static void
+on_user_profiles_flow_box_child_activated(G_GNUC_UNUSED GtkFlowBox *widget, GtkFlowBoxChild *child,
+										  gpointer user_data)
+{
+	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
+	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	const gint index		  = gtk_flow_box_child_get_index(child);
+	TlltCpUser *prev_selected = priv->selected_user;
+	priv->selected_user		  = TLLT_CP_USER(g_slist_nth_data(priv->logged_in_users, index));
+	g_return_if_fail(priv->selected_user != NULL);
+
+	// Block the refresh for performance reasons if you click the same person
+	if (prev_selected == NULL ||
+		tllt_cp_user_get_id(prev_selected) != tllt_cp_user_get_id(priv->selected_user)) {
+		GList *recipes = tllt_cp_user_get_recipes(priv->selected_user);
+
+		GtkContainer *container = GTK_CONTAINER(priv->recipe_list_box);
+		gtk_container_foreach(container, recipe_list_box_remove_all, container);
+
+		for (guint i = 0; i < g_list_length(recipes); i++) {
+			TlltCpRecipeListItem *list_item =
+				tllt_cp_recipe_list_item_new(TLLT_CP_RECIPE(g_list_nth(recipes, i)->data));
+			if (tllt_toaster_is_running(priv->toaster)) {
+				tllt_cp_recipe_list_item_toggle_run_button(list_item, FALSE);
+			}
+
+			g_object_connect(list_item, "signal::recipe-started", G_CALLBACK(on_recipe_started),
+							 self, NULL);
+			gtk_container_add(container, GTK_WIDGET(list_item));
+		}
+	}
+
+	if (!gtk_revealer_get_child_revealed(priv->user_actions_revealer)) {
+		gtk_revealer_set_reveal_child(priv->user_actions_revealer, TRUE);
+	}
+
+	if (!gtk_revealer_get_child_revealed(priv->recipe_revealer)) {
+		gtk_revealer_set_reveal_child(priv->recipe_revealer, TRUE);
+	}
 }
 
 static gboolean
@@ -302,10 +346,14 @@ on_toaster_stopped(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
-	g_object_unref(self);
+	g_object_unref(self);	// Refers to ref when toaster is started
 
 	gtk_widget_set_visible(GTK_WIDGET(priv->toasting_status_box), FALSE);
 	gtk_stack_set_visible_child_name(priv->manual_stack, "edit-page");
+
+	gboolean state = GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID;
+	gtk_container_foreach(GTK_CONTAINER(priv->recipe_list_box), recipe_list_box_toggle_run_buttons,
+						  &state);
 }
 
 static gchar *
@@ -345,6 +393,10 @@ on_toaster_preparing(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
 
 	gtk_stack_set_visible_child_name(priv->status_stack, "preparation-page");
 	gtk_stack_set_visible_child_name(priv->manual_stack, "display-page");
+
+	gboolean state = FALSE;
+	gtk_container_foreach(GTK_CONTAINER(priv->recipe_list_box), recipe_list_box_toggle_run_buttons,
+						  &state);
 }
 
 TlltCpWindow *

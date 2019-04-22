@@ -223,6 +223,7 @@ update_toaster_destroy(gpointer user_data)
 	TlltToasterOperationArgs *args = user_data;
 	TlltToasterPrivate *priv	   = tllt_toaster_get_instance_private(args->toaster);
 
+	priv->running = FALSE;
 	g_signal_emit(args->toaster, obj_signals[SIGNAL_STOPPED], 0);
 
 	// Cancel other timeouts if they exist
@@ -325,6 +326,7 @@ prepare_toaster(gpointer user_data)
 
 	if (g_cancellable_is_cancelled(priv->cancellable)) {
 		g_signal_emit(args->toaster, obj_signals[SIGNAL_STOPPED], 0);
+		priv->running = FALSE;
 		toaster_operation_destroy(args);
 	} else {
 		args->ref_count++;
@@ -370,5 +372,14 @@ tllt_toaster_start(TlltToaster *self, const unsigned int minutes, const unsigned
 	}
 
 	g_timeout_add(500, prepare_toaster, toaster_op_args);
+	priv->running = TRUE;
 	g_signal_emit(self, obj_signals[SIGNAL_PREPARING], 0);
+}
+
+gboolean
+tllt_toaster_is_running(TlltToaster *self)
+{
+	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
+
+	return priv->running;
 }

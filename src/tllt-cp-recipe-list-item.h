@@ -10,3 +10,4 @@ G_DECLARE_FINAL_TYPE(TlltCpRecipeListItem, tllt_cp_recipe_list_item, TLLT_CP, RE
 					 GtkBox)
 
 TlltCpRecipeListItem *tllt_cp_recipe_list_item_new(TlltCpRecipe *recipe);
+void tllt_cp_recipe_list_item_toggle_run_button(TlltCpRecipeListItem *self, gboolean state);

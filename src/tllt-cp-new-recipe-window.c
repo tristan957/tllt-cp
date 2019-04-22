@@ -13,8 +13,9 @@ struct _TlltCpNewRecipeWindow
 typedef struct TlltCpNewRecipeWindowPrivate
 {
 	GtkEntry *recipe_name_entry;
-	GtkComboBoxText recipe_type_combo;
+	GtkComboBoxText *recipe_type_combo;
 
+	TlltCpClient *client;
 	TlltCpUser *author;
 } TlltCpNewRecipeWindowPrivate;
 
@@ -22,7 +23,8 @@ G_DEFINE_TYPE_WITH_PRIVATE(TlltCpNewRecipeWindow, tllt_cp_new_recipe_window, GTK
 
 typedef enum TlltCpNewRecipeWindowProps
 {
-	PROP_AUTHOR = 1,
+	PROP_CLIENT = 1,
+	PROP_AUTHOR,
 	N_PROPS,
 } TlltCpNewRecipeWindowProps;
 
@@ -35,6 +37,7 @@ tllt_cp_new_recipe_window_finalize(GObject *obj)
 	TlltCpNewRecipeWindowPrivate *priv = tllt_cp_new_recipe_window_get_instance_private(self);
 
 	g_object_unref(priv->author);
+	g_object_unref(priv->client);
 
 	G_OBJECT_CLASS(tllt_cp_new_recipe_window_parent_class)->finalize(obj);
 }
@@ -46,6 +49,9 @@ tllt_cp_new_recipe_window_get_property(GObject *obj, guint prop_id, GValue *val,
 	TlltCpNewRecipeWindowPrivate *priv = tllt_cp_new_recipe_window_get_instance_private(self);
 
 	switch (prop_id) {
+	case PROP_CLIENT:
+		g_value_set_object(val, priv->client);
+		break;
 	case PROP_AUTHOR:
 		g_value_set_object(val, priv->author);
 		break;
@@ -62,6 +68,9 @@ tllt_cp_new_recipe_window_set_property(GObject *obj, guint prop_id, const GValue
 	TlltCpNewRecipeWindowPrivate *priv = tllt_cp_new_recipe_window_get_instance_private(self);
 
 	switch (prop_id) {
+	case PROP_CLIENT:
+		priv->client = g_value_dup_object(val);
+		break;
 	case PROP_AUTHOR:
 		priv->author = g_value_dup_object(val);
 		break;
@@ -81,11 +90,18 @@ on_cancel_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 static void
 on_create_recipe_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
 {
-	TlltCpNewRecipeWindow *self = TLLT_CP_NEW_RECIPE_WINDOW(user_data);
-	// TlltCpNewRecipeWindow *priv = tllt_cp_new_recipe_window_get_instance_private(self);
+	TlltCpNewRecipeWindow *self		   = TLLT_CP_NEW_RECIPE_WINDOW(user_data);
+	TlltCpNewRecipeWindowPrivate *priv = tllt_cp_new_recipe_window_get_instance_private(self);
 
-	// Grab user and make post request
-	gtk_window_close(GTK_WINDOW(self));
+	g_autoptr(GError) err = NULL;
+	TlltCpRecipe *recipe  = tllt_cp_user_add_recipe(
+		 priv->author, priv->client, gtk_entry_get_text(priv->recipe_name_entry),
+		 gtk_combo_box_get_active(GTK_COMBO_BOX(priv->recipe_type_combo)), &err);
+
+	// TODO: do something meaningful with error
+	if (err != NULL) {
+		g_printerr("%s\n", err->message);
+	}
 }
 
 static void
@@ -98,6 +114,9 @@ tllt_cp_new_recipe_window_class_init(TlltCpNewRecipeWindowClass *klass)
 	obj_class->get_property = tllt_cp_new_recipe_window_get_property;
 	obj_class->set_property = tllt_cp_new_recipe_window_set_property;
 
+	obj_properties[PROP_CLIENT] = g_param_spec_object(
+		"client", _("Client"), _("Client to make requests with"), TLLT_CP_TYPE_CLIENT,
+		G_PARAM_PRIVATE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY);
 	obj_properties[PROP_AUTHOR] =
 		g_param_spec_object("author", _("Author"), _("Author of the recipe"), TLLT_CP_TYPE_USER,
 							G_PARAM_PRIVATE | G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY);
@@ -121,8 +140,8 @@ tllt_cp_new_recipe_window_init(TlltCpNewRecipeWindow *self)
 }
 
 TlltCpNewRecipeWindow *
-tllt_cp_new_recipe_window_new(GtkWindow *parent, TlltCpUser *author)
+tllt_cp_new_recipe_window_new(GtkWindow *parent, TlltCpClient *client, TlltCpUser *author)
 {
-	return g_object_new(TLLT_CP_TYPE_NEW_RECIPE_WINDOW, "transient-for", parent, "author", author,
-						NULL);
+	return g_object_new(TLLT_CP_TYPE_NEW_RECIPE_WINDOW, "transient-for", parent, "client", client,
+						"author", author, NULL);
 }

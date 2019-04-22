@@ -34,6 +34,7 @@ static GParamSpec *obj_properties[N_PROPS];
 typedef enum TlltCpRecipeListItemSignals
 {
 	SIGNAL_RECIPE_DELETED,
+	SIGNAL_RECIPE_STARTED,
 	N_SIGNALS,
 } TlltCpRecipeListItemSignals;
 
@@ -55,8 +56,17 @@ on_recipe_save_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_dat
 	TlltCpRecipeListItem *self		  = TLLT_CP_RECIPE_LIST_ITEM(user_data);
 	TlltCpRecipeListItemPrivate *priv = tllt_cp_recipe_list_item_get_instance_private(self);
 
-	const char *name = gtk_entry_buffer_get_text(GTK_ENTRY_BUFFER(priv->recipe_name_entry));
+	const char *name = gtk_entry_get_text(priv->recipe_name_entry);
 	tllt_cp_recipe_set_name(priv->recipe, name);
+}
+
+static void
+on_recipe_run_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_data)
+{
+	TlltCpRecipeListItem *self		  = TLLT_CP_RECIPE_LIST_ITEM(user_data);
+	TlltCpRecipeListItemPrivate *priv = tllt_cp_recipe_list_item_get_instance_private(self);
+
+	g_signal_emit(self, obj_signals[SIGNAL_RECIPE_STARTED], 0, priv->recipe);
 }
 
 static void
@@ -152,6 +162,9 @@ tllt_cp_recipe_list_item_class_init(TlltCpRecipeListItemClass *klass)
 	obj_signals[SIGNAL_RECIPE_DELETED] =
 		g_signal_new("recipe-deleted", G_TYPE_FROM_CLASS(klass), G_SIGNAL_RUN_LAST, 0, NULL, NULL,
 					 NULL, G_TYPE_NONE, 0);
+	obj_signals[SIGNAL_RECIPE_STARTED] =
+		g_signal_new("recipe-started", G_TYPE_FROM_CLASS(klass), G_SIGNAL_RUN_LAST, 0, NULL, NULL,
+					 NULL, G_TYPE_NONE, 1, TLLT_CP_TYPE_RECIPE);
 
 	gtk_widget_class_set_template_from_resource(
 		wid_class, "/ht/sr/git/tristan957/tllt-cp/ui/tllt-cp-recipe-list-item.ui");
@@ -167,6 +180,7 @@ tllt_cp_recipe_list_item_class_init(TlltCpRecipeListItemClass *klass)
 												 recipe_name_entry);
 	gtk_widget_class_bind_template_callback(wid_class, on_recipe_delete_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_recipe_save_button_clicked);
+	gtk_widget_class_bind_template_callback(wid_class, on_recipe_run_button_clicked);
 }
 
 static void
@@ -179,4 +193,12 @@ TlltCpRecipeListItem *
 tllt_cp_recipe_list_item_new(TlltCpRecipe *recipe)
 {
 	return g_object_new(TLLT_CP_TYPE_RECIPE_LIST_ITEM, "recipe", recipe, NULL);
+}
+
+void
+tllt_cp_recipe_list_item_toggle_run_button(TlltCpRecipeListItem *self, gboolean state)
+{
+	TlltCpRecipeListItemPrivate *priv = tllt_cp_recipe_list_item_get_instance_private(self);
+
+	gtk_widget_set_sensitive(GTK_WIDGET(priv->recipe_run_button), state);
 }
