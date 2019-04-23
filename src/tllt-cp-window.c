@@ -3,6 +3,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "tllt-cp-feedback-dialog.h"
 #include "tllt-cp-login-window.h"
 #include "tllt-cp-new-recipe-window.h"
 #include "tllt-cp-recipe-list-item.h"
@@ -366,7 +367,8 @@ on_toaster_stopped(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
 	priv->currently_running_recipe = NULL;
 
 	if (priv->toaster_user != NULL && priv->currently_running_recipe != NULL) {
-		g_print("Present user opinion window\n");
+		TlltCpFeedbackDialog *dialog = tllt_cp_feedback_dialog_new(priv->toaster_user);
+		gtk_dialog_run(GTK_DIALOG(dialog));
 	}
 
 	g_object_unref(self);	// Refers to ref when toaster is started
