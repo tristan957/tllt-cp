@@ -90,7 +90,7 @@ tllt_cp_create_recipe_dto_class_init(TlltCpCreateRecipeDtoClass *klass)
 		g_param_spec_string("name", _("Name"), _("Name of the recipe"), NULL,
 							G_PARAM_CONSTRUCT_ONLY | G_PARAM_PRIVATE | G_PARAM_READWRITE);
 	obj_properties[PROP_TYPE] =
-		g_param_spec_uint("type", _("Type"), _("Type of the recipe"), 0, POPTART, TOAST,
+		g_param_spec_uint("type", _("Type"), _("Type of the recipe"), 0, POPTART, 0,
 						  G_PARAM_CONSTRUCT_ONLY | G_PARAM_PRIVATE | G_PARAM_READWRITE);
 
 	g_object_class_install_properties(obj_class, N_PROPS, obj_properties);
