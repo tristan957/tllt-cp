@@ -76,9 +76,9 @@
                 <property name="can_focus">False</property>
                 <property name="active">0</property>
                 <items>
-                  <item id="0" translatable="yes">Toast</item>
-                  <item id="1" translatable="yes">Pizza</item>
-                  <item id="2" translatable="yes">Bagel</item>
+                  <item id="1" translatable="yes">Toast</item>
+                  <item id="2" translatable="yes">Pizza</item>
+                  <item id="3" translatable="yes">Bagel</item>
                   <item id="3" translatable="yes">Poptart</item>
                 </items>
               </object>
