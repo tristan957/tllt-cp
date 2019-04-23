@@ -69,9 +69,15 @@ tllt_cp_new_recipe_window_set_property(GObject *obj, guint prop_id, const GValue
 
 	switch (prop_id) {
 	case PROP_CLIENT:
+		if (priv->client != NULL) {
+			g_object_unref(priv->client);
+		}
 		priv->client = g_value_dup_object(val);
 		break;
 	case PROP_AUTHOR:
+		if (priv->author != NULL) {
+			g_object_unref(priv->author);
+		}
 		priv->author = g_value_dup_object(val);
 		break;
 	default:
@@ -102,6 +108,8 @@ on_create_recipe_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_d
 	if (err != NULL) {
 		g_printerr("%s\n", err->message);
 	}
+
+	gtk_window_close(GTK_WINDOW(self));
 }
 
 static void

@@ -18,6 +18,7 @@ typedef struct TlltCpBuffer
 struct _TlltCpClient
 {
 	GObject parent_instance;
+
 	CURL *handle;
 	char *server;
 };
@@ -29,7 +30,7 @@ TlltCpClient *tllt_cp_client_new_from_environment();
 GObject *tllt_cp_client_get_request(TlltCpClient *self, const GType type, const char *endpoint,
 									GError **err) G_GNUC_WARN_UNUSED_RESULT;
 GObject *tllt_cp_client_post_request(TlltCpClient *self, const GType type, const char *endpoint,
-									 GObject *data, GError **err) G_GNUC_WARN_UNUSED_RESULT;
+									 GObject *data, GError **err);
 size_t tllt_cp_client_write_cb(char *ptr, size_t size, size_t nmemb, void *user_data);
 
 G_END_DECLS

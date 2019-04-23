@@ -8,6 +8,7 @@
 #include "dto/tllt-cp-authentication-dto.h"
 #include "dto/tllt-cp-create-recipe-dto.h"
 #include "dto/tllt-cp-create-user-dto.h"
+#include "dto/tllt-cp-user-feedback-dto.h"
 #include "tllt-cp-client.h"
 #include "tllt-cp-recipe.h"
 #include "tllt-cp-user.h"
@@ -305,4 +306,21 @@ tllt_cp_user_get_cooking_details_for_recipe(TlltCpUser *self, TlltCpClient *clie
 	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
 
 	return TLLT_CP_COOKING_DETAILS_DTO(obj);
+}
+
+void
+tllt_cp_user_adjust_scale(TlltCpUser *self, TlltCpClient *client, const TlltCpUserFeedback choice,
+						  GError **err)
+{
+	g_return_if_fail(err == NULL || *err == NULL);
+
+	TlltCpUserPrivate *priv = tllt_cp_user_get_instance_private(self);
+
+	g_autoptr(GString) endpoint = g_string_new(client->server);
+	g_string_append_printf(endpoint, "/users/%u/userScale", priv->id);
+	g_autoptr(TlltCpUserFeedbackDto) dto = tllt_cp_user_feedback_new(choice);
+
+	tllt_cp_client_post_request(client, G_TYPE_NONE, endpoint->str, G_OBJECT(dto), err);
+
+	g_return_if_fail(err == NULL || *err == NULL);
 }

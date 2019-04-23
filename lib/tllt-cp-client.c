@@ -228,9 +228,11 @@ tllt_cp_client_post_request(TlltCpClient *self, const GType type, const char *en
 			g_free(deserialized);
 			goto on_error;
 		}
+
 		g_free(deserialized);
 	}
 
+	// if (type != G_TYPE_NONE) {
 	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_WRITEFUNCTION,
 									 tllt_cp_client_write_cb)) != CURLE_OK) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_WRITEFUNCTION: %s",
@@ -242,6 +244,8 @@ tllt_cp_client_post_request(TlltCpClient *self, const GType type, const char *en
 					curl_easy_strerror(req_code));
 		goto on_error;
 	}
+	// }
+
 	if ((req_code = curl_easy_setopt(self->handle, CURLOPT_USERAGENT, "libcurl/tllt-cp")) !=
 		CURLE_OK) {
 		g_set_error(err, PACKAGE_DOMAIN, ERROR_CURL, "Failed to set CURLOPT_USERAGENT: %s",
@@ -288,7 +292,10 @@ tllt_cp_client_post_request(TlltCpClient *self, const GType type, const char *en
 		goto on_error;
 	}
 
-	GObject *obj = json_gobject_from_data(type, buffer.buf, -1, err);
+	GObject *obj = NULL;
+	if (type != G_TYPE_NONE) {
+		obj = json_gobject_from_data(type, buffer.buf, -1, err);
+	}
 
 	curl_slist_free_all(headers);
 	curl_easy_reset(self->handle);

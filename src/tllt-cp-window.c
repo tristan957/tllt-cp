@@ -363,13 +363,15 @@ on_toaster_stopped(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
+	if (priv->toaster_user != NULL && priv->currently_running_recipe != NULL) {
+		TlltCpFeedbackDialog *dialog =
+			tllt_cp_feedback_dialog_new(GTK_WINDOW(self), priv->toaster_user, priv->client);
+		gtk_dialog_run(GTK_DIALOG(dialog));
+		gtk_widget_destroy(GTK_WIDGET(dialog));
+	}
+
 	priv->toaster_user			   = NULL;
 	priv->currently_running_recipe = NULL;
-
-	if (priv->toaster_user != NULL && priv->currently_running_recipe != NULL) {
-		TlltCpFeedbackDialog *dialog = tllt_cp_feedback_dialog_new(priv->toaster_user);
-		gtk_dialog_run(GTK_DIALOG(dialog));
-	}
 
 	g_object_unref(self);	// Refers to ref when toaster is started
 

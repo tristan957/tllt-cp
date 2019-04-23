@@ -20,6 +20,13 @@ struct _TlltCpUser
 	GObject parent_instance;
 };
 
+typedef enum TlltCpUserFeedback
+{
+	LESS_TOASTY = 1,
+	THE_SAME,
+	MORE_TOASTY,
+} TlltCpUserFeedback;
+
 TlltCpUser *tllt_cp_user_get_by_id(TlltCpClient *client, unsigned int id, GError **err);
 TlltCpUser *tllt_cp_user_authenticate(TlltCpClient *client, const char *email, const char *password,
 									  GError **err);
@@ -36,5 +43,7 @@ TlltCpCookingDetailsDto *tllt_cp_user_get_cooking_details_for_recipe(TlltCpUser 
 																	 TlltCpClient *client,
 																	 TlltCpRecipe *recipe,
 																	 GError **err);
+void tllt_cp_user_adjust_scale(TlltCpUser *self, TlltCpClient *client,
+							   const TlltCpUserFeedback choice, GError **err);
 
 G_END_DECLS

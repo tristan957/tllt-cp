@@ -11,6 +11,7 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE(TlltCpFeedbackDialog, tllt_cp_feedback_dialog, TLLT_CP, FEEDBACK_DIALOG,
 					 GtkMessageDialog)
 
-TlltCpFeedbackDialog *tllt_cp_feedback_dialog_new(TlltCpUser *user);
+TlltCpFeedbackDialog *tllt_cp_feedback_dialog_new(GtkWindow *parent, TlltCpUser *user,
+												  TlltCpClient *client);
 
 G_END_DECLS
