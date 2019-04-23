@@ -41,6 +41,8 @@ typedef struct TlltCpWindowPrivate
 	GSList *logged_in_users;
 	TlltCpClient *client;
 	TlltCpUser *selected_user;
+	TlltCpUser *toaster_user;
+	TlltCpRecipe *currently_running_recipe;
 } TlltCpWindowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE(TlltCpWindow, tllt_cp_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -170,30 +172,43 @@ show_leading_zeros(GtkSpinButton *widget, G_GNUC_UNUSED gpointer user_data)
 }
 
 static void
-update_timer(const unsigned int minutes, const unsigned int seconds, const double progress,
-			 gpointer user_data)
+update_timer(const unsigned int time, const double progress, gpointer user_data)
 {
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
-	char buffer[3];
-	sprintf(buffer, "%02d", minutes);
+	const unsigned int minutes = time / 60;
+	const unsigned int seconds = time % 60;
+
+	char buffer[9];
+	sprintf(buffer, "%02u", minutes);
 	gtk_label_set_label(priv->timer_minutes_label, buffer);
-	sprintf(buffer, "%02d", seconds);
+	sprintf(buffer, "%02u", seconds);
 	gtk_label_set_label(priv->timer_seconds_label, buffer);
 	gtk_progress_bar_set_fraction(priv->toasting_progress_bar, progress);
 }
 
 static void
-on_recipe_started(G_GNUC_UNUSED TlltCpRecipeListItem *list_item, G_GNUC_UNUSED TlltCpRecipe *recipe,
+on_recipe_started(G_GNUC_UNUSED TlltCpRecipeListItem *list_item, TlltCpRecipe *recipe,
 				  gpointer user_data)
 {
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
-	// TODO: Get info from recipe
-	g_object_ref(self);
-	tllt_toaster_start(priv->toaster, 2, 0, 425, update_timer, self);
+	priv->toaster_user			   = priv->selected_user;
+	priv->currently_running_recipe = recipe;
+
+	g_autoptr(GError) err				   = NULL;
+	g_autoptr(TlltCpCookingDetailsDto) dto = tllt_cp_user_get_cooking_details_for_recipe(
+		priv->toaster_user, priv->client, priv->currently_running_recipe, &err);
+
+	if (dto != NULL) {
+		g_object_ref(self);
+		tllt_toaster_start(priv->toaster, dto->time, dto->temperature, update_timer, self);
+	} else {
+		priv->toaster_user			   = NULL;
+		priv->currently_running_recipe = NULL;
+	}
 }
 
 static void
@@ -315,10 +330,11 @@ on_timer_start_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_dat
 		gtk_switch_set_active(priv->top_heating_element_switch, TRUE);
 	}
 
+	const int minutes = gtk_spin_button_get_value_as_int(priv->timer_minutes_spin_button);
+	const int seconds = gtk_spin_button_get_value_as_int(priv->timer_seconds_spin_button);
+
 	g_object_ref(self);
-	tllt_toaster_start(priv->toaster,
-					   gtk_spin_button_get_value_as_int(priv->timer_minutes_spin_button),
-					   gtk_spin_button_get_value_as_int(priv->timer_seconds_spin_button),
+	tllt_toaster_start(priv->toaster, minutes * 60 + seconds,
 					   gtk_range_get_value(GTK_RANGE(priv->temperature_scale)), update_timer, self);
 }
 
@@ -345,6 +361,13 @@ on_toaster_stopped(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
 {
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
+
+	priv->toaster_user			   = NULL;
+	priv->currently_running_recipe = NULL;
+
+	if (priv->toaster_user != NULL && priv->currently_running_recipe != NULL) {
+		g_print("Present user opinion window\n");
+	}
 
 	g_object_unref(self);	// Refers to ref when toaster is started
 

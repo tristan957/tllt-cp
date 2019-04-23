@@ -19,13 +19,11 @@ struct _TlltToaster
 #define TLLT_TYPE_TOASTER (tllt_toaster_get_type())
 G_DECLARE_FINAL_TYPE(TlltToaster, tllt_toaster, TLLT, TOASTER, GObject)
 
-typedef void (*TlltToasterUpdateFunc)(unsigned int minutes, unsigned int seconds, double progress,
-									  gpointer user_data);
+typedef void (*TlltToasterUpdateFunc)(unsigned int time, double progress, gpointer user_data);
 
 TlltToaster *tllt_toaster_new_from_config_file(const char *file_path, GError **err);
-void tllt_toaster_start(TlltToaster *self, const unsigned int minutes, const unsigned int seconds,
-						const int temperature, const TlltToasterUpdateFunc update,
-						gpointer user_data);
+void tllt_toaster_start(TlltToaster *self, const unsigned int time, const int temperature,
+						const TlltToasterUpdateFunc update, gpointer user_data);
 void tllt_toaster_stop(TlltToaster *self);
 gboolean tllt_toaster_is_running(TlltToaster *self);
 

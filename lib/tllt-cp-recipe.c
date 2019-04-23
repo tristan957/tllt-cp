@@ -1,10 +1,10 @@
 #include <glib-object.h>
 #include <glib/gi18n.h>
 
+#include "dto/tllt-cp-cooking-details-dto.h"
 #include "dto/tllt-cp-create-recipe-dto.h"
 #include "tllt-cp-client.h"
 #include "tllt-cp-recipe.h"
-#include "tllt-cp-user.h"
 
 struct _TlltCpRecipe
 {
@@ -137,4 +137,12 @@ tllt_cp_recipe_get_rtype(TlltCpRecipe *self)
 	TlltCpRecipePrivate *priv = tllt_cp_recipe_get_instance_private(self);
 
 	return priv->type;
+}
+
+unsigned int
+tllt_cp_recipe_get_id(TlltCpRecipe *self)
+{
+	TlltCpRecipePrivate *priv = tllt_cp_recipe_get_instance_private(self);
+
+	return priv->id;
 }

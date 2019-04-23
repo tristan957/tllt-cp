@@ -208,8 +208,7 @@ update_toaster(gpointer user_data)
 
 	const int delta = args->total_time_seconds - g_timer_elapsed(priv->timer, NULL);
 	if (delta > 0 && !g_cancellable_is_cancelled(priv->cancellable)) {
-		args->update(delta / 60, delta % 60, 1 - ((double) delta) / args->total_time_seconds,
-					 args->user_data);
+		args->update(delta, 1 - ((double) delta) / args->total_time_seconds, args->user_data);
 
 		return TRUE;
 	}
@@ -345,8 +344,8 @@ prepare_toaster(gpointer user_data)
 }
 
 void
-tllt_toaster_start(TlltToaster *self, const unsigned int minutes, const unsigned int seconds,
-				   const int temperature, const TlltToasterUpdateFunc update, gpointer user_data)
+tllt_toaster_start(TlltToaster *self, const unsigned int time, const int temperature,
+				   const TlltToasterUpdateFunc update, gpointer user_data)
 {
 	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
 
@@ -354,7 +353,7 @@ tllt_toaster_start(TlltToaster *self, const unsigned int minutes, const unsigned
 
 	TlltToasterOperationArgs *toaster_op_args = g_malloc(sizeof(TlltToasterOperationArgs));
 	g_return_if_fail(toaster_op_args != NULL);
-	toaster_op_args->total_time_seconds = minutes * 60 + seconds;
+	toaster_op_args->total_time_seconds = time;
 	toaster_op_args->update				= update;
 	toaster_op_args->user_data			= user_data;
 	toaster_op_args->toaster			= self;

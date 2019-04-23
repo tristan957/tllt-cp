@@ -25,6 +25,7 @@ configure_file(
 
 sources = [
 	'dto/tllt-cp-authentication-dto.c',
+	'dto/tllt-cp-cooking-details-dto.c',
 	'dto/tllt-cp-create-recipe-dto.c',
 	'dto/tllt-cp-create-user-dto.c',
 	'tllt-cp-client.c',
@@ -35,6 +36,7 @@ sources = [
 
 public_headers = [
 	'dto/tllt-cp-authentication-dto.h',
+	'dto/tllt-cp-cooking-details-dto.h',
 	'dto/tllt-cp-create-recipe-dto.h',
 	'dto/tllt-cp-create-user-dto.h',
 	'tllt-cp.h',

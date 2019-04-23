@@ -32,5 +32,9 @@ GList *tllt_cp_user_get_recipes(TlltCpUser *self);
 TlltCpRecipe *tllt_cp_user_add_recipe(TlltCpUser *self, TlltCpClient *client, const char *name,
 									  const TlltCpRecipeType type, GError **err);
 void tllt_cp_user_remove_recipe(TlltCpUser *self, TlltCpRecipe *recipe, GError **err);
+TlltCpCookingDetailsDto *tllt_cp_user_get_cooking_details_for_recipe(TlltCpUser *self,
+																	 TlltCpClient *client,
+																	 TlltCpRecipe *recipe,
+																	 GError **err);
 
 G_END_DECLS

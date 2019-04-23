@@ -287,3 +287,22 @@ tllt_cp_user_get_recipes(TlltCpUser *self)
 
 	return priv->recipes;
 }
+
+TlltCpCookingDetailsDto *
+tllt_cp_user_get_cooking_details_for_recipe(TlltCpUser *self, TlltCpClient *client,
+											TlltCpRecipe *recipe, GError **err)
+{
+	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
+
+	TlltCpUserPrivate *priv = tllt_cp_user_get_instance_private(self);
+
+	g_autoptr(GString) endpoint = g_string_new(client->server);
+	g_string_append_printf(endpoint, "/users/%u/recipes/%u/cook", priv->id,
+						   tllt_cp_recipe_get_id(recipe));
+	GObject *obj =
+		tllt_cp_client_get_request(client, TLLT_CP_TYPE_COOKING_DETAILS_DTO, endpoint->str, err);
+
+	g_return_val_if_fail(err == NULL || *err == NULL, NULL);
+
+	return TLLT_CP_COOKING_DETAILS_DTO(obj);
+}
