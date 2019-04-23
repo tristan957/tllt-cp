@@ -30,7 +30,7 @@ libcurl_dep = dependency('libcurl', version: '>= 7.52', required: true)
 libjson_glib_dep = dependency('json-glib-1.0', version: '>= 1.2', required: true)
 libgtk_dep = dependency('gtk+-3.0', version: '>= 3.22', required: true)
 libmath_dep = cc.find_library('m', required: true)
-libwiringPi_dep = cc.find_library('wiringPi')
+libwiringPi_dep = cc.find_library('wiringPi', required: false)
 
 subdir('data')
 subdir('driver')
