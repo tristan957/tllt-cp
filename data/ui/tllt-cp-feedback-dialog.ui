@@ -5,7 +5,10 @@
   <template class="TlltCpFeedbackDialog" parent="GtkDialog">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
+    <property name="skip_taskbar_hint">True</property>
+    <property name="skip_pager_hint">True</property>
     <child type="titlebar">
       <object class="GtkHeaderBar">
         <property name="visible">True</property>
