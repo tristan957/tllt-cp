@@ -7,7 +7,7 @@
 
 struct _TlltCpFeedbackDialog
 {
-	GtkMessageDialog parent_instance;
+	GtkDialog parent_instance;
 };
 
 typedef struct TlltCpFeedbackDialogPrivate
@@ -16,7 +16,7 @@ typedef struct TlltCpFeedbackDialogPrivate
 	TlltCpClient *client;
 } TlltCpFeedbackDialogPrivate;
 
-G_DEFINE_TYPE_WITH_PRIVATE(TlltCpFeedbackDialog, tllt_cp_feedback_dialog, GTK_TYPE_MESSAGE_DIALOG)
+G_DEFINE_TYPE_WITH_PRIVATE(TlltCpFeedbackDialog, tllt_cp_feedback_dialog, GTK_TYPE_DIALOG)
 
 typedef enum TlltCpFeedbackDialogProps
 {
