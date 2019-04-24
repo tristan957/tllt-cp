@@ -101,7 +101,8 @@ on_create_recipe_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_d
 
 	g_autoptr(GError) err = NULL;
 	tllt_cp_user_add_recipe(priv->author, priv->client, gtk_entry_get_text(priv->recipe_name_entry),
-							gtk_combo_box_get_active(GTK_COMBO_BOX(priv->recipe_type_combo)), &err);
+							gtk_combo_box_get_active(GTK_COMBO_BOX(priv->recipe_type_combo)) + 1,
+							&err);
 
 	// TODO: do something meaningful with error
 	if (err != NULL) {
