@@ -378,7 +378,7 @@ on_toaster_stopped(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
 	gtk_widget_set_visible(GTK_WIDGET(priv->toasting_status_box), FALSE);
 	gtk_stack_set_visible_child_name(priv->manual_stack, "edit-page");
 
-	gboolean state = GTK_TREE_SORTABLE_UNSORTED_SORT_COLUMN_ID;
+	gboolean state = TRUE;
 	gtk_container_foreach(GTK_CONTAINER(priv->recipe_list_box), recipe_list_box_toggle_run_buttons,
 						  &state);
 }
