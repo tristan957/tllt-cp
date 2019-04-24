@@ -205,7 +205,8 @@ on_recipe_started(G_GNUC_UNUSED TlltCpRecipeListItem *list_item, TlltCpRecipe *r
 
 	if (dto != NULL) {
 		g_object_ref(self);
-		tllt_toaster_start(priv->toaster, dto->time, dto->temperature, update_timer, self);
+		tllt_toaster_start(priv->toaster, dto->time, dto->temperature, TRUE, TRUE, update_timer,
+						   self);
 	} else {
 		priv->toaster_user			   = NULL;
 		priv->currently_running_recipe = NULL;
@@ -298,7 +299,7 @@ on_user_profiles_flow_box_child_activated(G_GNUC_UNUSED GtkFlowBox *widget, GtkF
 }
 
 static gboolean
-on_heating_element_swtich_state_set(G_GNUC_UNUSED GtkSwitch *widget, G_GNUC_UNUSED gboolean state,
+on_heating_element_switch_state_set(G_GNUC_UNUSED GtkSwitch *widget, G_GNUC_UNUSED gboolean state,
 									gpointer user_data)
 {
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
@@ -322,21 +323,15 @@ on_timer_start_button_clicked(G_GNUC_UNUSED GtkButton *widget, gpointer user_dat
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
 	TlltCpWindowPrivate *priv = tllt_cp_window_get_instance_private(self);
 
-	// Reset switches for next run
-	if (!gtk_switch_get_active(priv->top_heating_element_switch)) {
-		gtk_switch_set_active(priv->top_heating_element_switch, TRUE);
-	}
-
-	if (!gtk_switch_get_active(priv->bottom_heating_element_switch)) {
-		gtk_switch_set_active(priv->top_heating_element_switch, TRUE);
-	}
-
 	const int minutes = gtk_spin_button_get_value_as_int(priv->timer_minutes_spin_button);
 	const int seconds = gtk_spin_button_get_value_as_int(priv->timer_seconds_spin_button);
 
 	g_object_ref(self);
 	tllt_toaster_start(priv->toaster, minutes * 60 + seconds,
-					   gtk_range_get_value(GTK_RANGE(priv->temperature_scale)), update_timer, self);
+					   gtk_range_get_value(GTK_RANGE(priv->temperature_scale)),
+					   gtk_switch_get_active(priv->top_heating_element_switch),
+					   gtk_switch_get_active(priv->bottom_heating_element_switch), update_timer,
+					   self);
 }
 
 static void
@@ -368,6 +363,15 @@ on_toaster_stopped(G_GNUC_UNUSED TlltToaster *toaster, gpointer user_data)
 			tllt_cp_feedback_dialog_new(GTK_WINDOW(self), priv->toaster_user, priv->client);
 		gtk_dialog_run(GTK_DIALOG(dialog));
 		gtk_widget_destroy(GTK_WIDGET(dialog));
+	}
+
+	// Reset switches for next run
+	if (!gtk_switch_get_active(priv->top_heating_element_switch)) {
+		gtk_switch_set_active(priv->top_heating_element_switch, TRUE);
+	}
+
+	if (!gtk_switch_get_active(priv->bottom_heating_element_switch)) {
+		gtk_switch_set_active(priv->top_heating_element_switch, TRUE);
 	}
 
 	priv->toaster_user			   = NULL;
@@ -488,7 +492,7 @@ tllt_cp_window_class_init(TlltCpWindowClass *klass)
 	gtk_widget_class_bind_template_callback(wid_class, on_timer_reset_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_toaster_stop_button_clicked);
 	gtk_widget_class_bind_template_callback(wid_class, on_temperature_scale_format_value);
-	gtk_widget_class_bind_template_callback(wid_class, on_heating_element_swtich_state_set);
+	gtk_widget_class_bind_template_callback(wid_class, on_heating_element_switch_state_set);
 }
 
 static void

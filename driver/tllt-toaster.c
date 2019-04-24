@@ -18,6 +18,8 @@ typedef struct TlltToasterOperationArgs
 	TlltToaster *toaster;
 	int temperature;
 	int total_time_seconds;
+	gboolean top;
+	gboolean bot;
 	unsigned int ref_count;
 	TlltToasterUpdateFunc update;
 	gpointer user_data;
@@ -269,8 +271,13 @@ control_toaster(gpointer user_data)
 	case STATE_READ: {
 		const double temp = tllt_sensor_read(TLLT_SENSOR(args->toaster->thermistor));
 		if (temp < args->temperature) {
-			tllt_powerable_on(TLLT_POWERABLE(args->toaster->top_heating_element));
-			tllt_powerable_on(TLLT_POWERABLE(args->toaster->bottom_heating_element));
+			if (args->top) {
+				tllt_powerable_on(TLLT_POWERABLE(args->toaster->top_heating_element));
+			}
+
+			if (args->bot) {
+				tllt_powerable_on(TLLT_POWERABLE(args->toaster->bottom_heating_element));
+			}
 
 			state = STATE_NO_READ;
 		}
@@ -345,7 +352,8 @@ prepare_toaster(gpointer user_data)
 
 void
 tllt_toaster_start(TlltToaster *self, const unsigned int time, const int temperature,
-				   const TlltToasterUpdateFunc update, gpointer user_data)
+				   const gboolean top, const gboolean bot, const TlltToasterUpdateFunc update,
+				   gpointer user_data)
 {
 	TlltToasterPrivate *priv = tllt_toaster_get_instance_private(self);
 
@@ -358,13 +366,20 @@ tllt_toaster_start(TlltToaster *self, const unsigned int time, const int tempera
 	toaster_op_args->user_data			= user_data;
 	toaster_op_args->toaster			= self;
 	toaster_op_args->temperature		= temperature;
+	toaster_op_args->top				= top;
+	toaster_op_args->bot				= bot;
 	toaster_op_args->ref_count			= 1;
 	g_object_ref(self);
 
 	const double temp = tllt_sensor_read(TLLT_SENSOR(self->thermistor));
 	if (temp < temperature) {
-		tllt_powerable_on(TLLT_POWERABLE(self->top_heating_element));
-		tllt_powerable_on(TLLT_POWERABLE(self->bottom_heating_element));
+		if (top) {
+			tllt_powerable_on(TLLT_POWERABLE(self->top_heating_element));
+		}
+
+		if (bot) {
+			tllt_powerable_on(TLLT_POWERABLE(self->bottom_heating_element));
+		}
 	} else {
 		tllt_powerable_off(TLLT_POWERABLE(self->top_heating_element));
 		tllt_powerable_off(TLLT_POWERABLE(self->bottom_heating_element));
