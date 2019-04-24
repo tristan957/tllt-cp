@@ -298,7 +298,7 @@ on_user_profiles_flow_box_child_activated(G_GNUC_UNUSED GtkFlowBox *widget, GtkF
 }
 
 static gboolean
-on_heating_element_swtich_state_set(G_GNUC_UNUSED GtkSwitch *widget, G_GNUC_UNUSED gboolean state,
+on_heating_element_swtich_state_set(G_GNUC_UNUSED GtkSwitch *widget, gboolean state,
 									gpointer user_data)
 {
 	TlltCpWindow *self		  = TLLT_CP_WINDOW(user_data);
